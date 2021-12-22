@@ -13,9 +13,9 @@
 
 
 from pybotics.robot import Robot
-from pybotics.predefined_models import ur10
+from pybotics.predefined_models import teco
 
-robot = Robot.from_parameters(ur10())
+robot = Robot.from_parameters(teco())
 
 
 # ## Define the Forces/Torques Acting on the TCP
