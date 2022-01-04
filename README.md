@@ -5,3 +5,25 @@
 ## solves
 1. https://blog.csdn.net/gyxx1998/article/details/118153079
 2. https://blog.csdn.net/zxxxiazai/article/details/103568577
+
+
+# 範例程式
+==================
+## 運行動力學分析(靜態),求取torque 
+'''bash
+rosrun dynamics dynamics_puma.py
+'''
+## 運行手臂軌跡規劃,求取各軸角度,速度,加速度
+'''bash
+rosrun trajectory_generation trajectory_generation_teco.py 
+'''
+## 運行動力學手臂全工作空間分析(靜態),求取最大torque 
+'''bash
+rosrun dynamics dynamics_puma_space.py
+'''
+
+
+>>2022/01/04 更新
+1. 新增工作空間分析
+2. 新增軌跡規劃求取各軸角度,速度,加速度
+

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# coding: utf-8
 import roboticstoolbox as rtb
 from spatialmath import *   # lgtm [py/polluting-import]
 import argparse
