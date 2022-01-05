@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="TECObot_urdf_test_MESH_3">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-3.88553672032978E-08 0.000607023304698251 0.0324651903540065"
+        rpy="0 0 0" />
+      <mass
+        value="0.726077498939582" />
+      <inertia
+        ixx="0.00214542503131185"
+        ixy="-1.6256039635216E-09"
+        ixz="-1.75967015897034E-09"
+        iyy="0.00217519049431956"
+        iyz="7.84469380222813E-06"
+        izz="0.0035729713646278" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://TECObot_urdf_test_MESH_3/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.909803921568627 0.443137254901961 0.0313725490196078 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://TECObot_urdf_test_MESH_3/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="link_1">
+    <inertial>
+      <origin
+        xyz="0.00216982554143771 -0.00152152702039912 0.136509463584598"
+        rpy="0 0 0" />
+      <mass
+        value="0.706624909903978" />
+      <inertia
+        ixx="0.00106221961517276"
+        ixy="2.32669431767169E-05"
+        ixz="3.40824435092083E-07"
+        iyy="0.00108099776249369"
+        iyz="-2.31183941296988E-06"
+        izz="0.00106492891669506" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://TECObot_urdf_test_MESH_3/meshes/link_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.250980392156863 0.250980392156863 0.250980392156863 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://TECObot_urdf_test_MESH_3/meshes/link_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_1"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="link_1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="link_2">
+    <inertial>
+      <origin
+        xyz="-0.00640920388427568 -0.00264974814783003 -1.54648728988571E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.706624392841053" />
+      <inertia
+        ixx="0.00106492423794155"
+        ixy="1.59615599722748E-06"
+        ixz="1.70625417541006E-06"
+        iyy="0.00104652432176462"
+        iyz="6.05499973089279E-07"
+        izz="0.00109668647596047" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://TECObot_urdf_test_MESH_3/meshes/link_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.250980392156863 0.250980392156863 0.250980392156863 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://TECObot_urdf_test_MESH_3/meshes/link_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_2"
+    type="revolute">
+    <origin
+      xyz="0.091378 -0.06328 0.1301"
+      rpy="0 0 2.5359" />
+    <parent
+      link="link_1" />
+    <child
+      link="link_2" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+</robot>
