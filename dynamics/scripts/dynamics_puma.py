@@ -13,10 +13,6 @@ from matplotlib import cm
 
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
 
-#get_ipython().magic(u'matplotlib notebook')
-#get_ipython().magic(u"config NotebookBackend.figure_format = 'retina'")
-
-
 # We will instantiate a model of the Puma 560 robot which has well known inertial parameters
 
 # In[2]:
@@ -73,51 +69,51 @@ p560.inertia(p560.qn)
 # In[6]:
 
 
-N = 100
-(Q2, Q3) = np.meshgrid(np.linspace(-pi, pi, N), np.linspace(-pi, pi, N))
-M11 = np.zeros((N,N))
-M12 = np.zeros((N,N))
-for i in range(N):
-    for j in range(N):
-        M = p560.inertia(np.r_[0, Q2[i,j], Q3[i,j], 0, 0, 0])
-        M11[i,j] = M[0,0]
-        M12[i,j] = M[0,1]
+# N = 100
+# (Q2, Q3) = np.meshgrid(np.linspace(-pi, pi, N), np.linspace(-pi, pi, N))
+# M11 = np.zeros((N,N))
+# M12 = np.zeros((N,N))
+# for i in range(N):
+#     for j in range(N):
+#         M = p560.inertia(np.r_[0, Q2[i,j], Q3[i,j], 0, 0, 0])
+#         M11[i,j] = M[0,0]
+#         M12[i,j] = M[0,1]
 
-p560.payload(20, [0, 0, 0]) # set payload 
-# The inertia "seen" by joint 1 varies as a function of $q_2$ and $q_3$ as shown below
+# p560.payload(20, [0, 0, 0]) # set payload 
+# # The inertia "seen" by joint 1 varies as a function of $q_2$ and $q_3$ as shown below
 
-# In[7]:
-
-
-fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-surf = ax.plot_surface(Q2, Q3, M11, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-fig.colorbar(surf, shrink=0.9, aspect=10, pad=0.12)
-ax.set_xlabel('$q_2$ (rad)')
-ax.set_ylabel('$q_3$ (rad)')
-ax.set_zlabel('$M_{11}$ ($kg.m^2$)')
-plt.show()
+# # In[7]:
 
 
-# The ratio of maximum to minimum values is
-
-# In[8]:
-
-
-M11.max() / M11.min()
-
-
-# The coupling inertia between joints 1 and 2 also varies with configuration and we can plot that as well
-
-# In[9]:
+# fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+# surf = ax.plot_surface(Q2, Q3, M11, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+# fig.colorbar(surf, shrink=0.9, aspect=10, pad=0.12)
+# ax.set_xlabel('$q_2$ (rad)')
+# ax.set_ylabel('$q_3$ (rad)')
+# ax.set_zlabel('$M_{11}$ ($kg.m^2$)')
+# plt.show()
 
 
-fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-surf = ax.plot_surface(Q2, Q3, M12, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-fig.colorbar(surf, shrink=0.9, aspect=10, pad=0.12)
-ax.set_xlabel('$q_2$ (rad)')
-ax.set_ylabel('$q_3$ (rad)')
-ax.set_zlabel('$M_{12}$ ($kg.m^2$)')
-plt.show()
+# # The ratio of maximum to minimum values is
+
+# # In[8]:
+
+
+# M11.max() / M11.min()
+
+
+# # The coupling inertia between joints 1 and 2 also varies with configuration and we can plot that as well
+
+# # In[9]:
+
+
+# fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+# surf = ax.plot_surface(Q2, Q3, M12, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+# fig.colorbar(surf, shrink=0.9, aspect=10, pad=0.12)
+# ax.set_xlabel('$q_2$ (rad)')
+# ax.set_ylabel('$q_3$ (rad)')
+# ax.set_zlabel('$M_{12}$ ($kg.m^2$)')
+# plt.show()
 
 
 # The velocity terms are a bit harder to comprehend but they mean that rotation of one joint (and its link) can exert a torque on other joints.  Consider that the should joint is rotating at 1 rad/sec, then the torque will be 
@@ -137,9 +133,16 @@ p560.coriolis(p560.qn, qd) @ qd
 # In[11]:
 
 
-p560.rne(p560.qn, np.zeros((6,)), np.zeros((6,)))
+tau_j = p560.rne(p560.qn, np.zeros((6,)), np.zeros((6,)))
+print("tau_j:",tau_j)
+print("zz:",np.zeros((6,)))
 
 
+vel = np.array([10,10,10,10,10,10]) # degree / sec
+acc = np.array([50,50,50,10,10,10]) # degree / sec2
+# linear speed # mm / s
+tau_j = p560.rne(p560.qn, vel, acc)
+print("tau_j:",tau_j)
 # which computes $\tau = \mbox{rne}(\mathit{q}, \mathit{\dot{q}}, \mathit{\dot{q}})$ and can accept additional arguments such as gravity or a wrench applied to the end-effector.  In the Toolbox this algorithm is implemented in C for maximum performance.
 # 
 # The example above computes the gravity load, cross check it with the result computed earlier.
@@ -154,89 +157,35 @@ p560.rne(p560.qn, np.zeros((6,)), np.zeros((6,)))
 # If we integrate this we can compute the trajectory of the joint coordinates (and velocities) as a function of time
 
 # In[12]:
+print("================================================================")
+
+# p560nf = p560.nofriction()
+# tg = p560nf.fdyn(5, p560.qn, dt=0.05)
 
 
-p560nf = p560.nofriction()
-tg = p560nf.fdyn(5, p560.qn, dt=0.05)
+# # The first line needs some explanation.  The Toolbox can model two types of joint friction:
+# # - viscous friction which is linearly related to joint velocity
+# # - Coulomb friction which is **non-linearly** related to joint velocity
+# # 
+# # Coulomb friction is a _harsh_ non-linearity and it causes the numerical integrator to take very small times steps, so the result will take many minutes to compute.  To speed things up, at the expense of some modeling fidelity, we set the Coulomb friction to zero, but retain the viscous friction.  The `nofriction()` method returns a clone of the robot with its friction parameters modified.
+# # 
+# # The computed joint configuration trajectory is
+
+# # In[13]:
 
 
-# The first line needs some explanation.  The Toolbox can model two types of joint friction:
-# - viscous friction which is linearly related to joint velocity
-# - Coulomb friction which is **non-linearly** related to joint velocity
-# 
-# Coulomb friction is a _harsh_ non-linearity and it causes the numerical integrator to take very small times steps, so the result will take many minutes to compute.  To speed things up, at the expense of some modeling fidelity, we set the Coulomb friction to zero, but retain the viscous friction.  The `nofriction()` method returns a clone of the robot with its friction parameters modified.
-# 
-# The computed joint configuration trajectory is
+# # tg.q
+# # print(tg.q)
+# # which we can plot using a Toolbox convenience function
 
-# In[13]:
+# # In[14]:
 
-
-tg.q
-print(tg.q)
-# which we can plot using a Toolbox convenience function
-
-# In[14]:
-
-rtb.tools.trajectory.qplot(tg.t, tg.q)
+# rtb.tools.trajectory.qplot(tg.t, tg.q)
 
 # or we can animate it, showing the robot collapsing under gravity
 
 # In[ ]:
-p560.plot(tg.q)
+# p560.plot(tg.q)
 #
 # The motion of the robot quickly dies out and it hangs downward, this loss of energy is due to the viscous friction in the robot's joints.
 
-
-
-# # 角度轉換
-# du=pi/180;  #度
-# radian=180/pi; #弧度
-# ## 數值法 求取工作空間
-# # 關節角限位
-# q1_s=-160
-# q1_end=160
-# q2_s=-160
-# q2_end=160
-# q3_s=-160
-# q3_end=160
-# q4_s=-160
-# q4_end=160
-# q5_s=-160
-# q5_end=160
-# q6_s=-160
-# q6_end=160
-
-# # 計算參數
-# step=20 #計算步距 % 解析度
-# # t=0:1:(q5_end-q5_s)/step # 產生時間向量 
-# step1 = (q1_end - q1_s)/step 
-# step2 = (q2_end - q2_s)/step 
-# step3 = (q3_end - q3_s)/step 
-# step4 = (q4_end - q4_s)/step 
-# step5 = (q5_end - q5_s)/step
-# step6 = (q6_end - q6_s)/step 
-# ## T_cell={((q1_end-q1_s)/step)*((q2_end-q2_s)/step)*((q3_end-q3_s)/step)*((q4_end-q4_s)/step)};
-
-# # 窮舉法正運動學計算工作空間
-# # tic;%tic1    
-# i = 1
-# T = np.zeros((3,1))
-# step_num = int(step1*step2*step3*step4*step5)
-# T_x = np.zeros((1,step_num))
-# T_y = np.zeros((1,step_num))
-# T_z = np.zeros((1,step_num))
-# for q1 in range(q1_s, q1_end, step):
-#     for q2 in range(q2_s, q2_end, step):
-#         for q3 in range(q3_s, q3_end, step):
-#             for q4 in range(q4_s, q4_end, step):
-#                 for q5 in range(q5_s, q5_end, step):
-#                     T = p560.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])
-#                     torque = p560.gravload([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])
-#                     #  A = T.t(1)
-#                     T_x[0,i] = T.t[0]
-#                     T_y[0,i] = T.t[1]
-#                     T_z[0,i] = T.t[2]
-#                     i=i+1
-                
-# # disp(['循環運行時間：',num2str(toc)]); 
-# # t1=clock;

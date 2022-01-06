@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 import rospy
+import numpy as np
 import roboticstoolbox as rtb
 from spatialmath import *   # lgtm [py/polluting-import]
 import argparse
@@ -10,6 +11,16 @@ import matplotlib.pyplot as plt
 
 class Trajectory_generation():
     def __init__(self):
+        self.qt = None
+        self.interval = range(200)
+
+        self.t = np.arange(0, 2, 0.010)
+        self.T0 = SE3(-0.494, -0.045, 0.259)
+        self.T1 = SE3(0.4, 0.5, 0.2)
+        print(self.T0)
+        print(self.T1)
+        self.Tc = None
+
         parser = argparse.ArgumentParser(description="Puma trajectory demo")
         parser.add_argument(
             '--backend',
@@ -34,14 +45,53 @@ class Trajectory_generation():
         else:
             raise ValueError('unknown model')
 
-        self.qt = None
-        self.interval = range(200)
         
-    def trajectory_planning(self):
+
+    def trajectory_planning(self, space):
         print(self.robot)
-        self.qt = rtb.tools.trajectory.jtraj(self.robot.qz, self.robot.qr, 200)
+        if space == "ctraj":
+            self.T0 = self.robot.fkine(self.robot.qz)
+            self.T1 = self.robot.fkine(self.robot.qr)
+            # self.T0 = SE3(-0.494, -0.045, 0.259)
+            # self.T1 = SE3(0.452, -0.572, 0.798)
+            print(self.T0)
+            print(self.T1)
+            # t = rtb.tools.trajectory.lspb(0, 1, 50)
+
+            self.Tc = rtb.tools.trajectory.ctraj(self.T0, self.T1, self.t)
+            # print(self.Tc)
+            sol = self.robot.ikine_LM(self.Tc, mask = [1, 1, 1, 1, 0, 1])
+            print(sol.q)
+            print(sol.q.shape)
+            
+            self.robot.plot(sol.q, backend=self.args.backend)
+            
+            # self.ax.scatter(self.T_x[0,:], self.T_y[0,:], self.T_z[0,:], c='r', marker='o')
+            plt.pause(0)
+
+        elif space == "jtraj":
+            self.qt = rtb.tools.trajectory.jtraj(self.robot.qz, self.robot.qr, 200)
+            
+            self.trajectory_planning_plot()
+            self.trajectory_plot()
+
+            # TODO:  rne 逆動力學 add vel & acc analyses
+            torque = self.robot.rne(self.qt.q, self.qt.qd, self.qt.qdd)
+            # print(torque[:,0])
+            fig = plt.figure()
+            plt.plot(self.interval, torque[:,0], 'r-')
+            plt.plot(self.interval, torque[:,1], 'b--')
+            plt.plot(self.interval, torque[:,2], 'g-.')
+            plt.plot(self.interval, torque[:,3], 'c-')
+            plt.plot(self.interval, torque[:,4], 'k--')
+            plt.plot(self.interval, torque[:,5], 'm-')
+            plt.legend(['torque0','torque1','torque2','torque3','torque4','torque5'])
+            plt.show()
+            plt.pause(0)
+
     def trajectory_plot(self):
         # 軌跡規劃後的各軸角度
+        fig = plt.figure()
         plt.subplot(221)
         plt.plot(self.interval, self.qt.q[:,0], 'r-')
         plt.plot(self.interval, self.qt.q[:,1], 'b--')
@@ -90,7 +140,20 @@ class Trajectory_generation():
 
         # t = rtb.tools.trajectory.lspb(robot.qz[1], robot.qr[1], 50)
         # t.plot()
-        self.robot.plot(self.qt.q, backend=self.args.backend)
+
+        # self.robot.plot(self.qt.q, backend=self.args.backend)
+        # fig = plt.figure()
+        self.robot.plot(self.qt.q, backend=self.args.backend, block=False, vellipse=False, fellipse=False)
+        plt.show()
+        # backend=None,
+        # block=False,
+        # dt=0.050,
+        # limits=None,
+        # vellipse=False,
+        # fellipse=False,
+        # fig=None,
+        # movie=None,
+        # loop=False,
 
 if __name__=="__main__":
     rospy.init_node("trajectory_generation")
@@ -98,9 +161,9 @@ if __name__=="__main__":
     tra = Trajectory_generation()
     # tra.init()
 
-    tra.trajectory_planning()
-    tra.trajectory_plot()
-    tra.trajectory_planning_plot()
+    tra.trajectory_planning("jtraj")
+    # tra.trajectory_plot()
+    # tra.trajectory_planning_plot()
     # while not rospy.is_shutdown():
     #     nex.arm_task_sub()
     #     pass

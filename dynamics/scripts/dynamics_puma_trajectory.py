@@ -13,7 +13,7 @@ np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if 
 
 
 
-class Dynamics_space():
+class Dynamics_trajectory():
     def __init__(self):
         self.p560 = rtb.models.DH.Puma560()
         # self.p560.plot(self.p560.qn, block=False)
@@ -63,23 +63,6 @@ class Dynamics_space():
     def payload_set(self):
         self.p560.payload(20, [0, 0, 0]) # set payload 
 
-# fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-# surf = ax.plot_surface(Q2, Q3, M11, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-# fig.colorbar(surf, shrink=0.9, aspect=10, pad=0.12)
-# ax.set_xlabel('$q_2$ (rad)')
-# ax.set_ylabel('$q_3$ (rad)')
-# ax.set_zlabel('$M_{11}$ ($kg.m^2$)')
-# plt.show()
-
-# M11.max() / M11.min()
-
-# fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-# surf = ax.plot_surface(Q2, Q3, M12, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-# fig.colorbar(surf, shrink=0.9, aspect=10, pad=0.12)
-# ax.set_xlabel('$q_2$ (rad)')
-# ax.set_ylabel('$q_3$ (rad)')
-# ax.set_zlabel('$M_{12}$ ($kg.m^2$)')
-# plt.show()
     def dynamics_cal(self):
         qd = np.r_[0, 1, 0, 0, 0, 0]
         # print("qd:",qd)
@@ -201,9 +184,9 @@ class Dynamics_space():
 
 
 if __name__=="__main__":
-    rospy.init_node("dynamics_space")
+    rospy.init_node("dynamics_trajectory")
 
-    Dya = Dynamics_space()
+    Dya = Dynamics_trajectory()
     # tra.init()
     Dya.payload_set()
     Dya.dynamics_cal()
