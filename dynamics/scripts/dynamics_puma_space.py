@@ -10,9 +10,6 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import time
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
-
-
-
 class Dynamics_space():
     def __init__(self):
         self.p560 = rtb.models.DH.Puma560()
@@ -63,23 +60,6 @@ class Dynamics_space():
     def payload_set(self):
         self.p560.payload(20, [0, 0, 0]) # set payload 
 
-# fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-# surf = ax.plot_surface(Q2, Q3, M11, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-# fig.colorbar(surf, shrink=0.9, aspect=10, pad=0.12)
-# ax.set_xlabel('$q_2$ (rad)')
-# ax.set_ylabel('$q_3$ (rad)')
-# ax.set_zlabel('$M_{11}$ ($kg.m^2$)')
-# plt.show()
-
-# M11.max() / M11.min()
-
-# fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-# surf = ax.plot_surface(Q2, Q3, M12, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-# fig.colorbar(surf, shrink=0.9, aspect=10, pad=0.12)
-# ax.set_xlabel('$q_2$ (rad)')
-# ax.set_ylabel('$q_3$ (rad)')
-# ax.set_zlabel('$M_{12}$ ($kg.m^2$)')
-# plt.show()
     def dynamics_cal(self):
         qd = np.r_[0, 1, 0, 0, 0, 0]
         # print("qd:",qd)
@@ -119,13 +99,9 @@ class Dynamics_space():
         
     def plot_space_scan(self):
         self.ax.scatter(self.T_x[0,:], self.T_y[0,:], self.T_z[0,:], c='r', marker='o')
-
-        # # 顯示圖例
-        # ax.legend()
         self.ax.set_xlabel("x")
         self.ax.set_ylabel("y") 
         self.ax.set_zlabel("z")
-        # 顯示圖形
         plt.show()
         plt.pause(0)
 
@@ -204,7 +180,6 @@ if __name__=="__main__":
     rospy.init_node("dynamics_space")
 
     Dya = Dynamics_space()
-    # tra.init()
     Dya.payload_set()
     Dya.dynamics_cal()
     # Dya.sol_output()

@@ -11,8 +11,6 @@ from matplotlib import cm
 import time
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
 
-
-
 class Dynamics_trajectory():
     def __init__(self):
         self.p560 = rtb.models.DH.Puma560()

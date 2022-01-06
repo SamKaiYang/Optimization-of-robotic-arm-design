@@ -56,17 +56,13 @@ class Trajectory_generation():
             # self.T1 = SE3(0.452, -0.572, 0.798)
             print(self.T0)
             print(self.T1)
-            # t = rtb.tools.trajectory.lspb(0, 1, 50)
 
             self.Tc = rtb.tools.trajectory.ctraj(self.T0, self.T1, self.t)
-            # print(self.Tc)
             sol = self.robot.ikine_LM(self.Tc, mask = [1, 1, 1, 1, 0, 1])
             print(sol.q)
             print(sol.q.shape)
             
             self.robot.plot(sol.q, backend=self.args.backend)
-            
-            # self.ax.scatter(self.T_x[0,:], self.T_y[0,:], self.T_z[0,:], c='r', marker='o')
             plt.pause(0)
 
         elif space == "jtraj":
@@ -77,7 +73,6 @@ class Trajectory_generation():
 
             # TODO:  rne 逆動力學 add vel & acc analyses
             torque = self.robot.rne(self.qt.q, self.qt.qd, self.qt.qdd)
-            # print(torque[:,0])
             fig = plt.figure()
             plt.plot(self.interval, torque[:,0], 'r-')
             plt.plot(self.interval, torque[:,1], 'b--')
@@ -135,35 +130,16 @@ class Trajectory_generation():
                 sys.exit(1)
         else:
             raise ValueError('unknown backend')
-        # rtb.tools.trajectory.plot()
-        # tg = rtb.tools.trajectory.lspb(robot.qz[0], robot.qr[0], 200)
 
-        # t = rtb.tools.trajectory.lspb(robot.qz[1], robot.qr[1], 50)
-        # t.plot()
-
-        # self.robot.plot(self.qt.q, backend=self.args.backend)
-        # fig = plt.figure()
-        self.robot.plot(self.qt.q, backend=self.args.backend, block=False, vellipse=False, fellipse=False)
+        self.robot.plot(self.qt.q, backend=self.args.backend, block=False, movie="trajectory_generation.gif", vellipse=False, fellipse=False)
         plt.show()
-        # backend=None,
-        # block=False,
-        # dt=0.050,
-        # limits=None,
-        # vellipse=False,
-        # fellipse=False,
-        # fig=None,
-        # movie=None,
-        # loop=False,
 
 if __name__=="__main__":
     rospy.init_node("trajectory_generation")
-
     tra = Trajectory_generation()
-    # tra.init()
-
     tra.trajectory_planning("jtraj")
-    # tra.trajectory_plot()
-    # tra.trajectory_planning_plot()
+    tra.trajectory_planning("ctraj")
+
     # while not rospy.is_shutdown():
     #     nex.arm_task_sub()
     #     pass
