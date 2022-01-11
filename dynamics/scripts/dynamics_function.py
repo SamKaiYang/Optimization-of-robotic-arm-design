@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 import rospy
-from interface_control.msg import cal_cmd 
+from interface_control.msg import cal_cmd, dyna_data, dyna_space_data
 import numpy as np
 import roboticstoolbox as rtb
 from spatialmath import *
@@ -39,6 +39,8 @@ class Dynamics_space():
     def __init__(self):
         # self.pub_armstatus = rospy.Publisher("/reply_external_comm",peripheralCmd,queue_size=10)
         self.sub_taskcmd = rospy.Subscriber("/cal_command",cal_cmd,self.cmd_callback)
+        self.sub_dyna = rospy.Subscriber("/dynamics_data",dyna_data,self.dyna_callback)
+        self.sub_dyna_space = rospy.Subscriber("/dynamics_space_data",dyna_space_data,self.dyna_space_callback)
         self.cmd = 0
         self.p560 = rtb.models.DH.Puma560()
         # self.p560.plot(self.p560.qn, block=False)
@@ -93,7 +95,25 @@ class Dynamics_space():
     def cmd_callback(self,data):
         self.cmd = data.cmd
         rospy.loginfo("I heard command is %s", data.cmd)
-        
+    
+    def dyna_callback(self,data):
+        self.payload = data.payload
+        self.payload_position = data.payload_position
+        self.vel = data.vel
+        self.acc = data.acc
+
+        rospy.loginfo("I heard command is %s", data.payload)
+        rospy.loginfo("I heard command is %s", data.payload_position)
+        rospy.loginfo("I heard command is %s", data.vel)
+        rospy.loginfo("I heard command is %s", data.acc)
+    
+    def dyna_space_callback(self,data):
+        pass
+        # self.cmd = data.cmd
+        # rospy.loginfo("I heard command is %s", data.cmd)
+
+
+
     def payload_set(self):
         self.p560.payload(20, [0, 0, 0]) # set payload 
 

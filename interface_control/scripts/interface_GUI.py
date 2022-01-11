@@ -9,7 +9,7 @@ from PySide2.QtCore import *
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from Ui_main import Ui_MainWindow
-from interface_control.msg import cal_cmd
+from interface_control.msg import cal_cmd, dyna_data, dyna_space_data
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -75,7 +75,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
 
         self.pub_cmd = rospy.Publisher("/cal_command",cal_cmd, queue_size=10)
+        self.pub_dyna_data = rospy.Publisher("/dynamics_data",dyna_data, queue_size=10)
+        self.pub_dyna_space = rospy.Publisher("/dynamics_space_data",dyna_space_data, queue_size=10)
         self.cal_cmd = cal_cmd()
+        self.dyna_data = dyna_data()
+        self.dyna_space_data = dyna_space_data()
+        
+        self.payload = 0.0
+        self.payload_position = [0.0,0.0,0.0]
+        self.joint_velocity = [0.0,0.0,0.0,0.0,0.0,0.0]
+        self.joint_acceleration = [0.0,0.0,0.0,0.0,0.0,0.0]
         # self.pub_ipset = rospy.Publisher("/ip_comm",ipconfig,queue_size=10)
         # self.pub_closenode = rospy.Publisher("/close_node",closenode,queue_size=10)
         # self.startthreadflag = False
@@ -85,6 +94,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.ui.lineEdit_acc.setText(str(self.acc))
         self.ui.btn_dynamics.clicked.connect(self.dyna_buttonClicked)
         self.ui.btn_dyn_space.clicked.connect(self.dyna_space_buttonClicked)
+        self.ui.btn_dyn_set.clicked.connect(self.dyna_set_buttonClicked)
+        self.ui.btn_dyn_space_set.clicked.connect(self.dyna_space_set_buttonClicked)
 
         # # Vel. HorizontalSlider
         # self.ui.horizontalSlider_vel.valueChanged.connect(self.VelSliderValue)
@@ -128,7 +139,35 @@ class MainWindow(QtWidgets.QMainWindow):
     #         + "}" + "QPushButton::pressed" + "{" + "background-color :#5151A2;\n" + "color:white;" +"}")
 
 
-    
+    def dyna_set_buttonClicked(self):
+        self.payload = float(self.ui.lineEdit_payload.text())
+        self.dyna_data.payload = self.payload
+        payload_x = float(self.ui.lineEdit_payload_x.text())
+        payload_y = float(self.ui.lineEdit_payload_y.text())
+        payload_z = float(self.ui.lineEdit_payload_z.text())
+        self.payload_position = [payload_x, payload_y, payload_z]
+        self.dyna_data.payload_position = self.payload_position
+        vel_0 = float(self.ui.lineEdit_vel_0.text())
+        vel_1 = float(self.ui.lineEdit_vel_1.text())
+        vel_2 = float(self.ui.lineEdit_vel_2.text())
+        vel_3 = float(self.ui.lineEdit_vel_3.text())
+        vel_4 = float(self.ui.lineEdit_vel_4.text())
+        vel_5 = float(self.ui.lineEdit_vel_5.text())
+        self.joint_velocity = [vel_0, vel_1, vel_2, vel_3, vel_4, vel_5]
+        self.dyna_data.vel = self.joint_velocity
+        acc_0 = float(self.ui.lineEdit_acc_0.text())
+        acc_1 = float(self.ui.lineEdit_acc_1.text())
+        acc_2 = float(self.ui.lineEdit_acc_2.text())
+        acc_3 = float(self.ui.lineEdit_acc_3.text())
+        acc_4 = float(self.ui.lineEdit_acc_4.text())
+        acc_5 = float(self.ui.lineEdit_acc_5.text())
+        self.joint_acceleration = [acc_0, acc_1, acc_2, acc_3, acc_4, acc_5]
+        self.dyna_data.acc = self.joint_acceleration
+
+        self.pub_dyna_data.publish(self.dyna_data)
+
+    def dyna_space_set_buttonClicked(self):
+        pass 
 
     def dyna_space_buttonClicked(self):
         self.pub_cmd.publish(1)
