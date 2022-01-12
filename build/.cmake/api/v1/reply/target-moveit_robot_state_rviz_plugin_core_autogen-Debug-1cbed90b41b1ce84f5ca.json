@@ -1,0 +1,269 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"moveit/moveit_ros/visualization/robot_state_rviz_plugin/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 0,
+			"id" : "geometric_shapes::@73f63fde2828742c7a61"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_exceptions::@6ce8def3193029bf70da"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_profiler::@3c67ff2a5d3c2b2df8c1"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_test_utils::@e91ccfa1779209b51ef1"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_utils::@e91ccfa1779209b51ef1"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_background_processing::@f663e4eec21b21d4fb92"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_kinematics_base::@5a809a1a11725bdeaaac"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_robot_model::@1aafb3f85d71070480a2"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_transforms::@5a01d0ae257f2f69ef2a"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_robot_state::@a9627884e83cec66945c"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_robot_trajectory::@93f40f716f87a475eb05"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_collision_detection::@c1a530c7f3965a347217"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_collision_detection_fcl::@a7222d44498d14e00f80"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_kinematic_constraints::@9fd0dded76d9cf82c09a"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_planning_scene::@23d8e680d659e38dc073"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_constraint_samplers::@b58a22511e34fad0efb6"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_planning_interface::@83473acd291c204fbee5"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_planning_request_adapter::@9e97bdb18a0641d8a111"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_trajectory_processing::@4348c7c6291c41455cfc"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_distance_field::@e5c97a19e6afd357c6d2"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_collision_distance_field::@e70ceed03282795a65eb"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_kinematics_metrics::@fe2a15287ef19d5fc10f"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_dynamics_solver::@1d4d573efe58bd318f68"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_python_tools::@9399192f5b856b621512"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_collision_detection_bullet::@aee0624c445a0d3f4890"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_ros_occupancy_map_monitor::@690a79e2d21bcb707d5f"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_rdf_loader::@62790b1d9d9a83c6c04e"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_collision_plugin_loader::@9b8ce8d731409878a70e"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_kinematics_plugin_loader::@edba38faf706bff955f7"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_robot_model_loader::@8e95ab7c9ed32dd846ba"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_constraint_sampler_manager_loader::@d1278d7984d9da3f1af2"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_planning_pipeline::@5edf6faa7e2cf1d9491d"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_planning_scene_monitor::@15fff9a35687e70df6d9"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_trajectory_execution_manager::@60e3c0061d610a77444c"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_plan_execution::@5d4b6840ae1d4cb79ce0"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_cpp::@1c2565dad8511b7641ee"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_move_group_capabilities_base::@f1fc71c5f06472144b57"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_pick_place_planner::@09e022dae7201d6cbf3b"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_lazy_free_space_updater::@06ee745fbfc10fde1480"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_point_containment_filter::@5aa111863d1115d93b0c"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_pointcloud_octomap_updater_core::@0b4ac9ca2d504d923a10"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_mesh_filter::@12767a961c56f7250aca"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_depth_self_filter::@12767a961c56f7250aca"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_depth_image_octomap_updater::@6d88850236fef430f26b"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_semantic_world::@26f78493840057c1e544"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_robot_interaction::@c6194377f719d0632180"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_warehouse::@97976132cb666b5e38ad"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_py_bindings_tools::@42c576cdd13637790884"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_common_planning_interface_objects::@38c6c1a045bc5ca7efa0"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_planning_scene_interface::@9e29330e99c41584c28a"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_move_group_interface::@e2c66c8fa6ee01ce4bea"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "moveit_rviz_plugin_render_tools::@3daadf45002155cc058e"
+		}
+	],
+	"id" : "moveit_robot_state_rviz_plugin_core_autogen::@f96a3d05594d75b994e1",
+	"isGeneratorProvided" : true,
+	"name" : "moveit_robot_state_rviz_plugin_core_autogen",
+	"paths" : 
+	{
+		"build" : "moveit/moveit_ros/visualization/robot_state_rviz_plugin",
+		"source" : "moveit/moveit_ros/visualization/robot_state_rviz_plugin"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/moveit/moveit_ros/visualization/robot_state_rviz_plugin/CMakeFiles/moveit_robot_state_rviz_plugin_core_autogen",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/moveit/moveit_ros/visualization/robot_state_rviz_plugin/CMakeFiles/moveit_robot_state_rviz_plugin_core_autogen.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

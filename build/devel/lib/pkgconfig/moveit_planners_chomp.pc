@@ -1,0 +1,8 @@
+prefix=/home/iclab/Documents/teco_ws/src/build/devel
+
+Name: moveit_planners_chomp
+Description: Description of moveit_planners_chomp
+Version: 1.1.7
+Cflags: -I/home/iclab/Documents/teco_ws/src/moveit/moveit_planners/chomp/chomp_interface/include
+Libs: -L${prefix}/lib -lmoveit_planners_chomp
+Requires: roscpp moveit_core pluginlib

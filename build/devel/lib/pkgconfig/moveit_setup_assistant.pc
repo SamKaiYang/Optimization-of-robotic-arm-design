@@ -1,0 +1,8 @@
+prefix=/home/iclab/Documents/teco_ws/src/build/devel
+
+Name: moveit_setup_assistant
+Description: Description of moveit_setup_assistant
+Version: 1.1.7
+Cflags: -I/home/iclab/Documents/teco_ws/src/moveit/moveit_setup_assistant/include
+Libs: -L${prefix}/lib -lmoveit_setup_assistant_tools
+Requires: moveit_ros_planning moveit_ros_visualization roscpp

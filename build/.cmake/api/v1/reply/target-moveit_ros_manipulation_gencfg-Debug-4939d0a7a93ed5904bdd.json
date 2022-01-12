@@ -1,0 +1,81 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"generate_dynamic_reconfigure_options"
+		],
+		"files" : 
+		[
+			"/opt/ros/melodic/share/dynamic_reconfigure/cmake/dynamic_reconfigure-macros.cmake",
+			"moveit/moveit_ros/manipulation/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 21,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 84,
+				"parent" : 1
+			}
+		]
+	},
+	"id" : "moveit_ros_manipulation_gencfg::@e7299284f8747cf3f331",
+	"name" : "moveit_ros_manipulation_gencfg",
+	"paths" : 
+	{
+		"build" : "moveit/moveit_ros/manipulation",
+		"source" : "moveit/moveit_ros/manipulation"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1,
+				2
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/moveit/moveit_ros/manipulation/CMakeFiles/moveit_ros_manipulation_gencfg",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/moveit/moveit_ros/manipulation/CMakeFiles/moveit_ros_manipulation_gencfg.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/devel/include/moveit_ros_manipulation/PickPlaceDynamicReconfigureConfig.h.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}
