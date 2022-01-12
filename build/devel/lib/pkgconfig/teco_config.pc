@@ -1,0 +1,8 @@
+prefix=/home/iclab/Documents/teco_ws/src/build/devel
+
+Name: teco_config
+Description: Description of teco_config
+Version: 0.3.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
