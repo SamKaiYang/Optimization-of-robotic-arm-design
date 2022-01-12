@@ -48,6 +48,8 @@ class Dynamics_space():
         self.p560.inertia(self.p560.qn)
         self.torque = np.array([np.zeros(shape=6)])
 
+        self.payload = 0
+        self.payload_position = np.array([0,0,0])
         self.vel = np.array([0,0,0,0,0,0]) # degree / sec
         self.acc = np.array([0,0,0,0,0,0]) # degree / sec2
         self.tau_j = self.p560.rne(self.p560.qn, self.vel, self.acc)
@@ -232,11 +234,17 @@ class Dynamics_space():
             self.p560.plot(sol.q, dt=0.1)
 
     def dynamics_calc(self):
-        self.p560.payload(0, [0, 0, 1]) # set payload
-        self.vel = np.array([10,10,10,10,10,10]) # degree / sec
-        self.acc = np.array([10,10,10,10,10,10]) # degree / sec2
+        # self.payload = 0
+        # self.payload_position = np.array([0,0,0])
+        # self.vel = np.array([0,0,0,0,0,0]) # degree / sec
+        # self.acc = np.array([0,0,0,0,0,0]) # degree / sec2
+
+        self.p560.payload(self.payload , self.payload_position) # set payload
+        # self.vel = np.array([10,10,10,10,10,10]) # degree / sec
+        # self.acc = np.array([10,10,10,10,10,10]) # degree / sec2
         self.tau_j = self.p560.rne(self.p560.qn, self.vel, self.acc)
         print("tau_j:",self.tau_j)
+        self.p560.plot(self.p560.qn,dt=0)
 
     def task_set(self):
         for case in switch(self.cmd):
