@@ -42,17 +42,17 @@ class Dynamics_space():
         self.sub_dyna = rospy.Subscriber("/dynamics_data",dyna_data,self.dyna_callback)
         self.sub_dyna_space = rospy.Subscriber("/dynamics_space_data",dyna_space_data,self.dyna_space_callback)
         self.cmd = 0
-        self.teco = rtb.models.DH.TECOARM1()
-        # self.teco.plot(self.teco.qn, block=False)
-        self.teco.gravload(self.teco.qn)
-        self.teco.inertia(self.teco.qn)
+        self.ur5 = rtb.models.DH.UR5()
+        # self.ur5.plot(self.ur5.qn, block=False)
+        self.ur5.gravload(self.ur5.qn)
+        self.ur5.inertia(self.ur5.qn)
         self.torque = np.array([np.zeros(shape=6)])
 
         self.payload = 0
         self.payload_position = np.array([0,0,0])
         self.vel = np.array([0,0,0,0,0,0]) # degree / sec
         self.acc = np.array([0,0,0,0,0,0]) # degree / sec2
-        self.tau_j = self.teco.rne(self.teco.qn, self.vel, self.acc)
+        self.tau_j = self.ur5.rne(self.ur5.qn, self.vel, self.acc)
 
         ## 數值法 求取工作空間
         # 關節角限位
@@ -90,7 +90,7 @@ class Dynamics_space():
         M12 = np.zeros((N,N))
         for i in range(N):
             for j in range(N):
-                M = self.teco.inertia(np.r_[0, Q2[i,j], Q3[i,j], 0, 0, 0])
+                M = self.ur5.inertia(np.r_[0, Q2[i,j], Q3[i,j], 0, 0, 0])
                 M11[i,j] = M[0,0]
                 M12[i,j] = M[0,1]
 
@@ -117,14 +117,14 @@ class Dynamics_space():
 
 
     def payload_set(self):
-        self.teco.payload(20, [0, 0, 0]) # set payload 
+        self.ur5.payload(20, [0, 0, 0]) # set payload 
 
     def dynamics_cal(self):
         qd = np.r_[0, 1, 0, 0, 0, 0]
         # print("qd:",qd)
-        self.teco.coriolis(self.teco.qn, qd) @ qd
+        self.ur5.coriolis(self.ur5.qn, qd) @ qd
         # TODO:  rne 逆動力學 add vel & acc analyses
-        self.teco.rne(self.teco.qn, np.zeros((6,)), np.zeros((6,)))
+        self.ur5.rne(self.ur5.qn, np.zeros((6,)), np.zeros((6,)))
         # 窮舉法正運動學計算工作空間
         start = time.time()
         print("The time used to execute this is given below")
@@ -136,7 +136,7 @@ class Dynamics_space():
         fig = plt.figure()
         self.ax = plt.subplot(111, projection='3d')
 
-        self.teco.payload(20, [0, 0, 1]) # set payload 
+        self.ur5.payload(20, [0, 0, 1]) # set payload 
 
         for q1 in range(self.q1_s, self.q1_end, self.step):
             for q2 in range(self.q2_s, self.q2_end, self.step):
@@ -145,8 +145,8 @@ class Dynamics_space():
                 for q3 in range(self.q3_s, self.q3_end, self.step):
                     for q4 in range(self.q4_s, self.q4_end, self.step):
                         for q5 in range(self.q5_s, self.q5_end, self.step):
-                            self.T = self.teco.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])
-                            load = np.array([self.teco.gravload([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])])
+                            self.T = self.ur5.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])
+                            load = np.array([self.ur5.gravload([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])])
                             self.torque = np.append(self.torque,load,axis=0)
                             self.T_x[0,i] = self.T.t[0]
                             self.T_y[0,i] = self.T.t[1]
@@ -190,13 +190,13 @@ class Dynamics_space():
             max_torque = torque_where[0][i]
             print("torque:",self.torque[max_torque])
             print("末端位置",[self.T_x[0,i], self.T_y[0,i], self.T_z[0,i]])
-            # TODO: 求解逆運動學 各軸角度self.teco.ikine_a()
+            # TODO: 求解逆運動學 各軸角度self.ur5.ikine_a()
             self.T.t[0] = self.T_x[0,i]
             self.T.t[1] = self.T_y[0,i]
             self.T.t[2] = self.T_z[0,i]
-            sol = self.teco.ikine_a(self.T, "lun")
+            sol = self.ur5.ikine_a(self.T, "lun")
             print("sol:",sol)
-            self.teco.plot(sol.q, dt=0.1 )
+            self.ur5.plot(sol.q, dt=0.1 )
             # plt.show()
 
     def sol_output_axis(self,axis):
@@ -210,13 +210,13 @@ class Dynamics_space():
             max_torque = torque_where[0][i]
             print("torque:",self.torque[max_torque])
             print("末端位置",[self.T_x[0,i], self.T_y[0,i], self.T_z[0,i]])
-            # TODO: 求解逆運動學 各軸角度self.teco.ikine_a()
+            # TODO: 求解逆運動學 各軸角度self.ur5.ikine_a()
             self.T.t[0] = self.T_x[0,i]
             self.T.t[1] = self.T_y[0,i]
             self.T.t[2] = self.T_z[0,i]
-            sol = self.teco.ikine_a(self.T, "lun")
+            sol = self.ur5.ikine_a(self.T, "lun")
             print("sol:",sol)
-            self.teco.plot(sol.q, dt=0.1)
+            self.ur5.plot(sol.q, dt=0.1)
 
         print("軸%d torque負最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
         torque_where = np.where(self.torque==np.min(self.torque[:,axis]))
@@ -225,13 +225,13 @@ class Dynamics_space():
             max_torque = torque_where[0][i]
             print("torque:",self.torque[max_torque])
             print("末端位置",[self.T_x[0,i], self.T_y[0,i], self.T_z[0,i]])
-            # TODO: 求解逆運動學 各軸角度self.teco.ikine_a()
+            # TODO: 求解逆運動學 各軸角度self.ur5.ikine_a()
             self.T.t[0] = self.T_x[0,i]
             self.T.t[1] = self.T_y[0,i]
             self.T.t[2] = self.T_z[0,i]
-            sol = self.teco.ikine_a(self.T, "lun")
+            sol = self.ur5.ikine_a(self.T, "lun")
             print("sol:",sol)
-            self.teco.plot(sol.q, dt=0.1)
+            self.ur5.plot(sol.q, dt=0.1)
 
     def dynamics_calc(self):
         # self.payload = 0
@@ -239,14 +239,12 @@ class Dynamics_space():
         # self.vel = np.array([0,0,0,0,0,0]) # degree / sec
         # self.acc = np.array([0,0,0,0,0,0]) # degree / sec2
 
-        self.teco.payload(self.payload , self.payload_position) # set payload
+        self.ur5.payload(self.payload , self.payload_position) # set payload
         # self.vel = np.array([10,10,10,10,10,10]) # degree / sec
         # self.acc = np.array([10,10,10,10,10,10]) # degree / sec2
-        self.tau_j = self.teco.rne(self.teco.qn, self.vel, self.acc)
+        self.tau_j = self.ur5.rne(self.ur5.qn, self.vel, self.acc)
         print("tau_j:",self.tau_j)
-
-        # fig = plt.figure()
-        self.teco.plot(self.teco.qn,dt=0)
+        self.ur5.plot(self.ur5.qn,dt=0)
 
     def task_set(self):
         for case in switch(self.cmd):
