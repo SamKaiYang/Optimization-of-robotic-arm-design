@@ -34,6 +34,18 @@ rosrun trajectory_generation trajectory_generation_teco.py
 ```bash
 rosrun dynamics dynamics_puma_space.py
 ```
+# 執行moveit demo
+```bash
+roslaunch teco_config demo.launch
+##moveit python interface 
+rosrun teco_config move_group_python_interface_tutorial.py 
+```
+
+```bash
+roslaunch teco_config demo.launch
+##moveit c++ interface launch
+roslaunch moveit_tutorials move_group_interface_teco.launch 
+```
 
 
 >>2022/01/04 更新
