@@ -1878,11 +1878,3 @@
 /home/iclab/Documents/teco_ws/src/build/moveit/moveit_planners/pilz_industrial_motion_planner/CMakeFiles/pilz_industrial_motion_planner.dir
 /home/iclab/Documents/teco_ws/src/build/moveit/moveit_planners/pilz_industrial_motion_planner/CMakeFiles/run_tests_pilz_industrial_motion_planner_rostest_test_unittest_trajectory_generator_lin.test.dir
 /home/iclab/Documents/teco_ws/src/build/moveit/moveit_planners/pilz_industrial_motion_planner/CMakeFiles/run_tests_pilz_industrial_motion_planner_rostest_test_unittest_trajectory_generator_ptp.test.dir
-/home/iclab/Documents/teco_ws/src/build/teco_moveit_config/CMakeFiles/install/strip.dir
-/home/iclab/Documents/teco_ws/src/build/teco_moveit_config/CMakeFiles/install/local.dir
-/home/iclab/Documents/teco_ws/src/build/teco_moveit_config/CMakeFiles/test.dir
-/home/iclab/Documents/teco_ws/src/build/teco_moveit_config/CMakeFiles/list_install_components.dir
-/home/iclab/Documents/teco_ws/src/build/teco_moveit_config/CMakeFiles/teco_moveit_interface.dir
-/home/iclab/Documents/teco_ws/src/build/teco_moveit_config/CMakeFiles/install.dir
-/home/iclab/Documents/teco_ws/src/build/teco_moveit_config/CMakeFiles/edit_cache.dir
-/home/iclab/Documents/teco_ws/src/build/teco_moveit_config/CMakeFiles/rebuild_cache.dir

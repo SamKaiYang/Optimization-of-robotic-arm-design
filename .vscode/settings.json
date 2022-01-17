@@ -7,14 +7,26 @@
     ],
     "cSpell.words": [
         "Chitta",
+        "dyna",
         "Eigen",
+        "fkine",
+        "gravload",
+        "ikine",
         "Lautman",
         "moveit",
+        "mplot",
         "ompl",
+        "pyplot",
+        "rospy",
         "rviz",
         "Rviz",
+        "taskcmd",
         "teco",
-        "XLARGE"
+        "TECOARM",
+        "xlabel",
+        "XLARGE",
+        "ylabel",
+        "zlabel"
     ],
     "files.associations": {
         "string": "cpp",

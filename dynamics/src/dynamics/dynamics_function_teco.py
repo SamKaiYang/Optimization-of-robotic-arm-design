@@ -50,10 +50,12 @@ class Dynamics_space():
 
         self.payload = 0
         self.payload_position = np.array([0,0,0])
+        self.joint_angle = np.array([0,0,0,0,0,0]) # degree 
         self.vel = np.array([0,0,0,0,0,0]) # degree / sec
         self.acc = np.array([0,0,0,0,0,0]) # degree / sec2
         self.tau_j = self.teco.rne(self.teco.qn, self.vel, self.acc)
 
+        self.qn = np.array([0,0,0,0,0,0]) # degree 
         ## 數值法 求取工作空間
         # 關節角限位
         self.q1_s=-160
@@ -93,17 +95,73 @@ class Dynamics_space():
                 M = self.teco.inertia(np.r_[0, Q2[i,j], Q3[i,j], 0, 0, 0])
                 M11[i,j] = M[0,0]
                 M12[i,j] = M[0,1]
+    # def init(self):
+    #     # self.pub_armstatus = rospy.Publisher("/reply_external_comm",peripheralCmd,queue_size=10)
+    #     self.cmd = 0
+    #     self.teco = rtb.models.DH.TECOARM1()
+    #     # self.teco.plot(self.teco.qn, block=False)
+    #     self.teco.gravload(self.teco.qn)
+    #     self.teco.inertia(self.teco.qn)
+    #     self.torque = np.array([np.zeros(shape=6)])
+
+    #     self.payload = 0
+    #     self.payload_position = np.array([0,0,0])
+    #     self.joint_angle = np.array([0,0,0,0,0,0]) # degree 
+    #     self.vel = np.array([0,0,0,0,0,0]) # degree / sec
+    #     self.acc = np.array([0,0,0,0,0,0]) # degree / sec2
+    #     self.tau_j = self.teco.rne(self.teco.qn, self.vel, self.acc)
+
+    #     ## 數值法 求取工作空間
+    #     # 關節角限位
+    #     self.q1_s=-160
+    #     self.q1_end=160
+    #     self.q2_s=-160
+    #     self.q2_end=160
+    #     self.q3_s=-160
+    #     self.q3_end=160
+    #     self.q4_s=-160
+    #     self.q4_end=160
+    #     self.q5_s=-160
+    #     self.q5_end=160
+    #     self.q6_s=-160
+    #     self.q6_end=160
+    #     # 計算參數
+    #     self.step= 20 #計算步距 % 解析度   # original = 20
+    #     # t=0:1:(q5_end-q5_s)/step # 產生時間向量 
+    #     step1 = (self.q1_end - self.q1_s)/self.step 
+    #     step2 = (self.q2_end - self.q2_s)/self.step 
+    #     step3 = (self.q3_end - self.q3_s)/self.step 
+    #     step4 = (self.q4_end - self.q4_s)/self.step 
+    #     step5 = (self.q5_end - self.q5_s)/self.step
+    #     step6 = (self.q6_end - self.q6_s)/self.step 
+    #     self.step_num = int(step1*step2*step3*step4*step5)
+    #     self.T_cell=step1*step2*step3*step4*step5
+    #     self.T = np.zeros((3,1))
+    #     self.T_x = np.zeros((1,self.step_num))
+    #     self.T_y = np.zeros((1,self.step_num))
+    #     self.T_z = np.zeros((1,self.step_num))
+        
+    #     N = 100
+    #     (Q2, Q3) = np.meshgrid(np.linspace(-pi, pi, N), np.linspace(-pi, pi, N))
+    #     M11 = np.zeros((N,N))
+    #     M12 = np.zeros((N,N))
+    #     for i in range(N):
+    #         for j in range(N):
+    #             M = self.teco.inertia(np.r_[0, Q2[i,j], Q3[i,j], 0, 0, 0])
+    #             M11[i,j] = M[0,0]
+    #             M12[i,j] = M[0,1]
 
     def cmd_callback(self,data):
         self.cmd = data.cmd
         rospy.loginfo("I heard command is %s", data.cmd)
     
     def dyna_callback(self,data):
+        self.joint_angle = data.joint_angle
         self.payload = data.payload
         self.payload_position = data.payload_position
         self.vel = data.vel
         self.acc = data.acc
-
+        rospy.loginfo("I heard command is %s", data.joint_angle)
         rospy.loginfo("I heard command is %s", data.payload)
         rospy.loginfo("I heard command is %s", data.payload_position)
         rospy.loginfo("I heard command is %s", data.vel)
@@ -234,20 +292,36 @@ class Dynamics_space():
             self.teco.plot(sol.q, dt=0.1)
 
     def dynamics_calc(self):
-        # self.payload = 0
-        # self.payload_position = np.array([0,0,0])
-        # self.vel = np.array([0,0,0,0,0,0]) # degree / sec
-        # self.acc = np.array([0,0,0,0,0,0]) # degree / sec2
-
+        qn = [0,0,0,0,0,0]
+        deg = pi/180
+        
+        for i in range(6):
+            qn[i] = self.joint_angle[i]*deg
+        # print(self.teco.gravload(qn))
         self.teco.payload(self.payload , self.payload_position) # set payload
+
+        self.qn = qn
         # self.vel = np.array([10,10,10,10,10,10]) # degree / sec
         # self.acc = np.array([10,10,10,10,10,10]) # degree / sec2
-        self.tau_j = self.teco.rne(self.teco.qn, self.vel, self.acc)
-        print("tau_j:",self.tau_j)
+        self.tau_j = self.teco.rne(self.qn, self.vel, self.acc)
+        print("tau_j:", self.tau_j)
 
         # fig = plt.figure()
-        self.teco.plot(self.teco.qn,dt=0)
+        # self.teco.plot(qn,dt=0)
 
+    def arm_plot(self):
+        qn = [0,0,0,0,0,0]
+        deg = pi/180
+        
+        for i in range(6):
+            qn[i] = self.joint_angle[i]*deg
+
+        self.qn = qn
+        # fig = plt.figure()
+        # self.teco.plot(self.qn,dt=0, block = False, loop=False)
+        print("arm_plot:", self.qn)
+        self.teco.plot(self.qn,dt=0)
+        
     def task_set(self):
         for case in switch(self.cmd):
             if case(1):
@@ -270,10 +344,23 @@ class Dynamics_space():
                 print("Start trajectory planning")
                 self.cmd = 0
                 break
+            
+            if case(4):
+                Dya.arm_plot()
+                self.cmd = 0
+                break
 
             if case():
                 break
 
+
+# class Dynamics_plot(Dynamics_space):
+#     def __init__(self, parent=None):
+#         Dynamics_space.__init__(self)
+#         self.test = 0
+#     def arm_plot(self):
+#         fig = plt.figure()
+#         self.teco.plot(qn,dt=0)
 
 if __name__=="__main__":
     rospy.init_node("dynamics_space")

@@ -1,18 +1,26 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 import rospy
 # import threading
 # import time
 import numpy as np
+
+from dynamics.dynamics_function_teco import Dynamics_space
+
 from PySide2 import QtWidgets, QtGui
 from PySide2.QtCore import *
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import matplotlib.pyplot as plt
+# matplotlib.use("Qt5Agg") 
+
 from Ui_main import Ui_MainWindow
 from interface_control.msg import cal_cmd, dyna_data, dyna_space_data
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
+import importlib
+importlib.reload(sys)
 
 class switch(object):
     def __init__(self, value):
@@ -68,11 +76,31 @@ class MyThread(QThread):
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
 
-class MainWindow(QtWidgets.QMainWindow):
+class MyFigureCanvas(FigureCanvas):
+    def __init__(self, parent=None, width=10, height=5, xlim=(0, 2500), ylim=(-2, 2), dpi=100):
+        # 创建一个Figure
+        fig = plt.Figure(figsize=(width, height), dpi=dpi, tight_layout=True) # tight_layout: 用于去除画图时两边的空白
+
+        FigureCanvas.__init__(self, fig) # 初始化父类
+        self.setParent(parent)
+
+        self.axes = fig.add_subplot(111) # 添加子图
+        self.axes.spines['top'].set_visible(False) # 去掉绘图时上面的横线
+        self.axes.spines['right'].set_visible(False) # 去掉绘图时右面的横线
+        self.axes.set_xlim(xlim)
+        self.axes.set_ylim(ylim)
+
+class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        # 初始化 gv_visual_data 的显示
+        self.gv_visual_data_content = MyFigureCanvas(width=self.ui.graphicsView.width() / 101,
+                            height=self.ui.graphicsView.height() / 101,
+                            xlim=(0, 2*np.pi),
+                            ylim=(-1, 1)) # 实例化一个FigureCanvas
 
         self.pub_cmd = rospy.Publisher("/cal_command",cal_cmd, queue_size=10)
         self.pub_dyna_data = rospy.Publisher("/dynamics_data",dyna_data, queue_size=10)
@@ -85,6 +113,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.payload_position = [0.0,0.0,0.0]
         self.joint_velocity = [0.0,0.0,0.0,0.0,0.0,0.0]
         self.joint_acceleration = [0.0,0.0,0.0,0.0,0.0,0.0]
+        self.joint_angle = [0.0,0.0,0.0,0.0,0.0,0.0]
         # self.pub_ipset = rospy.Publisher("/ip_comm",ipconfig,queue_size=10)
         # self.pub_closenode = rospy.Publisher("/close_node",closenode,queue_size=10)
         # self.startthreadflag = False
@@ -96,7 +125,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.btn_dyn_space.clicked.connect(self.dyna_space_buttonClicked)
         self.ui.btn_dyn_set.clicked.connect(self.dyna_set_buttonClicked)
         self.ui.btn_dyn_space_set.clicked.connect(self.dyna_space_set_buttonClicked)
-
+        self.ui.btn_arm_plot.clicked.connect(self.arm_plot_buttonClicked)
         # # Vel. HorizontalSlider
         # self.ui.horizontalSlider_vel.valueChanged.connect(self.VelSliderValue)
         # # Acc. HorizontalSlider
@@ -142,11 +171,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def dyna_set_buttonClicked(self):
         self.payload = float(self.ui.lineEdit_payload.text())
         self.dyna_data.payload = self.payload
+
         payload_x = float(self.ui.lineEdit_payload_x.text())
         payload_y = float(self.ui.lineEdit_payload_y.text())
         payload_z = float(self.ui.lineEdit_payload_z.text())
         self.payload_position = [payload_x, payload_y, payload_z]
         self.dyna_data.payload_position = self.payload_position
+
         vel_0 = float(self.ui.lineEdit_vel_0.text())
         vel_1 = float(self.ui.lineEdit_vel_1.text())
         vel_2 = float(self.ui.lineEdit_vel_2.text())
@@ -155,6 +186,7 @@ class MainWindow(QtWidgets.QMainWindow):
         vel_5 = float(self.ui.lineEdit_vel_5.text())
         self.joint_velocity = [vel_0, vel_1, vel_2, vel_3, vel_4, vel_5]
         self.dyna_data.vel = self.joint_velocity
+
         acc_0 = float(self.ui.lineEdit_acc_0.text())
         acc_1 = float(self.ui.lineEdit_acc_1.text())
         acc_2 = float(self.ui.lineEdit_acc_2.text())
@@ -163,6 +195,15 @@ class MainWindow(QtWidgets.QMainWindow):
         acc_5 = float(self.ui.lineEdit_acc_5.text())
         self.joint_acceleration = [acc_0, acc_1, acc_2, acc_3, acc_4, acc_5]
         self.dyna_data.acc = self.joint_acceleration
+
+        jog_0 = float(self.ui.lineEdit_jog_0.text())
+        jog_1 = float(self.ui.lineEdit_jog_1.text())
+        jog_2 = float(self.ui.lineEdit_jog_2.text())
+        jog_3 = float(self.ui.lineEdit_jog_3.text())
+        jog_4 = float(self.ui.lineEdit_jog_4.text())
+        jog_5 = float(self.ui.lineEdit_jog_5.text())
+        self.joint_angle = [jog_0, jog_1, jog_2, jog_3, jog_4, jog_5]
+        self.dyna_data.joint_angle = self.joint_angle
 
         self.pub_dyna_data.publish(self.dyna_data)
 
@@ -174,6 +215,25 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def dyna_buttonClicked(self):
         self.pub_cmd.publish(2)
+
+    def arm_plot_buttonClicked(self):
+        self.pub_cmd.publish(4)
+        # self.init()
+        # self.arm_plot()
+
+        # self.graphic_scene.addWidget(self.arm_plot()) # 把图形放到QGraphicsScene中，注意：图形是作为一个QWidget放到放到QGraphicsScene中的
+        # self.ui.graphicsView.setScene(self.graphic_scene) # 把QGraphicsScene放入QGraphicsView
+        # self.ui.graphicsView.show() # 调用show方法呈现图形
+
+        # x = np.arange(0, 2 * np.pi, np.pi / 100)
+        # y = np.cos(x)
+        # self.gv_visual_data_content.axes.plot(x, y)
+        # self.gv_visual_data_content.axes.set_title('cos()')
+        # # 加载的图形（FigureCanvas）不能直接放到graphicview控件中，必须先放到graphicScene，然后再把graphicscene放到graphicview中
+        # self.graphic_scene = QGraphicsScene() # 创建一个QGraphicsScene
+        # self.graphic_scene.addWidget(self.gv_visual_data_content) # 把图形放到QGraphicsScene中，注意：图形是作为一个QWidget放到放到QGraphicsScene中的
+        # self.ui.graphicsView.setScene(self.graphic_scene) # 把QGraphicsScene放入QGraphicsView
+        # self.ui.graphicsView.show() # 调用show方法呈现图形
 
     # def display(self):
         

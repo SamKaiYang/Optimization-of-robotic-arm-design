@@ -24,7 +24,7 @@
 ==================
 ## 運行動力學分析(靜態),求取torque 
 ```bash
-rosrun dynamics dynamics_puma.py
+rosrun dynamics dynamics_teco.py
 ```
 ## 運行手臂軌跡規劃,求取各軸角度,速度,加速度
 ```bash
@@ -32,7 +32,14 @@ rosrun trajectory_generation trajectory_generation_teco.py
 ```
 ## 運行動力學手臂全工作空間分析(靜態),求取最大torque 
 ```bash
-rosrun dynamics dynamics_puma_space.py
+rosrun dynamics dynamics_teco_space_ex.py
+```
+
+# 顯示與操作介面
+```bash
+rosrun interface_control interface_GUI.py
+rosrun dynamics dynamics_function_teco.py 
+
 ```
 # 執行moveit demo
 ```bash
