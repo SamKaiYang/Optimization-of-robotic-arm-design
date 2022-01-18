@@ -21,7 +21,7 @@ class Trajectory_generation():
         print(self.T1)
         self.Tc = None
 
-        parser = argparse.ArgumentParser(description="Puma trajectory demo")
+        parser = argparse.ArgumentParser(description="TECO trajectory demo")
         parser.add_argument(
             '--backend',
             '-b',

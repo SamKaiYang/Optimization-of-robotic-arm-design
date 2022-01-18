@@ -9,6 +9,7 @@ from math import pi
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
+import argparse
 import time
 from moveit_msgs.msg import DisplayTrajectory, RobotTrajectory
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
@@ -61,6 +62,31 @@ class Dynamics_space():
         self.tau_j = self.teco.rne(self.teco.qn, self.vel, self.acc)
 
         self.qn = np.array([0,0,0,0,0,0]) # degree 
+        
+        parser = argparse.ArgumentParser(description="TECO trajectory demo")
+        parser.add_argument(
+            '--backend',
+            '-b',
+            dest='backend',
+            default='pyplot',
+            help='choose backend: pyplot (default), swift, vpython',
+            action='store')
+        parser.add_argument(
+            '--model',
+            '-m',
+            dest='model',
+            default='DH',
+            action='store',
+            help='choose model: DH (default), URDF')
+        self.args = parser.parse_args()
+
+        if self.args.model.lower() == 'dh':
+            self.robot = rtb.models.DH.Puma560()
+        elif self.args.model.lower() == 'urdf':
+            self.robot = rtb.models.URDF.Puma560()
+        else:
+            raise ValueError('unknown model')
+
         ## 數值法 求取工作空間
         # 關節角限位
         self.q1_s=-160
@@ -193,7 +219,7 @@ class Dynamics_space():
             accelerations.append(self.robot_trajectory[0].joint_trajectory.points[i].accelerations)
             time_from_start.append(self.robot_trajectory[0].joint_trajectory.points[i].time_from_start)
             
-        rospy.loginfo("positions is %s", positions)
+        # rospy.loginfo("positions is %s", positions)
         # rospy.loginfo("velocities is %s", velocities)
         # rospy.loginfo("accelerations is %s", accelerations)
         # rospy.loginfo("time_from_start secs is %s", time_from_start.secs)
@@ -344,6 +370,21 @@ class Dynamics_space():
             # print("tau_j:", self.tau_j)
 
     def arm_plot(self):
+        if self.args.backend.lower() == 'pyplot':
+            if self.args.model.lower() != 'dh':
+                print('PyPlot only supports DH models for now')
+                sys.exit(1)
+        elif self.args.backend.lower() == 'vpython':
+            if self.args.model.lower() != 'dh':
+                print('VPython only supports DH models for now')
+                sys.exit(1)
+        elif self.args.backend.lower() == 'swift':
+            if self.args.model.lower() != 'urdf':
+                print('Swift only supports URDF models for now')
+                sys.exit(1)
+        else:
+            raise ValueError('unknown backend')
+
         qn = [0,0,0,0,0,0]
         deg = pi/180
         
@@ -354,7 +395,10 @@ class Dynamics_space():
         # fig = plt.figure()
         # self.teco.plot(self.qn,dt=0, block = False, loop=False)
         print("arm_plot:", self.qn)
-        self.teco.plot(self.qn,dt=0)
+        self.teco.plot(self.qn, backend=self.args.backend, block=False, vellipse=False, fellipse=False)
+        # self.robot.plot(self.qt.q, backend=self.args.backend, block=False, movie="trajectory_generation.gif", vellipse=False, fellipse=False)
+        plt.show()
+        print("aaa")
         
     def task_set(self):
         for case in switch(self.cmd):
