@@ -1,0 +1,395 @@
+{
+	"backtrace" : 3,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"catkin_run_tests_target",
+			"add_rostest",
+			"add_dependencies"
+		],
+		"files" : 
+		[
+			"/opt/ros/melodic/share/catkin/cmake/test/tests.cmake",
+			"/opt/ros/melodic/share/rostest/cmake/rostest-extras.cmake",
+			"pilz_industrial_motion/pilz_robot_programming/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 146,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 4
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 5
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 7
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 8
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 11
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 12
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 15
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 17
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 18
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 20
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 21
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 23
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 24
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 26
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 27
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 29
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 30
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 32
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 33
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 35
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 36
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 38
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 39
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 41
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 42
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 44
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 45
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 52,
+				"parent" : 47
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 48
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 6,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_api_execution_error.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 9,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_api_execution_stop_with_gripper.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_integrationtest_self_collision.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 13,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_api_cmd_conversion_with_gripper.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 16,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_api_cmd_conversion.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 19,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_sequence_with_gripper.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 22,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_api_execution_stop.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 25,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_api_program_termination.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 28,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_api_utility_functions.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 31,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_api_brake_test.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 34,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_api_pause.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 37,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_robot_functions.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 40,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_api_gripper.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 43,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_api_instantiation.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 46,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_api_pause_concurrency.test::@520ecda95b5e8c1870d2"
+		},
+		{
+			"backtrace" : 49,
+			"id" : "_run_tests_pilz_robot_programming_rostest_test_integrationtests_tst_joint_position_limits.test::@520ecda95b5e8c1870d2"
+		}
+	],
+	"id" : "_run_tests_pilz_robot_programming_rostest::@520ecda95b5e8c1870d2",
+	"name" : "_run_tests_pilz_robot_programming_rostest",
+	"paths" : 
+	{
+		"build" : "pilz_industrial_motion/pilz_robot_programming",
+		"source" : "pilz_industrial_motion/pilz_robot_programming"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

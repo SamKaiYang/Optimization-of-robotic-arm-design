@@ -10,6 +10,9 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import time
+from moveit_msgs.msg import DisplayTrajectory, RobotTrajectory
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+import geometry_msgs.msg
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
 
 
@@ -41,6 +44,8 @@ class Dynamics_space():
         self.sub_taskcmd = rospy.Subscriber("/cal_command",cal_cmd,self.cmd_callback)
         self.sub_dyna = rospy.Subscriber("/dynamics_data",dyna_data,self.dyna_callback)
         self.sub_dyna_space = rospy.Subscriber("/dynamics_space_data",dyna_space_data,self.dyna_space_callback)
+        self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path", DisplayTrajectory,self.planned_path_callback)
+        # self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path",moveit_msgs.msg.JointTrajectory,self.planned_path_callback)
         self.cmd = 0
         self.teco = rtb.models.DH.TECOARM1()
         # self.teco.plot(self.teco.qn, block=False)
@@ -172,7 +177,30 @@ class Dynamics_space():
         # self.cmd = data.cmd
         # rospy.loginfo("I heard command is %s", data.cmd)
 
+    def planned_path_callback(self, data):
+        self.model_id = data.model_id
+        self.robot_trajectory = data.trajectory
+        self.robotstate = data.trajectory_start
 
+        points_num = len(self.robot_trajectory[0].joint_trajectory.points)
+        positions = []
+        velocities = []
+        accelerations = []
+        time_from_start = []
+        for i in range(points_num):
+            positions.append(self.robot_trajectory[0].joint_trajectory.points[i].positions)
+            velocities.append(self.robot_trajectory[0].joint_trajectory.points[i].velocities)
+            accelerations.append(self.robot_trajectory[0].joint_trajectory.points[i].accelerations)
+            time_from_start.append(self.robot_trajectory[0].joint_trajectory.points[i].time_from_start)
+            
+        rospy.loginfo("positions is %s", positions)
+        # rospy.loginfo("velocities is %s", velocities)
+        # rospy.loginfo("accelerations is %s", accelerations)
+        # rospy.loginfo("time_from_start secs is %s", time_from_start.secs)
+        # rospy.loginfo("time_from_start nsecs is %s", time_from_start.nsecs)
+
+        # print(points_num)
+        self.trajectory_dynamics_calc(points_num, positions, velocities, accelerations, time_from_start)
 
     def payload_set(self):
         self.teco.payload(20, [0, 0, 0]) # set payload 
@@ -308,6 +336,12 @@ class Dynamics_space():
 
         # fig = plt.figure()
         # self.teco.plot(qn,dt=0)
+
+    def trajectory_dynamics_calc(self, num, pos, vel, acc, time):
+        self.teco.payload(self.payload , self.payload_position) # set payload
+        for i in range(num):
+            self.tau_j = self.teco.rne(pos[i], vel[i], acc[i])
+            # print("tau_j:", self.tau_j)
 
     def arm_plot(self):
         qn = [0,0,0,0,0,0]
