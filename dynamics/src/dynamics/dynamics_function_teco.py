@@ -365,9 +365,18 @@ class Dynamics_space():
 
     def trajectory_dynamics_calc(self, num, pos, vel, acc, time):
         self.teco.payload(self.payload , self.payload_position) # set payload
+        self.tau_j_array = []
         for i in range(num):
             self.tau_j = self.teco.rne(pos[i], vel[i], acc[i])
-            # print("tau_j:", self.tau_j)
+            self.tau_j_array.append(self.tau_j)
+        print("tau_j array:", self.tau_j_array)
+        print("tau_j array size:", len(self.tau_j_array))
+        print("tau_j array row:", self.tau_j_array[:,])
+        # print("tau_j array:", self.tau_j_array[:,1])
+        # print([row[0] for row in self.tau_j_array])
+        # x = np.linspace(start = self.tau_j_array[0][0], stop = self.tau_j_array[0][len(self.tau_j_array)-1], num = len(self.tau_j_array))    
+        # plt.plot(x, self.tau_j_array[0])
+        # plt.show()
 
     def arm_plot(self):
         if self.args.backend.lower() == 'pyplot':
