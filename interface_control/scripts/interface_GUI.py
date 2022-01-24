@@ -111,6 +111,8 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         
         self.payload = 0.0
         self.payload_position = [0.0,0.0,0.0]
+        self.payload_space = 0.0
+        self.payload_position_space = [0.0,0.0,0.0]
         self.joint_velocity = [0.0,0.0,0.0,0.0,0.0,0.0]
         self.joint_acceleration = [0.0,0.0,0.0,0.0,0.0,0.0]
         self.joint_angle = [0.0,0.0,0.0,0.0,0.0,0.0]
@@ -126,6 +128,8 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.btn_dyn_set.clicked.connect(self.dyna_set_buttonClicked)
         self.ui.btn_dyn_space_set.clicked.connect(self.dyna_space_set_buttonClicked)
         self.ui.btn_arm_plot.clicked.connect(self.arm_plot_buttonClicked)
+        self.ui.btn_dyn_axis_set.clicked.connect(self.axis_set_buttonClicked)
+        
         # # Vel. HorizontalSlider
         # self.ui.horizontalSlider_vel.valueChanged.connect(self.VelSliderValue)
         # # Acc. HorizontalSlider
@@ -208,7 +212,24 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.pub_dyna_data.publish(self.dyna_data)
 
     def dyna_space_set_buttonClicked(self):
-        pass 
+        # self.dyna_space_data
+        self.payload_space = float(self.ui.lineEdit_payload_space.text())
+        self.dyna_space_data.payload = self.payload_space
+
+        payload_x = float(self.ui.lineEdit_payload_x_space.text())
+        payload_y = float(self.ui.lineEdit_payload_y_space.text())
+        payload_z = float(self.ui.lineEdit_payload_z_space.text())
+        self.payload_position_space = [payload_x, payload_y, payload_z]
+        self.dyna_space_data.payload_position = self.payload_position_space
+
+        self.pub_dyna_space.publish(self.dyna_space_data)
+        
+    def axis_set_buttonClicked(self):
+        self.axis = int(self.ui.lineEdit_axis_set.text())
+        self.dyna_space_data.analysis_axis = self.axis
+        self.pub_dyna_space.publish(self.dyna_space_data)
+
+        self.pub_cmd.publish(3)
 
     def dyna_space_buttonClicked(self):
         self.pub_cmd.publish(1)

@@ -40,6 +40,8 @@ rosrun dynamics dynamics_teco_space_ex.py
 rosrun interface_control interface_GUI.py
 rosrun dynamics dynamics_function_teco.py 
 
+#or 
+roslaunch dynamics dynamics_teco.launch
 ```
 # 執行moveit demo
 ```bash

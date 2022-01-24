@@ -59,33 +59,38 @@ class Dynamics_space():
         self.joint_angle = np.array([0,0,0,0,0,0]) # degree 
         self.vel = np.array([0,0,0,0,0,0]) # degree / sec
         self.acc = np.array([0,0,0,0,0,0]) # degree / sec2
+
+        self.payload_space = 0
+        self.payload_position_space = np.array([0,0,0])
+        self.axis_num = 1
+
         self.tau_j = self.teco.rne(self.teco.qn, self.vel, self.acc)
 
         self.qn = np.array([0,0,0,0,0,0]) # degree 
         
-        parser = argparse.ArgumentParser(description="TECO trajectory demo")
-        parser.add_argument(
-            '--backend',
-            '-b',
-            dest='backend',
-            default='pyplot',
-            help='choose backend: pyplot (default), swift, vpython',
-            action='store')
-        parser.add_argument(
-            '--model',
-            '-m',
-            dest='model',
-            default='DH',
-            action='store',
-            help='choose model: DH (default), URDF')
-        self.args = parser.parse_args()
+        # parser = argparse.ArgumentParser(description="TECO trajectory demo")
+        # parser.add_argument(
+        #     '--backend',
+        #     '-b',
+        #     dest='backend',
+        #     default='pyplot',
+        #     help='choose backend: pyplot (default), swift, vpython',
+        #     action='store')
+        # parser.add_argument(
+        #     '--model',
+        #     '-m',
+        #     dest='model',
+        #     default='DH',
+        #     action='store',
+        #     help='choose model: DH (default), URDF')
+        # self.args = parser.parse_args()
 
-        if self.args.model.lower() == 'dh':
-            self.robot = rtb.models.DH.Puma560()
-        elif self.args.model.lower() == 'urdf':
-            self.robot = rtb.models.URDF.Puma560()
-        else:
-            raise ValueError('unknown model')
+        # if self.args.model.lower() == 'dh':
+        #     self.robot = rtb.models.DH.Puma560()
+        # elif self.args.model.lower() == 'urdf':
+        #     self.robot = rtb.models.URDF.Puma560()
+        # else:
+        #     raise ValueError('unknown model')
 
         ## 數值法 求取工作空間
         # 關節角限位
@@ -199,9 +204,12 @@ class Dynamics_space():
         rospy.loginfo("I heard command is %s", data.acc)
     
     def dyna_space_callback(self,data):
-        pass
-        # self.cmd = data.cmd
-        # rospy.loginfo("I heard command is %s", data.cmd)
+        self.payload_space = data.payload
+        self.payload_position_space = data.payload_position
+        self.axis_num = data.analysis_axis
+        rospy.loginfo("I heard command is %s", data.payload)
+        rospy.loginfo("I heard command is %s", data.payload_position)
+        rospy.loginfo("I heard command is %s", data.analysis_axis)
 
     def planned_path_callback(self, data):
         self.model_id = data.model_id
@@ -248,7 +256,8 @@ class Dynamics_space():
         fig = plt.figure()
         self.ax = plt.subplot(111, projection='3d')
 
-        self.teco.payload(20, [0, 0, 1]) # set payload 
+
+        self.teco.payload(self.payload_space, self.payload_position_space) # set payload 
 
         for q1 in range(self.q1_s, self.q1_end, self.step):
             for q2 in range(self.q2_s, self.q2_end, self.step):
@@ -306,12 +315,13 @@ class Dynamics_space():
             self.T.t[0] = self.T_x[0,i]
             self.T.t[1] = self.T_y[0,i]
             self.T.t[2] = self.T_z[0,i]
-            sol = self.teco.ikine_a(self.T, "lun")
+            sol = self.teco.ikine_a(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
             print("sol:",sol)
             self.teco.plot(sol.q, dt=0.1 )
             # plt.show()
 
-    def sol_output_axis(self,axis):
+    def sol_output_axis(self):
+        axis = self.axis_num
         axis = axis-1
         print("軸%d torque正最大值:%f" %(axis+1, np.max(self.torque[:,axis])))
         print("軸%d torque負最大值:%f" %(axis+1, np.min(self.torque[:,axis])))
@@ -326,7 +336,7 @@ class Dynamics_space():
             self.T.t[0] = self.T_x[0,i]
             self.T.t[1] = self.T_y[0,i]
             self.T.t[2] = self.T_z[0,i]
-            sol = self.teco.ikine_a(self.T, "lun")
+            sol = self.teco.ikine_a(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
             print("sol:",sol)
             self.teco.plot(sol.q, dt=0.1)
 
@@ -341,7 +351,7 @@ class Dynamics_space():
             self.T.t[0] = self.T_x[0,i]
             self.T.t[1] = self.T_y[0,i]
             self.T.t[2] = self.T_z[0,i]
-            sol = self.teco.ikine_a(self.T, "lun")
+            sol = self.teco.ikine_a(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
             print("sol:",sol)
             self.teco.plot(sol.q, dt=0.1)
 
@@ -371,7 +381,7 @@ class Dynamics_space():
             self.tau_j_array.append(self.tau_j)
         print("tau_j array:", self.tau_j_array)
         print("tau_j array size:", len(self.tau_j_array))
-        print("tau_j array row:", self.tau_j_array[:,])
+        # print("tau_j array row:", self.tau_j_array[:,]) # TODO: test list 
         # print("tau_j array:", self.tau_j_array[:,1])
         # print([row[0] for row in self.tau_j_array])
         # x = np.linspace(start = self.tau_j_array[0][0], stop = self.tau_j_array[0][len(self.tau_j_array)-1], num = len(self.tau_j_array))    
@@ -379,20 +389,20 @@ class Dynamics_space():
         # plt.show()
 
     def arm_plot(self):
-        if self.args.backend.lower() == 'pyplot':
-            if self.args.model.lower() != 'dh':
-                print('PyPlot only supports DH models for now')
-                sys.exit(1)
-        elif self.args.backend.lower() == 'vpython':
-            if self.args.model.lower() != 'dh':
-                print('VPython only supports DH models for now')
-                sys.exit(1)
-        elif self.args.backend.lower() == 'swift':
-            if self.args.model.lower() != 'urdf':
-                print('Swift only supports URDF models for now')
-                sys.exit(1)
-        else:
-            raise ValueError('unknown backend')
+        # if self.args.backend.lower() == 'pyplot':
+        #     if self.args.model.lower() != 'dh':
+        #         print('PyPlot only supports DH models for now')
+        #         sys.exit(1)
+        # elif self.args.backend.lower() == 'vpython':
+        #     if self.args.model.lower() != 'dh':
+        #         print('VPython only supports DH models for now')
+        #         sys.exit(1)
+        # elif self.args.backend.lower() == 'swift':
+        #     if self.args.model.lower() != 'urdf':
+        #         print('Swift only supports URDF models for now')
+        #         sys.exit(1)
+        # else:
+        #     raise ValueError('unknown backend')
 
         qn = [0,0,0,0,0,0]
         deg = pi/180
@@ -404,7 +414,7 @@ class Dynamics_space():
         # fig = plt.figure()
         # self.teco.plot(self.qn,dt=0, block = False, loop=False)
         print("arm_plot:", self.qn)
-        self.teco.plot(self.qn, backend=self.args.backend, block=False, vellipse=False, fellipse=False)
+        self.teco.plot(self.qn, backend='pyplot', block=False, vellipse=False, fellipse=False)
         # self.robot.plot(self.qt.q, backend=self.args.backend, block=False, movie="trajectory_generation.gif", vellipse=False, fellipse=False)
         plt.show()
         print("aaa")
@@ -416,7 +426,7 @@ class Dynamics_space():
                 print("success get subscriber data ")
                 Dya.payload_set()
                 Dya.dynamics_cal()
-                Dya.sol_output_axis(2)
+                # Dya.sol_output_axis()
                 Dya.plot_space_scan()
                 self.cmd = 0
                 break
@@ -426,14 +436,20 @@ class Dynamics_space():
                 Dya.dynamics_calc()
                 self.cmd = 0
                 break
-
+            # Select axis for dynamics space scan joint torque output
             if case(3):
-                print("Start trajectory planning")
+                print("Select axis for dynamics space scan joint torque output")
+                Dya.sol_output_axis()
                 self.cmd = 0
                 break
             
             if case(4):
                 Dya.arm_plot()
+                self.cmd = 0
+                break
+            #
+            if case(5):
+                
                 self.cmd = 0
                 break
 
