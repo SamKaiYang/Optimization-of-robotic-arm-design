@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # coding: utf-8
 import rospy
+import sys
+# import dyna_space
 from interface_control.msg import cal_cmd, dyna_data, dyna_space_data
 import numpy as np
 import roboticstoolbox as rtb
@@ -242,6 +244,8 @@ class Dynamics_space():
         self.teco.payload(20, [0, 0, 0]) # set payload 
 
     def dynamics_cal(self):
+        # dyna_space.dynamics_cal(self.teco, self.payload_space, self.payload_postition,self.q1_s,self.q1_end,self.q2_s,self.q2_end,self.q3_s,self.q3_end,self.q4_s,self.q4_end,self.q5_s,self.q5_end)
+        
         qd = np.r_[0, 1, 0, 0, 0, 0]
         # print("qd:",qd)
         self.teco.coriolis(self.teco.qn, qd) @ qd

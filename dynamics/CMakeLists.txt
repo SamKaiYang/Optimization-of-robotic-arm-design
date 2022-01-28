@@ -105,12 +105,12 @@ catkin_python_setup()
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES dynamics
-#  CATKIN_DEPENDS actionlib_msgs dynamic_reconfigure message_generation roscpp rospy std_msgs
-#  DEPENDS system_lib
-)
+# catkin_package(
+#   INCLUDE_DIRS include
+#   LIBRARIES dynamics
+#   CATKIN_DEPENDS actionlib_msgs dynamic_reconfigure message_generation roscpp rospy std_msgs
+# #  DEPENDS system_lib
+# )
 
 ###########
 ## Build ##
@@ -122,6 +122,9 @@ include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
 )
+## Declare a C++ library
+
+# add_library(dynamics src/dyna_space.c)
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -194,6 +197,18 @@ include_directories(
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+
+
+# set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+# # include CMake module for Cython
+# include(UseCython)
+# add_custom_target(ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
+#   ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
+#   ${CMAKE_CURRENT_BINARY_DIR}
+#   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+# add_subdirectory(src/cython)
+
+
 
 #############
 ## Testing ##
