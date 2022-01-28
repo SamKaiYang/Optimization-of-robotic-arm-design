@@ -129,7 +129,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.btn_dyn_space_set.clicked.connect(self.dyna_space_set_buttonClicked)
         self.ui.btn_arm_plot.clicked.connect(self.arm_plot_buttonClicked)
         self.ui.btn_dyn_axis_set.clicked.connect(self.axis_set_buttonClicked)
-        
+        self.ui.btn_arm_plot_close.clicked.connect(self.arm_plot_close_buttonClicked)
         # # Vel. HorizontalSlider
         # self.ui.horizontalSlider_vel.valueChanged.connect(self.VelSliderValue)
         # # Acc. HorizontalSlider
@@ -255,7 +255,9 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         # self.graphic_scene.addWidget(self.gv_visual_data_content) # 把图形放到QGraphicsScene中，注意：图形是作为一个QWidget放到放到QGraphicsScene中的
         # self.ui.graphicsView.setScene(self.graphic_scene) # 把QGraphicsScene放入QGraphicsView
         # self.ui.graphicsView.show() # 调用show方法呈现图形
-
+    def arm_plot_close_buttonClicked(self):
+        self.pub_cmd.publish(5)
+    
     # def display(self):
         
     #     if self.ui.comboBox.currentText() == "None":
