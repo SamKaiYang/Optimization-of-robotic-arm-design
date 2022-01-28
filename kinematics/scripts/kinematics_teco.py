@@ -31,6 +31,7 @@ teco = rtb.models.DH.TECOARM1()
 
 
 import numpy as np
+
 np.set_printoptions(suppress=True)
 
 joints = np.deg2rad([5,5,5,5,5,5])
@@ -42,7 +43,16 @@ T = SE3(0.5, 0.2, 0.5) * SE3.OA([0,0,1], [1,0,0])
 T
 
 sol = teco.ikine_LM(T)
-print(sol)
+print(sol.q)
+
+# output test 
+import csv
+
+f = open('csv_test','w')
+
+writer = csv.writer(f)
+writer.writerow(sol)
+f.close()
 # ## Inverse Kinematics
 # - The inverse kinematics (IK) makes use of the kinematics equations to determine the joint parameters that provide a desired position for the robot's end-effector
 # - The default internal IK implementation uses scipy.optimize.least_squares with joint limit bounds

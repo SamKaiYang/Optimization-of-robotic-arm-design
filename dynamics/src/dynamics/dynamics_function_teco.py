@@ -14,6 +14,8 @@ import time
 from moveit_msgs.msg import DisplayTrajectory, RobotTrajectory
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import geometry_msgs.msg
+import csv
+
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
 
 
@@ -315,7 +317,7 @@ class Dynamics_space():
             self.T.t[0] = self.T_x[0,i]
             self.T.t[1] = self.T_y[0,i]
             self.T.t[2] = self.T_z[0,i]
-            sol = self.teco.ikine_a(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
+            sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
             print("sol:",sol)
             self.teco.plot(sol.q, dt=0.1 )
             # plt.show()
@@ -336,7 +338,7 @@ class Dynamics_space():
             self.T.t[0] = self.T_x[0,i]
             self.T.t[1] = self.T_y[0,i]
             self.T.t[2] = self.T_z[0,i]
-            sol = self.teco.ikine_a(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
+            sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
             print("sol:",sol)
             self.teco.plot(sol.q, dt=0.1)
 
@@ -351,9 +353,18 @@ class Dynamics_space():
             self.T.t[0] = self.T_x[0,i]
             self.T.t[1] = self.T_y[0,i]
             self.T.t[2] = self.T_z[0,i]
-            sol = self.teco.ikine_a(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
+            sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
             print("sol:",sol)
             self.teco.plot(sol.q, dt=0.1)
+
+
+        # f = open('sol_output_axis','w')
+
+        # writer = csv.writer(f)
+        # writer.writerow(self.tau_j)
+        # f.close()
+        # print("save to dynamics_calc file")
+        # # fig = plt.figure()
 
     def dynamics_calc(self):
         qn = [0,0,0,0,0,0]
@@ -370,6 +381,12 @@ class Dynamics_space():
         self.tau_j = self.teco.rne(self.qn, self.vel, self.acc)
         print("tau_j:", self.tau_j)
 
+        f = open('dynamics_calc','w')
+
+        writer = csv.writer(f)
+        writer.writerow(self.tau_j)
+        f.close()
+        print("save to dynamics_calc file")
         # fig = plt.figure()
         # self.teco.plot(qn,dt=0)
 
@@ -378,8 +395,9 @@ class Dynamics_space():
         self.tau_j_array = []
         for i in range(num):
             self.tau_j = self.teco.rne(pos[i], vel[i], acc[i])
+            print("tau_j array:", self.tau_j)
             self.tau_j_array.append(self.tau_j)
-        print("tau_j array:", self.tau_j_array)
+        # print("tau_j array:", self.tau_j_array)
         print("tau_j array size:", len(self.tau_j_array))
         # print("tau_j array row:", self.tau_j_array[:,]) # TODO: test list 
         # print("tau_j array:", self.tau_j_array[:,1])
@@ -417,7 +435,6 @@ class Dynamics_space():
         self.teco.plot(self.qn, backend='pyplot', block=False, vellipse=False, fellipse=False)
         # self.robot.plot(self.qt.q, backend=self.args.backend, block=False, movie="trajectory_generation.gif", vellipse=False, fellipse=False)
         plt.show()
-        print("aaa")
         
     def task_set(self):
         for case in switch(self.cmd):
