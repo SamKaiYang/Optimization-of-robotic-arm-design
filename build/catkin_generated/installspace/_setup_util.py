@@ -268,7 +268,7 @@ if __name__ == '__main__':
 
         if not args.local:
             # environment at generation time
-            CMAKE_PREFIX_PATH = r'/home/iclab/Documents/teco_ws/devel;/opt/ros/melodic;/opt/installer/open_cv/cv_bridge'.split(';')
+            CMAKE_PREFIX_PATH = r'/opt/installer/open_cv/cv_bridge;/opt/ros/melodic'.split(';')
         else:
             # don't consider any other prefix path than this one
             CMAKE_PREFIX_PATH = []

@@ -46,18 +46,3 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   include("/home/iclab/Documents/teco_ws/src/build/dynamics/catkin_generated/safe_execute_install.cmake")
 endif()
 
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/iclab/Documents/teco_ws/src/build/dynamics/catkin_generated/installspace/dynamics.pc")
-endif()
-
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/dynamics/cmake" TYPE FILE FILES
-    "/home/iclab/Documents/teco_ws/src/build/dynamics/catkin_generated/installspace/dynamicsConfig.cmake"
-    "/home/iclab/Documents/teco_ws/src/build/dynamics/catkin_generated/installspace/dynamicsConfig-version.cmake"
-    )
-endif()
-
-if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/dynamics" TYPE FILE FILES "/home/iclab/Documents/teco_ws/src/dynamics/package.xml")
-endif()
-

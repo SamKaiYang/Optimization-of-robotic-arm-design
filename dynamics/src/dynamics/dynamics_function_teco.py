@@ -327,47 +327,69 @@ class Dynamics_space():
             # plt.show()
 
     def sol_output_axis(self):
-        axis = self.axis_num
-        axis = axis-1
-        self.ik_sol_positive= []
-        print("軸%d torque正最大值:%f" %(axis+1, np.max(self.torque[:,axis])))
-        print("軸%d torque負最大值:%f" %(axis+1, np.min(self.torque[:,axis])))
-        print("軸%d torque正最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
-        torque_where = np.where(self.torque==np.max(self.torque[:,axis]))
-        for i in range(len(torque_where[0])):
-            print(torque_where[0][i])
-            max_torque = torque_where[0][i]
-            print("torque:",self.torque[max_torque])
-            print("末端位置",[self.T_x[0,i], self.T_y[0,i], self.T_z[0,i]])
-            # TODO: 求解逆運動學 各軸角度self.teco.ikine_a()
-            self.T.t[0] = self.T_x[0,i]
-            self.T.t[1] = self.T_y[0,i]
-            self.T.t[2] = self.T_z[0,i]
-            sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
-            print("sol:",sol)
-            self.teco.plot(sol.q, dt=0.1)
-            # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
-            # TODO: 匯入至CSV檔案
-            self.ik_sol_positive.append(sol)
+        # f = open('dynamics_calc','w')
+        # writer = csv.writer(f)
 
-        self.ik_sol_negative= []
-        print("軸%d torque負最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
-        torque_where = np.where(self.torque==np.min(self.torque[:,axis]))
-        for i in range(len(torque_where[0])):
-            print(torque_where[0][i])
-            max_torque = torque_where[0][i]
-            print("torque:",self.torque[max_torque])
-            print("末端位置",[self.T_x[0,i], self.T_y[0,i], self.T_z[0,i]])
-            # TODO: 求解逆運動學 各軸角度self.teco.ikine_a()
-            self.T.t[0] = self.T_x[0,i]
-            self.T.t[1] = self.T_y[0,i]
-            self.T.t[2] = self.T_z[0,i]
-            sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
-            print("sol:",sol)
-            self.teco.plot(sol.q, dt=0.1)
-            # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
-            # TODO: 匯入至CSV檔案
-            self.ik_sol_negative.append(sol)
+        # axis = self.axis_num
+        # axis = axis-1
+
+        for i in range(6):
+            axis = i 
+            file_name = 'dynamics_space_calc'+str(axis+1)
+            f = open(file_name,'w')
+            writer = csv.writer(f)
+
+            self.ik_sol_positive= []
+            print("軸%d torque正最大值:%f" %(axis+1, np.max(self.torque[:,axis])))
+            print("軸%d torque負最大值:%f" %(axis+1, np.min(self.torque[:,axis])))
+            print("軸%d torque正最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
+            torque_where = np.where(self.torque==np.max(self.torque[:,axis]))
+            for i in range(len(torque_where[0])):
+                print(torque_where[0][i])
+                max_torque = torque_where[0][i]
+                print("torque:",self.torque[max_torque])
+                print("末端位置",[self.T_x[0,i], self.T_y[0,i], self.T_z[0,i]])
+                # TODO: 求解逆運動學 各軸角度self.teco.ikine_a()
+                self.T.t[0] = self.T_x[0,i]
+                self.T.t[1] = self.T_y[0,i]
+                self.T.t[2] = self.T_z[0,i]
+                sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
+                print("sol:",sol)
+                self.teco.plot(sol.q, dt=0.1)
+                # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
+                # TODO: 匯入至CSV檔案
+                self.ik_sol_positive.append(sol)
+
+            axis_number = axis+1
+            string = np.array(["軸", axis_number ,"torque正最大值時","各軸torque","末端位置","各軸角度"])
+            writer.writerow(string)
+
+            writer.writerow(self.ik_sol_positive)
+            string = np.array(["軸", axis_number ,"torque負最大值時","各軸torque","末端位置","各軸角度"])
+            writer.writerow(string)
+
+            self.ik_sol_negative= []
+            print("軸%d torque負最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
+            torque_where = np.where(self.torque==np.min(self.torque[:,axis]))
+            for i in range(len(torque_where[0])):
+                print(torque_where[0][i])
+                max_torque = torque_where[0][i]
+                print("torque:",self.torque[max_torque])
+                print("末端位置",[self.T_x[0,i], self.T_y[0,i], self.T_z[0,i]])
+                # TODO: 求解逆運動學 各軸角度self.teco.ikine_a()
+                self.T.t[0] = self.T_x[0,i]
+                self.T.t[1] = self.T_y[0,i]
+                self.T.t[2] = self.T_z[0,i]
+                sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
+                print("sol:",sol)
+                self.teco.plot(sol.q, dt=0.1)
+                # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
+                # TODO: 匯入至CSV檔案
+                self.ik_sol_negative.append(sol)
+
+            writer.writerow(self.ik_sol_negative)
+            f.close()
+            print("save to dynamics_space_calc file")
         # f = open('sol_output_axis','w')
 
         # writer = csv.writer(f)
@@ -390,11 +412,14 @@ class Dynamics_space():
         # self.acc = np.array([10,10,10,10,10,10]) # degree / sec2
         self.tau_j = self.teco.rne(self.qn, self.vel, self.acc)
         print("tau_j:", self.tau_j)
-
-        f = open('dynamics_calc','w')
+        axis = 2
+        file_name = 'dynamics_calc'+str(axis+1)
+        # f = open('dynamics_calc','w')
+        f = open(file_name,'w')
 
         writer = csv.writer(f)
         writer.writerow(self.tau_j)
+        
         f.close()
         print("save to dynamics_calc file")
         # fig = plt.figure()
