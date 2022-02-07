@@ -17,7 +17,8 @@ from moveit_msgs.msg import DisplayTrajectory, RobotTrajectory
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import geometry_msgs.msg
 import csv
-
+import openpyxl
+from openpyxl import Workbook
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
 
 
@@ -339,6 +340,21 @@ class Dynamics_space():
             f = open(file_name,'w')
             writer = csv.writer(f)
 
+
+            # excel output
+            # 建立excel空白活頁簿
+            excel_file = Workbook()
+            # 建立一個工作表
+            sheet = excel_file.active
+            # 先填入第一列的欄位名稱
+            sheet['A1'] = 'axis 1'
+            sheet['B1'] = 'axis 2'
+            sheet['C1'] = 'axis 3'
+            sheet['D1'] = 'axis 4'
+            sheet['E1'] = 'axis 5'
+            sheet['F1'] = 'axis 6'
+
+
             self.ik_sol_positive= []
             print("軸%d torque正最大值:%f" %(axis+1, np.max(self.torque[:,axis])))
             print("軸%d torque負最大值:%f" %(axis+1, np.min(self.torque[:,axis])))
@@ -359,7 +375,7 @@ class Dynamics_space():
                 # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
                 # TODO: 匯入至CSV檔案
                 self.ik_sol_positive.append(sol)
-
+            # output csv file
             axis_number = axis+1
             string = np.array(["軸", axis_number ,"torque正最大值時","各軸torque","末端位置","各軸角度"])
             writer.writerow(string)
@@ -367,6 +383,11 @@ class Dynamics_space():
             writer.writerow(self.ik_sol_positive)
             string = np.array(["軸", axis_number ,"torque負最大值時","各軸torque","末端位置","各軸角度"])
             writer.writerow(string)
+
+            # output excel file
+            sheet.append(ik_sol_positive)
+            file_name = 'dynamics_space_calc'+str(axis+1)+'_positive'+'xlsx'
+            excel_file.save(file_name)
 
             self.ik_sol_negative= []
             print("軸%d torque負最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
@@ -386,10 +407,15 @@ class Dynamics_space():
                 # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
                 # TODO: 匯入至CSV檔案
                 self.ik_sol_negative.append(sol)
-
+            # output csv file
             writer.writerow(self.ik_sol_negative)
             f.close()
             print("save to dynamics_space_calc file")
+
+            # output excel file
+            sheet.append(ik_sol_negative)
+            file_name = 'dynamics_space_calc'+str(axis+1)+'_positive'+'xlsx'
+            excel_file.save(file_name)
         # f = open('sol_output_axis','w')
 
         # writer = csv.writer(f)
@@ -422,6 +448,21 @@ class Dynamics_space():
         
         f.close()
         print("save to dynamics_calc file")
+
+        # excel output
+        # 建立excel空白活頁簿
+        excel_file = Workbook()
+        # 建立一個工作表
+        sheet = excel_file.active
+        # 先填入第一列的欄位名稱
+        sheet['A1'] = 'axis 1'
+        sheet['B1'] = 'axis 2'
+        sheet['C1'] = 'axis 3'
+        sheet['D1'] = 'axis 4'
+        sheet['E1'] = 'axis 5'
+        sheet['F1'] = 'axis 6'
+        sheet.append([self.tau_j[0],self.tau_j[1],self.tau_j[2],self.tau_j[3],self.tau_j[4],self.tau_j[5]])
+        excel_file.save('dynamics_calc.xlsx')
         # fig = plt.figure()
         # self.teco.plot(qn,dt=0)
 
@@ -481,7 +522,7 @@ class Dynamics_space():
                 print("success get subscriber data ")
                 Dya.payload_set()
                 Dya.dynamics_cal()
-                # Dya.sol_output_axis()
+                Dya.sol_output_axis()
                 Dya.plot_space_scan()
                 self.cmd = 0
                 break

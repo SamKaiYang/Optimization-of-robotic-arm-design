@@ -43,7 +43,7 @@ rosrun dynamics dynamics_function_teco.py
 #or 
 roslaunch dynamics dynamics_teco.launch
 ```
-# 執行moveit demo
+# 執行moveit OMPL demo
 ```bash
 roslaunch teco_config demo.launch
 ##moveit python interface 
@@ -54,6 +54,11 @@ rosrun teco_config move_group_python_interface_tutorial.py
 roslaunch teco_config demo.launch
 ##moveit c++ interface launch
 roslaunch moveit_tutorials move_group_interface_teco.launch 
+```
+
+# 執行moveit industrial motion demo
+```bash
+roslaunch teco_config demo_pliz.launch
 ```
 
 
