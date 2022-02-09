@@ -385,7 +385,8 @@ class Dynamics_space():
             writer.writerow(string)
 
             # output excel file
-            sheet.append(ik_sol_positive)
+            for i in range(len(self.ik_sol_positive)):
+                sheet.append(self.ik_sol_positive[i])
             file_name = 'dynamics_space_calc'+str(axis+1)+'_positive'+'xlsx'
             excel_file.save(file_name)
 
@@ -413,7 +414,8 @@ class Dynamics_space():
             print("save to dynamics_space_calc file")
 
             # output excel file
-            sheet.append(ik_sol_negative)
+            for i in range(len(self.ik_sol_negative)):
+                sheet.append(self.ik_sol_negative[i])
             file_name = 'dynamics_space_calc'+str(axis+1)+'_positive'+'xlsx'
             excel_file.save(file_name)
         # f = open('sol_output_axis','w')
@@ -462,6 +464,9 @@ class Dynamics_space():
         sheet['E1'] = 'axis 5'
         sheet['F1'] = 'axis 6'
         sheet.append([self.tau_j[0],self.tau_j[1],self.tau_j[2],self.tau_j[3],self.tau_j[4],self.tau_j[5]])
+        a = [[0,1,2,3,4,5],[6,7,8,9,10,11],[12,13,14,15,16,17]]
+        for i in range(len(a)):
+            sheet.append(a[i])
         excel_file.save('dynamics_calc.xlsx')
         # fig = plt.figure()
         # self.teco.plot(qn,dt=0)
