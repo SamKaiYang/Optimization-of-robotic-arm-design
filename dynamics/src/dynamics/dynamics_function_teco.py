@@ -2,6 +2,7 @@
 # coding: utf-8
 import rospy
 import sys
+from collections import namedtuple
 # import dyna_space
 from interface_control.msg import cal_cmd, dyna_data, dyna_space_data
 import numpy as np
@@ -19,6 +20,7 @@ import geometry_msgs.msg
 import csv
 import openpyxl
 from openpyxl import Workbook
+from os import path
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
 
 
@@ -136,6 +138,9 @@ class Dynamics_space():
                 M = self.teco.inertia(np.r_[0, Q2[i,j], Q3[i,j], 0, 0, 0])
                 M11[i,j] = M[0,0]
                 M12[i,j] = M[0,1]
+
+        self.xlsx_outpath = "./xlsx/"
+        self.pic_outpath = "./picture/"
     # def init(self):
     #     # self.pub_armstatus = rospy.Publisher("/reply_external_comm",peripheralCmd,queue_size=10)
     #     self.cmd = 0
@@ -336,9 +341,9 @@ class Dynamics_space():
 
         for i in range(6):
             axis = i 
-            file_name = 'dynamics_space_calc'+str(axis+1)
-            f = open(file_name,'w')
-            writer = csv.writer(f)
+            # file_name = 'dynamics_space_calc'+str(axis+1)
+            # f = open(file_name,'w')
+            # writer = csv.writer(f)
 
 
             # excel output
@@ -371,23 +376,28 @@ class Dynamics_space():
                 self.T.t[2] = self.T_z[0,i]
                 sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
                 print("sol:",sol)
-                self.teco.plot(sol.q, dt=0.1)
+                # self.teco.plot(sol.q, dt=0.1)
+                self.teco.plot(sol.q)
                 # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
                 # TODO: 匯入至CSV檔案
+                plt.savefig(path.join(self.pic_outpath,"dataname_positive_{0}_{1}.png".format(axis+1,i)))
+                plt.close()
                 self.ik_sol_positive.append(sol)
-            # output csv file
-            axis_number = axis+1
-            string = np.array(["軸", axis_number ,"torque正最大值時","各軸torque","末端位置","各軸角度"])
-            writer.writerow(string)
+            # # output csv file
+            # axis_number = axis+1
+            # string = np.array(["軸", axis_number ,"torque正最大值時","各軸torque","末端位置","各軸角度"])
+            # writer.writerow(string)
 
-            writer.writerow(self.ik_sol_positive)
-            string = np.array(["軸", axis_number ,"torque負最大值時","各軸torque","末端位置","各軸角度"])
-            writer.writerow(string)
+            # writer.writerow(self.ik_sol_positive)
+            # string = np.array(["軸", axis_number ,"torque負最大值時","各軸torque","末端位置","各軸角度"])
+            # writer.writerow(string)
 
             # output excel file
-            for i in range(len(self.ik_sol_positive)):
-                sheet.append(self.ik_sol_positive[i])
-            file_name = 'dynamics_space_calc'+str(axis+1)+'_positive'+'xlsx'
+            for x in self.ik_sol_positive:
+                sheet.append(x.q.tolist())
+            # for i in range(len(self.ik_sol_positive)):
+            #     sheet.append(self.ik_sol_positive[i])
+            file_name = self.xlsx_outpath+'/dynamics_space_calc_axis'+str(axis+1)+'_positive'+'.xlsx'
             excel_file.save(file_name)
 
             self.ik_sol_negative= []
@@ -404,19 +414,24 @@ class Dynamics_space():
                 self.T.t[2] = self.T_z[0,i]
                 sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
                 print("sol:",sol)
-                self.teco.plot(sol.q, dt=0.1)
+                # self.teco.plot(sol.q, dt=0.1)
+                self.teco.plot(sol.q)
                 # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
                 # TODO: 匯入至CSV檔案
+                plt.savefig(path.join(self.pic_outpath,"dataname_negative_{0}_{1}.png".format(axis+1,i)))
+                plt.close()
                 self.ik_sol_negative.append(sol)
-            # output csv file
-            writer.writerow(self.ik_sol_negative)
-            f.close()
-            print("save to dynamics_space_calc file")
+            # # output csv file
+            # writer.writerow(self.ik_sol_negative)
+            # f.close()
+            # print("save to dynamics_space_calc file")
 
             # output excel file
-            for i in range(len(self.ik_sol_negative)):
-                sheet.append(self.ik_sol_negative[i])
-            file_name = 'dynamics_space_calc'+str(axis+1)+'_positive'+'xlsx'
+            for x in self.ik_sol_negative:
+                sheet.append(x.q.tolist())
+            # for i in range(len(self.ik_sol_negative)):
+            #     sheet.append(self.ik_sol_negative[i])
+            file_name = self.xlsx_outpath+'/dynamics_space_calc_axis'+str(axis+1)+'_negative'+'.xlsx'
             excel_file.save(file_name)
         # f = open('sol_output_axis','w')
 
@@ -425,7 +440,6 @@ class Dynamics_space():
         # f.close()
         # print("save to dynamics_calc file")
         # # fig = plt.figure()
-
     def dynamics_calc(self):
         qn = [0,0,0,0,0,0]
         deg = pi/180
@@ -441,16 +455,19 @@ class Dynamics_space():
         self.tau_j = self.teco.rne(self.qn, self.vel, self.acc)
         print("tau_j:", self.tau_j)
         axis = 2
-        file_name = 'dynamics_calc'+str(axis+1)
-        # f = open('dynamics_calc','w')
-        f = open(file_name,'w')
+        # file_name = 'dynamics_calc'+str(axis+1)
+        # # f = open('dynamics_calc','w')
+        # f = open(file_name,'w')
 
-        writer = csv.writer(f)
-        writer.writerow(self.tau_j)
+        # writer = csv.writer(f)
+        # writer.writerow(self.tau_j)
         
-        f.close()
-        print("save to dynamics_calc file")
-
+        # f.close()
+        # print("save to dynamics_calc file")
+        self.teco.plot(self.qn)
+        
+        plt.savefig(path.join(self.pic_outpath,"dataname_dynamics_calc.png"))
+        plt.close()
         # excel output
         # 建立excel空白活頁簿
         excel_file = Workbook()
@@ -464,12 +481,9 @@ class Dynamics_space():
         sheet['E1'] = 'axis 5'
         sheet['F1'] = 'axis 6'
         sheet.append([self.tau_j[0],self.tau_j[1],self.tau_j[2],self.tau_j[3],self.tau_j[4],self.tau_j[5]])
-        a = [[0,1,2,3,4,5],[6,7,8,9,10,11],[12,13,14,15,16,17]]
-        for i in range(len(a)):
-            sheet.append(a[i])
-        excel_file.save('dynamics_calc.xlsx')
-        # fig = plt.figure()
-        # self.teco.plot(qn,dt=0)
+        file_name = self.xlsx_outpath+'/dynamics_calc'+'.xlsx'
+        # excel_file.save('dynamics_calc.xlsx')
+        excel_file.save(file_name)
 
     def trajectory_dynamics_calc(self, num, pos, vel, acc, time):
         self.teco.payload(self.payload , self.payload_position) # set payload
@@ -488,20 +502,6 @@ class Dynamics_space():
         # plt.show()
 
     def arm_plot(self):
-        # if self.args.backend.lower() == 'pyplot':
-        #     if self.args.model.lower() != 'dh':
-        #         print('PyPlot only supports DH models for now')
-        #         sys.exit(1)
-        # elif self.args.backend.lower() == 'vpython':
-        #     if self.args.model.lower() != 'dh':
-        #         print('VPython only supports DH models for now')
-        #         sys.exit(1)
-        # elif self.args.backend.lower() == 'swift':
-        #     if self.args.model.lower() != 'urdf':
-        #         print('Swift only supports URDF models for now')
-        #         sys.exit(1)
-        # else:
-        #     raise ValueError('unknown backend')
 
         qn = [0,0,0,0,0,0]
         deg = pi/180
@@ -557,14 +557,6 @@ class Dynamics_space():
             if case():
                 break
 
-
-# class Dynamics_plot(Dynamics_space):
-#     def __init__(self, parent=None):
-#         Dynamics_space.__init__(self)
-#         self.test = 0
-#     def arm_plot(self):
-#         fig = plt.figure()
-#         self.teco.plot(qn,dt=0)
 
 if __name__=="__main__":
     rospy.init_node("dynamics_space")

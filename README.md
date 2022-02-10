@@ -1,4 +1,10 @@
 # Optimization-of-robotic-arm-design
+## Installation
+```bash
+python3 -m pip install django
+
+``` 
+
 ## References
 ###  UR5
 1. https://github.com/tku-iarc/UR5_control
