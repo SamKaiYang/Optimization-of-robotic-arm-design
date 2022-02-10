@@ -1,8 +1,26 @@
 # Optimization-of-robotic-arm-design
+## Dependency Package
+1. [ROS](https://wiki.ros.org/melodic/Installation/Ubuntu)
+2. [roboticstoolbox](https://github.com/petercorke/robotics-toolbox-python)
+3. [ROS-MoveIt](https://moveit.ros.org/install/source/)
 ## Installation
 ```bash
-python3 -m pip install django
-
+sudo apt-get update && sudo apt-get -y upgrade
+python -m pip install --user --upgrade pip==20.2.4
+sudo apt-get install build-essential
+sudo apt-get install qttools5-dev-tools
+sudo apt-get install qtcreator
+sudo apt-get install qt5-default
+sudo apt-get install qt5-doc
+sudo apt-get install qt5-doc-html qtbase5-doc-html
+sudo apt-get install qtbase5-examples
+sudo apt-get install libxcb-xinerama0
+pip3 install openpyxl
+pip3 install spatialmath-python
+pip3 install numpy
+pip3 install -U matplotlib
+pip3 install argparse
+pip3 install PySide2
 ``` 
 
 ## References
