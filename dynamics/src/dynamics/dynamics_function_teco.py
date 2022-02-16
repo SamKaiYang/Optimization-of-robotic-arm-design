@@ -21,6 +21,7 @@ import csv
 import openpyxl
 from openpyxl import Workbook
 from os import path
+from scipy.interpolate import make_interp_spline # draw smooth 
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
 
 
@@ -49,10 +50,10 @@ class switch(object):
 class Dynamics_space():
     def __init__(self):
         # self.pub_armstatus = rospy.Publisher("/reply_external_comm",peripheralCmd,queue_size=10)
-        self.sub_taskcmd = rospy.Subscriber("/cal_command",cal_cmd,self.cmd_callback)
-        self.sub_dyna = rospy.Subscriber("/dynamics_data",dyna_data,self.dyna_callback)
-        self.sub_dyna_space = rospy.Subscriber("/dynamics_space_data",dyna_space_data,self.dyna_space_callback)
-        self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path", DisplayTrajectory,self.planned_path_callback)
+        self.sub_taskcmd = rospy.Subscriber("/cal_command",cal_cmd, self.cmd_callback)
+        self.sub_dyna = rospy.Subscriber("/dynamics_data",dyna_data, self.dyna_callback)
+        self.sub_dyna_space = rospy.Subscriber("/dynamics_space_data",dyna_space_data, self.dyna_space_callback)
+        self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path", DisplayTrajectory, self.planned_path_callback)
         # self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path",moveit_msgs.msg.JointTrajectory,self.planned_path_callback)
         self.cmd = 0
         self.teco = rtb.models.DH.TECOARM1()
@@ -231,20 +232,32 @@ class Dynamics_space():
         velocities = []
         accelerations = []
         time_from_start = []
+        time_from_start_secs = []
+        time_from_start_nsecs = []
+        time_array = []
         for i in range(points_num):
             positions.append(self.robot_trajectory[0].joint_trajectory.points[i].positions)
             velocities.append(self.robot_trajectory[0].joint_trajectory.points[i].velocities)
             accelerations.append(self.robot_trajectory[0].joint_trajectory.points[i].accelerations)
             time_from_start.append(self.robot_trajectory[0].joint_trajectory.points[i].time_from_start)
-            
-        # rospy.loginfo("positions is %s", positions)
-        # rospy.loginfo("velocities is %s", velocities)
-        # rospy.loginfo("accelerations is %s", accelerations)
-        # rospy.loginfo("time_from_start secs is %s", time_from_start.secs)
-        # rospy.loginfo("time_from_start nsecs is %s", time_from_start.nsecs)
+            time_from_start_secs.append(self.robot_trajectory[0].joint_trajectory.points[i].time_from_start.secs)
+            time_from_start_nsecs.append(self.robot_trajectory[0].joint_trajectory.points[i].time_from_start.nsecs)
 
-        # print(points_num)
         self.trajectory_dynamics_calc(points_num, positions, velocities, accelerations, time_from_start)
+        # TODO: plot trajectory torque 
+        # rospy.loginfo("tau_j_array 1 is %s", self.tau_j_array[1,:].tolist())
+        time_array_secs = np.array(time_from_start_secs)
+        time_array_nsecs = np.array(time_from_start_nsecs)
+        time_array = time_array_secs+time_array_nsecs*(10)**(-9)
+        print(time_array)
+        tau_array = np.array(self.tau_j_array)
+        print(tau_array[:,0])
+
+        x_smooth = np.linspace(time_array.min(),time_array.max(),300)
+        y_smooth = make_interp_spline(time_array, tau_array[:,0])
+        plt.plot(x_smooth, y_smooth)
+        plt.show()
+        
 
     def payload_set(self):
         self.teco.payload(20, [0, 0, 0]) # set payload 
@@ -358,6 +371,12 @@ class Dynamics_space():
             sheet['D1'] = 'axis 4'
             sheet['E1'] = 'axis 5'
             sheet['F1'] = 'axis 6'
+            sheet['G1'] = 'torque 1'
+            sheet['H1'] = 'torque 2'
+            sheet['I1'] = 'torque 3'
+            sheet['J1'] = 'torque 4'
+            sheet['K1'] = 'torque 5'
+            sheet['L1'] = 'torque 6'
 
 
             self.ik_sol_positive= []
@@ -377,28 +396,44 @@ class Dynamics_space():
                 sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
                 print("sol:",sol)
                 # self.teco.plot(sol.q, dt=0.1)
-                self.teco.plot(sol.q)
-                # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
-                # TODO: 匯入至CSV檔案
-                plt.savefig(path.join(self.pic_outpath,"dataname_positive_{0}_{1}.png".format(axis+1,i)))
-                plt.close()
-                self.ik_sol_positive.append(sol)
-            # # output csv file
-            # axis_number = axis+1
-            # string = np.array(["軸", axis_number ,"torque正最大值時","各軸torque","末端位置","各軸角度"])
-            # writer.writerow(string)
+                # self.teco.plot(sol.q)
+                # # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
+                # # TODO: 匯入至CSV檔案
+                # plt.savefig(path.join(self.pic_outpath,"dataname_positive_{0}_{1}.png".format(axis+1,i)))
+                # plt.close()
+                
+                # TODO:# output excel file
+                append_sol_list_angle = sol.q.tolist()
+                append_sol_list_torque = self.torque[max_torque].tolist()
+                append_sol_list.extend(append_sol_list_torque)
+                sheet.append(append_sol_list)
+                # self.ik_sol_positive.append(sol)
 
-            # writer.writerow(self.ik_sol_positive)
-            # string = np.array(["軸", axis_number ,"torque負最大值時","各軸torque","末端位置","各軸角度"])
-            # writer.writerow(string)
+            # original # output excel file
+            # for x in self.ik_sol_positive:
+            #     sheet.append(x.q.tolist())
 
-            # output excel file
-            for x in self.ik_sol_positive:
-                sheet.append(x.q.tolist())
-            # for i in range(len(self.ik_sol_positive)):
-            #     sheet.append(self.ik_sol_positive[i])
             file_name = self.xlsx_outpath+'/dynamics_space_calc_axis'+str(axis+1)+'_positive'+'.xlsx'
             excel_file.save(file_name)
+
+            # excel output
+            # 建立excel空白活頁簿
+            excel_file = Workbook()
+            # 建立一個工作表
+            sheet = excel_file.active
+            # 先填入第一列的欄位名稱
+            sheet['A1'] = 'axis 1'
+            sheet['B1'] = 'axis 2'
+            sheet['C1'] = 'axis 3'
+            sheet['D1'] = 'axis 4'
+            sheet['E1'] = 'axis 5'
+            sheet['F1'] = 'axis 6'
+            sheet['G1'] = 'torque 1'
+            sheet['H1'] = 'torque 2'
+            sheet['I1'] = 'torque 3'
+            sheet['J1'] = 'torque 4'
+            sheet['K1'] = 'torque 5'
+            sheet['L1'] = 'torque 6'
 
             self.ik_sol_negative= []
             print("軸%d torque負最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
@@ -415,31 +450,25 @@ class Dynamics_space():
                 sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
                 print("sol:",sol)
                 # self.teco.plot(sol.q, dt=0.1)
-                self.teco.plot(sol.q)
-                # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
-                # TODO: 匯入至CSV檔案
-                plt.savefig(path.join(self.pic_outpath,"dataname_negative_{0}_{1}.png".format(axis+1,i)))
-                plt.close()
-                self.ik_sol_negative.append(sol)
-            # # output csv file
-            # writer.writerow(self.ik_sol_negative)
-            # f.close()
-            # print("save to dynamics_space_calc file")
+                # self.teco.plot(sol.q)
+                # # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
+                # # TODO: 匯入至CSV檔案
+                # plt.savefig(path.join(self.pic_outpath,"dataname_negative_{0}_{1}.png".format(axis+1,i)))
+                # plt.close()
+                # TODO:# output excel file
+                append_sol_list_angle = sol.q.tolist()
+                append_sol_list_torque = self.torque[max_torque].tolist()
+                append_sol_list.extend(append_sol_list_torque)
+                sheet.append(append_sol_list)
+                # self.ik_sol_negative.append(sol)
 
-            # output excel file
-            for x in self.ik_sol_negative:
-                sheet.append(x.q.tolist())
-            # for i in range(len(self.ik_sol_negative)):
-            #     sheet.append(self.ik_sol_negative[i])
+            # original # output excel file
+            # for x in self.ik_sol_negative:
+            #     sheet.append(x.q.tolist())
+
             file_name = self.xlsx_outpath+'/dynamics_space_calc_axis'+str(axis+1)+'_negative'+'.xlsx'
             excel_file.save(file_name)
-        # f = open('sol_output_axis','w')
 
-        # writer = csv.writer(f)
-        # writer.writerow(self.tau_j)
-        # f.close()
-        # print("save to dynamics_calc file")
-        # # fig = plt.figure()
     def dynamics_calc(self):
         qn = [0,0,0,0,0,0]
         deg = pi/180
