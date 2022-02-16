@@ -251,13 +251,63 @@ class Dynamics_space():
         time_array = time_array_secs+time_array_nsecs*(10)**(-9)
         print(time_array)
         tau_array = np.array(self.tau_j_array)
-        print(tau_array[:,0])
+        print(tau_array[:,1])
 
         x_smooth = np.linspace(time_array.min(),time_array.max(),300)
-        y_smooth = make_interp_spline(time_array, tau_array[:,0])
-        plt.plot(x_smooth, y_smooth)
-        plt.show()
+        # x_smooth = time_array
+        # y_smooth = make_interp_spline(time_array, tau_array[:,0])(x_smooth)
+        # plt.subplot(2,3,1) 
+        # plt.plot(x_smooth, y_smooth,"b-.")
+        # plt.title("torque 1", {'fontsize':10})  # 設定圖標題及其文字大小
+        # plt.xlabel("sec")
+        # plt.ylabel("N*m")
         
+        # y_smooth = make_interp_spline(time_array, tau_array[:,1])(x_smooth)
+        # plt.subplot(2,3,2) 
+        # plt.plot(x_smooth, y_smooth,"r")
+        # plt.title("torque 2", {'fontsize':10})  # 設定圖標題及其文字大小
+        # plt.xlabel("sec")
+        # plt.ylabel("N*m")
+
+        # y_smooth = make_interp_spline(time_array, tau_array[:,2])(x_smooth)
+        # plt.subplot(2,3,3) 
+        # plt.plot(x_smooth, y_smooth,"g--")
+        # plt.title("torque 3", {'fontsize':10})  # 設定圖標題及其文字大小
+        # plt.xlabel("sec")
+        # plt.ylabel("N*m")
+
+        # y_smooth = make_interp_spline(time_array, tau_array[:,3])(x_smooth)
+        # plt.subplot(2,3,4) 
+        # plt.plot(x_smooth, y_smooth,"m:")
+        # plt.title("torque 4", {'fontsize':10})  # 設定圖標題及其文字大小
+        # plt.xlabel("sec")
+        # plt.ylabel("N*m")
+
+        # y_smooth = make_interp_spline(time_array, tau_array[:,4])(x_smooth)
+        # plt.subplot(2,3,5) 
+        # plt.plot(x_smooth, y_smooth,"r-.")
+        # plt.title("torque 5", {'fontsize':10})  # 設定圖標題及其文字大小
+        # plt.xlabel("sec")
+        # plt.ylabel("N*m")
+
+        plt.ion()
+        fig = plt.figure()
+        axis = 6
+        for i in range(axis):
+            y_smooth = make_interp_spline(time_array, tau_array[:,i])(x_smooth)
+            plt.subplot(2,3,i+1) 
+            plt.plot(x_smooth, y_smooth,"b--")
+            string_axis = str(i+1)
+            plt.title("torque "+string_axis, {'fontsize':10})  # 設定圖標題及其文字大小
+            plt.xlabel("sec")
+            plt.ylabel("N*m")
+
+        plt.show()
+        # plt.savefig(path.join(self.pic_outpath,"trajectory_torque.png"))
+        plt.pause(0.0001)
+        fig.canvas.draw()
+        # plt.clf()
+        # plt.close()      # 關閉圖表      
 
     def payload_set(self):
         self.teco.payload(20, [0, 0, 0]) # set payload 
