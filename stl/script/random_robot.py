@@ -5,7 +5,7 @@ from spatialmath import SE3
 
 class RandomRobot(DHRobot):
     """
-    Class that models a TECO TECOARM1 manipulator
+    Class that models a random manipulator data
 
     :param symbolic: use symbolic constants
     :type symbolic: bool
@@ -14,11 +14,6 @@ class RandomRobot(DHRobot):
     conventions.
 
     .. runblock:: pycon
-
-        >>> import roboticstoolbox as rtb
-        >>> robot = rtb.models.DH.TECOARM1()
-        >>> print(robot)
-
     Defined joint configurations are:
 
     - qz, zero joint angle configuration
@@ -58,27 +53,7 @@ class RandomRobot(DHRobot):
         mass = [0.706627496414257, 1.81432701922486, 0.44267362700812, 0.240053004221894, 0.22616916171284, 0.3927]
         
         G= [-80,-80,-80,-50,-50,-50]   # gear ratio
-        # <xacro:property name="shoulder_cog" value="0.0 0.00193 -0.02561" />
-        # <xacro:property name="upper_arm_cog" value="0.0 -0.024201 0.2125" />
-        # <xacro:property name="forearm_cog" value="0.0 0.0265 0.11993" />
-        # <xacro:property name="wrist_1_cog" value="0.0 0.110949 0.01634" />
-        # <xacro:property name="wrist_2_cog" value="0.0 0.0018 0.11099" />
-        # <xacro:property name="wrist_3_cog" value="0.0 0.001159 0.0" />
 
-        # xyz="-1.55579201081481E-05 0.00265005484815443 -0.00640979059142413"
-        # xyz="4.90637956589368E-11 0.205571973027702 -0.00335989805856342"
-        # xyz="-9.75479428030767E-05 0.271025707847572 0.111573843205116"
-        # xyz="-0.000181761828397664 0.00219045749084071 -0.000800397394362884"
-        # xyz="-0.000192919655058627 -0.00232492307126431 0.00352418959262345"
-        # xyz="-4.4856E-13 0 0.025"
-        # center_of_mass = [
-        #         [0,     -0.02561,  0.00193],
-        #         [0.2125, 0,        0.11336],
-        #         [0.15,   0,        0.0265],
-        #         [0,     -0.0018,   0.01634],
-        #         [0,     -0.0018,   0.01634],
-        #         [0,      0,       -0.001159]
-        #     ]
         center_of_mass = [
                 [-1.55579201081481E-05, 0.00265005484815443, -0.00640979059142413],
                 [4.90637956589368E-11, 0.205571973027702, -0.003359898058563426],

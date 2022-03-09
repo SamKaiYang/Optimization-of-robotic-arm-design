@@ -67,6 +67,15 @@ rosrun dynamics dynamics_function_teco.py
 #or 
 roslaunch dynamics dynamics_teco.launch
 ```
+
+```bash
+rosrun interface_control interface_GUI.py
+rosrun dynamics dynamics_function_random.py 
+
+#or 
+roslaunch dynamics dynamics_random.launch
+```
+
 # 執行moveit OMPL demo
 ```bash
 roslaunch teco_config demo.launch
