@@ -1,5 +1,5 @@
 <launch>
-  <node name="stl_cal" pkg="stl" type="stl_combining.py" respawn="false" output="screen" cwd="node" >
+  <node name="stl_cal" pkg="stl" type="stl_cal.py" respawn="false" output="screen" cwd="node" >
   </node>
   <!-- <node name="interface_ui" pkg="interface_control" type="interface_GUI.py" respawn="false" output="screen" cwd="node"  >
   </node> -->
