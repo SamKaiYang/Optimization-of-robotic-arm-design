@@ -33,7 +33,7 @@ class RandomRobot(ERobot):
         links, name, urdf_string, urdf_filepath = self.URDF_read(
             os.path.dirname(os.path.realpath(__file__))+"/tecobot.urdf"
         )
-
+        
         super().__init__(
             links,
             name=name.upper(),
@@ -47,23 +47,35 @@ class RandomRobot(ERobot):
         self.addconfiguration("qr", np.array([np.pi, 0, 0, 0, np.pi / 2, 0]))
 
         # sol=robot.ikine_LM(SE3(0.5, -0.2, 0.2)@SE3.OA([1,0,0],[0,0,-1]))
-        self.addconfiguration(
-            "qn",
-            np.array(
-                [
-                    -7.052413e-01,
-                    3.604328e-01,
-                    -1.494176e00,
-                    1.133744e00,
-                    -7.052413e-01,
-                    0,
-                ]
-            ),
-        )
+        # self.addconfiguration(
+        #     "qn",
+        #     np.array(
+        #         [
+        #             -7.052413e-01,
+        #             3.604328e-01,
+        #             -1.494176e00,
+        #             1.133744e00,
+        #             -7.052413e-01,
+        #             0,
+        #         ]
+        #     ),
+        # )
+        self.addconfiguration("qn", np.array([0, 0, 0, 0, 0, 0]))
 
 
 if __name__ == "__main__":  # pragma nocover
     print(os.path.dirname(os.path.realpath(__file__)))
     robot = RandomRobot()
-    print(robot)
+    # TODO: 刪除dummy, base link link.m & r 
+    # for j, link in enumerate(robot):
+    #     # if j == 0:
+    #     #     enumerate(robot).remove(link)
+    #     # elif j == 1:
+    #     #     enumerate(robot).remove(link)
+    #     print("link_m:",link.m)
+    #     print("\n")
+    #     print("link_r:",link.r)
+    #     print("\n")
+        # I[j] = SpatialInertia(m=link.m, r=link.r)
+    # print(robot.links.m)
     print(robot.ets())

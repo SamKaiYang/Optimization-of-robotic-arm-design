@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import numpy as np
 from roboticstoolbox import DHRobot, RevoluteDH
 from spatialmath import SE3
