@@ -2,6 +2,8 @@
 import numpy as np
 from roboticstoolbox import DHRobot, RevoluteDH
 from spatialmath import SE3
+from urdf_parser_py.urdf import URDF
+import os
 
 
 class RandomRobot(DHRobot):
@@ -35,6 +37,7 @@ class RandomRobot(DHRobot):
 
     def __init__(self, symbolic=False):
 
+        robot = URDF.from_xml_file(os.path.dirname(os.path.realpath(__file__))+"/tecobot.urdf")
         if symbolic:
             import spatialmath.base.symbolic as sym
             zero = sym.zero()
@@ -47,47 +50,51 @@ class RandomRobot(DHRobot):
         inch = 0.0254
 
         # robot length values (metres)
-        # a = [0, -0.42500, -0.39225, 0, 0, 0] #m
-        a = [0, -0.314, -0.284, 0, 0, 0] #m # teco
-        # d = [0.089459, 0, 0, 0.10915, 0.09465, 0.0823] #m
-        d = [0.1301, 0, 0, 0.1145, 0.090, 0.048] #m # teco 
-
+        # a = [0, -0.314, -0.284, 0, 0, 0] #m # teco
+        a = [0, -robot.joints[3].origin.xyz[1], -robot.joints[4].origin.xyz[1], 0, 0, 0]
+        # a = [0, -j3.y, -j4.y, 0, 0, 0]
+        # d = [0.1301, 0, 0, 0.1145, 0.090, 0.048] #m # teco 
+        d = [robot.joints[1].origin.xyz[2],
+            0,
+            0,
+            robot.joints[2].origin.xyz[1]-robot.joints[4].origin.xyz[2], 
+            robot.joints[5].origin.xyz[2],
+            robot.joints[6].origin.xyz[2]
+        ]
+        # d = [j1.z, 0, 0, j2.y-j4.z , j5.z, j6.z] #m
         alpha = [pi/2, zero, zero, pi/2, -pi/2, zero]
 
+        
         # mass data, no inertia available
         # mass = [3.7000, 8.3930, 2.33, 1.2190, 1.2190, 0.1897]
-        mass = [0.706627496414257, 1.81432701922486, 0.44267362700812, 0.240053004221894, 0.22616916171284, 0.3927]
+        mass = [robot.links[2].inertial.mass, 
+                robot.links[3].inertial.mass,
+                robot.links[4].inertial.mass,
+                robot.links[5].inertial.mass,
+                robot.links[6].inertial.mass,
+                robot.links[7].inertial.mass
+            ]
         
         G= [-80,-80,-80,-50,-50,-50]   # gear ratio
-        # <xacro:property name="shoulder_cog" value="0.0 0.00193 -0.02561" />
-        # <xacro:property name="upper_arm_cog" value="0.0 -0.024201 0.2125" />
-        # <xacro:property name="forearm_cog" value="0.0 0.0265 0.11993" />
-        # <xacro:property name="wrist_1_cog" value="0.0 0.110949 0.01634" />
-        # <xacro:property name="wrist_2_cog" value="0.0 0.0018 0.11099" />
-        # <xacro:property name="wrist_3_cog" value="0.0 0.001159 0.0" />
 
-        # xyz="-1.55579201081481E-05 0.00265005484815443 -0.00640979059142413"
-        # xyz="4.90637956589368E-11 0.205571973027702 -0.00335989805856342"
-        # xyz="-9.75479428030767E-05 0.271025707847572 0.111573843205116"
-        # xyz="-0.000181761828397664 0.00219045749084071 -0.000800397394362884"
-        # xyz="-0.000192919655058627 -0.00232492307126431 0.00352418959262345"
-        # xyz="-4.4856E-13 0 0.025"
         # center_of_mass = [
-        #         [0,     -0.02561,  0.00193],
-        #         [0.2125, 0,        0.11336],
-        #         [0.15,   0,        0.0265],
-        #         [0,     -0.0018,   0.01634],
-        #         [0,     -0.0018,   0.01634],
-        #         [0,      0,       -0.001159]
+        #         [-1.55579201081481E-05, 0.00265005484815443, -0.00640979059142413],
+        #         [4.90637956589368E-11, 0.205571973027702, -0.003359898058563426],
+        #         [-9.75479428030767E-05, 0.271025707847572, 0.111573843205116],
+        #         [-0.000181761828397664, 0.00219045749084071, -0.000800397394362884],
+        #         [-0.000192919655058627, -0.00232492307126431, 0.00352418959262345],
+        #         [-4.4856E-13 ,0 ,0.025]
         #     ]
+
         center_of_mass = [
-                [-1.55579201081481E-05, 0.00265005484815443, -0.00640979059142413],
-                [4.90637956589368E-11, 0.205571973027702, -0.003359898058563426],
-                [-9.75479428030767E-05, 0.271025707847572, 0.111573843205116],
-                [-0.000181761828397664, 0.00219045749084071, -0.000800397394362884],
-                [-0.000192919655058627, -0.00232492307126431, 0.00352418959262345],
-                [-4.4856E-13 ,0 ,0.025]
+                robot.links[2].inertial.origin.xyz,
+                robot.links[3].inertial.origin.xyz,
+                robot.links[4].inertial.origin.xyz,
+                robot.links[5].inertial.origin.xyz,
+                robot.links[6].inertial.origin.xyz,
+                robot.links[7].inertial.origin.xyz
             ]
+
         links = []
 
         for j in range(6):

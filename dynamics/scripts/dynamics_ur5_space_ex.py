@@ -13,6 +13,7 @@ np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if 
 
 class Dynamics_trajectory():
     def __init__(self):
+        # self.ur5 = rtb.models.URDF.UR5()
         self.ur5 = rtb.models.DH.UR5()
         # self.ur5.plot(self.ur5.qn, block=False)
         self.ur5.gravload(self.ur5.qn)

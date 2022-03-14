@@ -23,8 +23,8 @@ from openpyxl import Workbook
 from os import path
 from scipy.interpolate import make_interp_spline # draw smooth 
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
-# from random_robot import RandomRobot
-from robot_urdf import RandomRobot
+from random_robot import RandomRobot
+# from robot_urdf import RandomRobot
 
 class switch(object):
     def __init__(self, value):

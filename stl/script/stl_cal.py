@@ -44,7 +44,7 @@ if __name__ == '__main__':
     print("                                          {0}".format(inertia[2,:]))
 
     lines = []
-    with open('../tecobot_test.urdf','r',encoding='utf-8') as urdf_config:
+    with open('../../dynamics/src/dynamics/tecobot_sample.urdf','r',encoding='utf-8') as urdf_config:
         lines = urdf_config.readlines()
         size = urdf_config.read()
         # print(urdf_config.read())
@@ -64,14 +64,14 @@ if __name__ == '__main__':
                 continue
 
     
-    with open('../tecobot_test.urdf','w',encoding='utf-8') as urdf_config:
+    with open('../../dynamics/src/dynamics/tecobot_sample.urdf','w',encoding='utf-8') as urdf_config:
         lines[154] = ("      xyz=\"0 0.11115 {0}\"\n".format(cog[0]))
         for data in lines:
             urdf_config.write(data)
         urdf_config.flush()
         
     
-    robot = URDF.from_xml_file("../tecobot_test.urdf")
-    print(robot)
+    # robot = URDF.from_xml_file("../tecobot_test.urdf")
+    # print(robot)
         # for line in urdf_config.readlines():
         #     print(line.strip()) # 把末尾的'\n'删掉
