@@ -21,6 +21,8 @@ pip3 install numpy
 pip3 install -U matplotlib
 pip3 install argparse
 pip3 install PySide2
+pip3 install roboticstoolbox-python
+pip3 install sympy
 ``` 
 
 ## References
