@@ -5,34 +5,37 @@ import rospy
 from stl import mesh
 from os import path
 from urdf_parser_py.urdf import URDF, Robot
-# # Using an existing stl file:
-# # your_mesh = mesh.Mesh.from_file('meshes/6.STL')
-# your_mesh = mesh.Mesh.from_file('combined.STL')
-# # Or creating a new mesh (make sure not to overwrite the `mesh` import by
-# # naming it `mesh`):
-# VERTICE_COUNT = 100
-# data = numpy.zeros(VERTICE_COUNT, dtype=mesh.Mesh.dtype)
-# your_mesh = mesh.Mesh(data, remove_empty_areas=False)
+from interface_control.msg import parameter_design
 
-# # The mesh normals (calculated automatically)
-# your_mesh.normals
-# # The mesh vectors
-# your_mesh.v0, your_mesh.v1, your_mesh.v2
-# # Accessing individual points (concatenation of v0, v1 and v2 in triplets)
-# assert (your_mesh.points[0][0:3] == your_mesh.v0[0]).all()
-# assert (your_mesh.points[0][3:6] == your_mesh.v1[0]).all()
-# assert (your_mesh.points[0][6:9] == your_mesh.v2[0]).all()
-# assert (your_mesh.points[1][0:3] == your_mesh.v0[1]).all()
-
-# your_mesh.save('new_base_link.STL')
-
-# Using an existing closed stl file:
-# xlsx_outpath = "./xlsx/"
+class stl_conv_urdf():
+    def __init__(self, robot_name, robot_parameter):
+        self.robot_name = robot_name
+        self.robot_parameter = robot_parameter
+        self.robot_urdf = URDF.from_xml_file(robot_name)
+        self.robot_stl = mesh.Mesh.from_file(robot_name + ".stl")
+        self.robot_stl.points = self.robot_stl.points * self.robot_parameter.stl_scale
+        self.robot_stl.update_normals()
+        self.robot_stl.save(robot_name + ".stl")
+        self.robot_stl = mesh.Mesh.from_file(robot_name + ".stl")
+        self.robot_stl.points = self.robot_stl.points * self.robot_parameter.stl_scale
+        self.robot_stl.update_normals()
+        self.robot_stl.save(robot_name + ".stl")
+        self.robot_stl = mesh.Mesh.from_file(robot_name + ".stl")
+        self.robot_stl.points = self.robot_stl.points * self.robot_parameter.stl_scale
+        self.robot_stl.update_normals()
+        self.robot_stl.save(robot_name + ".stl")
+        self.robot_stl = mesh.Mesh.from_file(robot_name + ".stl")
+        self.robot_stl.points = self.robot_stl.points * self.robot_parameter.stl_scale
+        self.robot_stl.update_normals()
+        self.robot_stl.save(robot_name + ".stl")
+        self.robot_stl = mesh.Mesh.from_file(robot_name + ".stl")
+        self.robot_stl.points = self.robot_stl.points * self.robot_parameter.stl_scale
 
 
 if __name__ == '__main__':
 
     rospy.init_node('stl_cal')
+    # sub_dyna_space = rospy.Subscriber("/dynamics_space_data",dyna_space_data, self.dyna_space_callback)
 
     # your_mesh = mesh.Mesh.from_file('../meshes/1.STL')
     your_mesh = mesh.Mesh.from_file('combined.STL')

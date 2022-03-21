@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 # matplotlib.use("Qt5Agg") 
 
 from Ui_main import Ui_MainWindow
-from interface_control.msg import cal_cmd, dyna_data, dyna_space_data
+from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, parameter_design
 import sys
 import importlib
 importlib.reload(sys)
@@ -101,13 +101,19 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
                             height=self.ui.graphicsView.height() / 101,
                             xlim=(0, 2*np.pi),
                             ylim=(-1, 1)) # 实例化一个FigureCanvas
-
+        # publish cmd to dynamics calculate : use function select 
         self.pub_cmd = rospy.Publisher("/cal_command",cal_cmd, queue_size=10)
+        # publish arm dynamics data : float32 payload, joint_angle, payload_position, vel, acc
         self.pub_dyna_data = rospy.Publisher("/dynamics_data",dyna_data, queue_size=10)
+        # publish arm dynamics use space scan data 
         self.pub_dyna_space = rospy.Publisher("/dynamics_space_data",dyna_space_data, queue_size=10)
+        # publish arm design data : arm length, payload, dof
+        self.pub_parameter_design = rospy.Publisher("/parameter_design",parameter_design, queue_size=10)
+
         self.cal_cmd = cal_cmd()
         self.dyna_data = dyna_data()
         self.dyna_space_data = dyna_space_data()
+        self.parameter_design = parameter_design()
         
         self.payload = 0.0
         self.payload_position = [0.0,0.0,0.0]
@@ -130,6 +136,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.btn_arm_plot.clicked.connect(self.arm_plot_buttonClicked)
         self.ui.btn_dyn_axis_set.clicked.connect(self.axis_set_buttonClicked)
         self.ui.btn_arm_plot_close.clicked.connect(self.arm_plot_close_buttonClicked)
+        self.ui.btn_dynamics_design.clicked.connect(self.dynamics_design_buttonClicked)
         # # Vel. HorizontalSlider
         # self.ui.horizontalSlider_vel.valueChanged.connect(self.VelSliderValue)
         # # Acc. HorizontalSlider
@@ -258,6 +265,20 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
     def arm_plot_close_buttonClicked(self):
         self.pub_cmd.publish(5)
     
+    def dynamics_design_buttonClicked(self):
+        axis_2 = float(self.ui.lineEdit_axis_2.text())
+        axis_3 = float(self.ui.lineEdit_axis_3.text())
+        arm_weight = float(self.ui.lineEdit_arm_weight.text())
+        payload = float(self.ui.lineEdit_payload_2.text())
+        dof = int(self.ui.lineEdit_dof.text())
+        # print(axis_2, axis_3) # test 
+        self.parameter_design.axis_2_length = axis_2
+        self.parameter_design.axis_3_length = axis_3
+        self.parameter_design.arm_weight = arm_weight
+        self.parameter_design.payload = payload
+        self.parameter_design.DoF = dof
+        
+        self.pub_parameter_design.publish(self.parameter_design)
     # def display(self):
         
     #     if self.ui.comboBox.currentText() == "None":

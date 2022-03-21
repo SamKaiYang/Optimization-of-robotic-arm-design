@@ -55,6 +55,7 @@ add_message_files(
   cal_cmd.msg
   dyna_data.msg
   dyna_space_data.msg
+  parameter_design.msg
 )
 
 ## Generate services in the 'srv' folder
