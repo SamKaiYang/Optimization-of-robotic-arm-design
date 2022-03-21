@@ -3,5 +3,7 @@
   </node>
   <node name="interface_ui" pkg="interface_control" type="interface_GUI.py" respawn="false" output="screen" cwd="node"  >
   </node>
+  <node name="stl_cal" pkg="dynamics" type="stl_conv_urdf.py" respawn="false" output="screen" cwd="node" >
+  </node>
   
 </launch>

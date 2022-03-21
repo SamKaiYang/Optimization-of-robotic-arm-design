@@ -4,8 +4,6 @@ from roboticstoolbox import DHRobot, RevoluteDH
 from spatialmath import SE3
 from urdf_parser_py.urdf import URDF
 import os
-
-
 class RandomRobot(DHRobot):
     """
     Class that models a TECO TECOARM1 manipulator
@@ -37,7 +35,7 @@ class RandomRobot(DHRobot):
 
     def __init__(self, symbolic=False):
 
-        robot = URDF.from_xml_file(os.path.dirname(os.path.realpath(__file__))+"/tecobot.urdf")
+        robot = URDF.from_xml_file(os.path.dirname(os.path.realpath(__file__))+"/urdf"+"/random.urdf")
         if symbolic:
             import spatialmath.base.symbolic as sym
             zero = sym.zero()

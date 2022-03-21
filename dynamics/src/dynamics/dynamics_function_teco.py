@@ -76,30 +76,6 @@ class Dynamics_space():
 
         self.qn = np.array([0,0,0,0,0,0]) # degree 
         
-        # parser = argparse.ArgumentParser(description="TECO trajectory demo")
-        # parser.add_argument(
-        #     '--backend',
-        #     '-b',
-        #     dest='backend',
-        #     default='pyplot',
-        #     help='choose backend: pyplot (default), swift, vpython',
-        #     action='store')
-        # parser.add_argument(
-        #     '--model',
-        #     '-m',
-        #     dest='model',
-        #     default='DH',
-        #     action='store',
-        #     help='choose model: DH (default), URDF')
-        # self.args = parser.parse_args()
-
-        # if self.args.model.lower() == 'dh':
-        #     self.robot = rtb.models.DH.Puma560()
-        # elif self.args.model.lower() == 'urdf':
-        #     self.robot = rtb.models.URDF.Puma560()
-        # else:
-        #     raise ValueError('unknown model')
-
         ## 數值法 求取工作空間
         # 關節角限位
         self.q1_s=-160
@@ -142,61 +118,6 @@ class Dynamics_space():
 
         self.xlsx_outpath = "./xlsx/"
         self.pic_outpath = "./picture/"
-    # def init(self):
-    #     # self.pub_armstatus = rospy.Publisher("/reply_external_comm",peripheralCmd,queue_size=10)
-    #     self.cmd = 0
-    #     self.teco = rtb.models.DH.TECOARM1()
-    #     # self.teco.plot(self.teco.qn, block=False)
-    #     self.teco.gravload(self.teco.qn)
-    #     self.teco.inertia(self.teco.qn)
-    #     self.torque = np.array([np.zeros(shape=6)])
-
-    #     self.payload = 0
-    #     self.payload_position = np.array([0,0,0])
-    #     self.joint_angle = np.array([0,0,0,0,0,0]) # degree 
-    #     self.vel = np.array([0,0,0,0,0,0]) # degree / sec
-    #     self.acc = np.array([0,0,0,0,0,0]) # degree / sec2
-    #     self.tau_j = self.teco.rne(self.teco.qn, self.vel, self.acc)
-
-    #     ## 數值法 求取工作空間
-    #     # 關節角限位
-    #     self.q1_s=-160
-    #     self.q1_end=160
-    #     self.q2_s=-160
-    #     self.q2_end=160
-    #     self.q3_s=-160
-    #     self.q3_end=160
-    #     self.q4_s=-160
-    #     self.q4_end=160
-    #     self.q5_s=-160
-    #     self.q5_end=160
-    #     self.q6_s=-160
-    #     self.q6_end=160
-    #     # 計算參數
-    #     self.step= 20 #計算步距 % 解析度   # original = 20
-    #     # t=0:1:(q5_end-q5_s)/step # 產生時間向量 
-    #     step1 = (self.q1_end - self.q1_s)/self.step 
-    #     step2 = (self.q2_end - self.q2_s)/self.step 
-    #     step3 = (self.q3_end - self.q3_s)/self.step 
-    #     step4 = (self.q4_end - self.q4_s)/self.step 
-    #     step5 = (self.q5_end - self.q5_s)/self.step
-    #     step6 = (self.q6_end - self.q6_s)/self.step 
-    #     self.step_num = int(step1*step2*step3*step4*step5)
-    #     self.T_cell=step1*step2*step3*step4*step5
-    #     self.T = np.zeros((3,1))
-    #     self.T_x = np.zeros((1,self.step_num))
-    #     self.T_y = np.zeros((1,self.step_num))
-    #     self.T_z = np.zeros((1,self.step_num))
-        
-    #     N = 100
-    #     (Q2, Q3) = np.meshgrid(np.linspace(-pi, pi, N), np.linspace(-pi, pi, N))
-    #     M11 = np.zeros((N,N))
-    #     M12 = np.zeros((N,N))
-    #     for i in range(N):
-    #         for j in range(N):
-    #             M = self.teco.inertia(np.r_[0, Q2[i,j], Q3[i,j], 0, 0, 0])
-    #             M11[i,j] = M[0,0]
-    #             M12[i,j] = M[0,1]
 
     def cmd_callback(self,data):
         self.cmd = data.cmd
@@ -254,41 +175,6 @@ class Dynamics_space():
         print(tau_array[:,1])
 
         x_smooth = np.linspace(time_array.min(),time_array.max(),300)
-        # x_smooth = time_array
-        # y_smooth = make_interp_spline(time_array, tau_array[:,0])(x_smooth)
-        # plt.subplot(2,3,1) 
-        # plt.plot(x_smooth, y_smooth,"b-.")
-        # plt.title("torque 1", {'fontsize':10})  # 設定圖標題及其文字大小
-        # plt.xlabel("sec")
-        # plt.ylabel("N*m")
-        
-        # y_smooth = make_interp_spline(time_array, tau_array[:,1])(x_smooth)
-        # plt.subplot(2,3,2) 
-        # plt.plot(x_smooth, y_smooth,"r")
-        # plt.title("torque 2", {'fontsize':10})  # 設定圖標題及其文字大小
-        # plt.xlabel("sec")
-        # plt.ylabel("N*m")
-
-        # y_smooth = make_interp_spline(time_array, tau_array[:,2])(x_smooth)
-        # plt.subplot(2,3,3) 
-        # plt.plot(x_smooth, y_smooth,"g--")
-        # plt.title("torque 3", {'fontsize':10})  # 設定圖標題及其文字大小
-        # plt.xlabel("sec")
-        # plt.ylabel("N*m")
-
-        # y_smooth = make_interp_spline(time_array, tau_array[:,3])(x_smooth)
-        # plt.subplot(2,3,4) 
-        # plt.plot(x_smooth, y_smooth,"m:")
-        # plt.title("torque 4", {'fontsize':10})  # 設定圖標題及其文字大小
-        # plt.xlabel("sec")
-        # plt.ylabel("N*m")
-
-        # y_smooth = make_interp_spline(time_array, tau_array[:,4])(x_smooth)
-        # plt.subplot(2,3,5) 
-        # plt.plot(x_smooth, y_smooth,"r-.")
-        # plt.title("torque 5", {'fontsize':10})  # 設定圖標題及其文字大小
-        # plt.xlabel("sec")
-        # plt.ylabel("N*m")
 
         plt.ion()
         fig = plt.figure()
@@ -306,15 +192,11 @@ class Dynamics_space():
         # plt.savefig(path.join(self.pic_outpath,"trajectory_torque.png"))
         plt.pause(0.0001)
         fig.canvas.draw()
-        # plt.clf()
-        # plt.close()      # 關閉圖表      
-
+ 
     def payload_set(self):
         self.teco.payload(20, [0, 0, 0]) # set payload 
 
     def dynamics_cal(self):
-        # dyna_space.dynamics_cal(self.teco, self.payload_space, self.payload_postition,self.q1_s,self.q1_end,self.q2_s,self.q2_end,self.q3_s,self.q3_end,self.q4_s,self.q4_end,self.q5_s,self.q5_end)
-        
         qd = np.r_[0, 1, 0, 0, 0, 0]
         # print("qd:",qd)
         self.teco.coriolis(self.teco.qn, qd) @ qd
@@ -396,19 +278,8 @@ class Dynamics_space():
             # plt.show()
 
     def sol_output_axis(self):
-        # f = open('dynamics_calc','w')
-        # writer = csv.writer(f)
-
-        # axis = self.axis_num
-        # axis = axis-1
-
         for i in range(6):
             axis = i 
-            # file_name = 'dynamics_space_calc'+str(axis+1)
-            # f = open(file_name,'w')
-            # writer = csv.writer(f)
-
-
             # excel output
             # 建立excel空白活頁簿
             excel_file = Workbook()
@@ -445,23 +316,13 @@ class Dynamics_space():
                 self.T.t[2] = self.T_z[0,i]
                 sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
                 print("sol:",sol)
-                # self.teco.plot(sol.q, dt=0.1)
-                # self.teco.plot(sol.q)
-                # # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
-                # # TODO: 匯入至CSV檔案
-                # plt.savefig(path.join(self.pic_outpath,"dataname_positive_{0}_{1}.png".format(axis+1,i)))
-                # plt.close()
-                
+                # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
+                # TODO: 匯入至CSV檔案
                 # TODO:# output excel file
                 append_sol_list_angle = sol.q.tolist()
                 append_sol_list_torque = self.torque[max_torque].tolist()
                 append_sol_list.extend(append_sol_list_torque)
                 sheet.append(append_sol_list)
-                # self.ik_sol_positive.append(sol)
-
-            # original # output excel file
-            # for x in self.ik_sol_positive:
-            #     sheet.append(x.q.tolist())
 
             file_name = self.xlsx_outpath+'/dynamics_space_calc_axis'+str(axis+1)+'_positive'+'.xlsx'
             excel_file.save(file_name)
@@ -499,22 +360,13 @@ class Dynamics_space():
                 self.T.t[2] = self.T_z[0,i]
                 sol = self.teco.ikine_LM(self.T)  # original sol = self.teco.ikine_a(self.T, "lun")
                 print("sol:",sol)
-                # self.teco.plot(sol.q, dt=0.1)
-                # self.teco.plot(sol.q)
-                # # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
-                # # TODO: 匯入至CSV檔案
-                # plt.savefig(path.join(self.pic_outpath,"dataname_negative_{0}_{1}.png".format(axis+1,i)))
-                # plt.close()
+                # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
+                # TODO: 匯入至CSV檔案
                 # TODO:# output excel file
                 append_sol_list_angle = sol.q.tolist()
                 append_sol_list_torque = self.torque[max_torque].tolist()
                 append_sol_list.extend(append_sol_list_torque)
                 sheet.append(append_sol_list)
-                # self.ik_sol_negative.append(sol)
-
-            # original # output excel file
-            # for x in self.ik_sol_negative:
-            #     sheet.append(x.q.tolist())
 
             file_name = self.xlsx_outpath+'/dynamics_space_calc_axis'+str(axis+1)+'_negative'+'.xlsx'
             excel_file.save(file_name)
@@ -525,26 +377,12 @@ class Dynamics_space():
         
         for i in range(6):
             qn[i] = self.joint_angle[i]*deg
-        # print(self.teco.gravload(qn))
         self.teco.payload(self.payload , self.payload_position) # set payload
-
         self.qn = qn
-        # self.vel = np.array([10,10,10,10,10,10]) # degree / sec
-        # self.acc = np.array([10,10,10,10,10,10]) # degree / sec2
         self.tau_j = self.teco.rne(self.qn, self.vel, self.acc)
         print("tau_j:", self.tau_j)
         axis = 2
-        # file_name = 'dynamics_calc'+str(axis+1)
-        # # f = open('dynamics_calc','w')
-        # f = open(file_name,'w')
-
-        # writer = csv.writer(f)
-        # writer.writerow(self.tau_j)
-        
-        # f.close()
-        # print("save to dynamics_calc file")
         self.teco.plot(self.qn)
-        
         plt.savefig(path.join(self.pic_outpath,"dataname_dynamics_calc.png"))
         plt.close()
         # excel output
@@ -571,14 +409,7 @@ class Dynamics_space():
             self.tau_j = self.teco.rne(pos[i], vel[i], acc[i])
             print("tau_j array:", self.tau_j)
             self.tau_j_array.append(self.tau_j)
-        # print("tau_j array:", self.tau_j_array)
         print("tau_j array size:", len(self.tau_j_array))
-        # print("tau_j array row:", self.tau_j_array[:,]) # TODO: test list 
-        # print("tau_j array:", self.tau_j_array[:,1])
-        # print([row[0] for row in self.tau_j_array])
-        # x = np.linspace(start = self.tau_j_array[0][0], stop = self.tau_j_array[0][len(self.tau_j_array)-1], num = len(self.tau_j_array))    
-        # plt.plot(x, self.tau_j_array[0])
-        # plt.show()
 
     def arm_plot(self):
 
@@ -589,11 +420,8 @@ class Dynamics_space():
             qn[i] = self.joint_angle[i]*deg
 
         self.qn = qn
-        # fig = plt.figure()
-        # self.teco.plot(self.qn,dt=0, block = False, loop=False)
         print("arm_plot:", self.qn)
         self.teco.plot(self.qn, backend='pyplot', block=False, vellipse=False, fellipse=False)
-        # self.robot.plot(self.qt.q, backend=self.args.backend, block=False, movie="trajectory_generation.gif", vellipse=False, fellipse=False)
         plt.show()
         
     def plot_close(self):

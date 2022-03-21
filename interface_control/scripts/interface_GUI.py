@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 import rospy
-# import threading
-# import time
 import numpy as np
 
 from dynamics.dynamics_function_teco import Dynamics_space
@@ -14,8 +12,6 @@ from PySide2.QtGui import *
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
-# matplotlib.use("Qt5Agg") 
-
 from Ui_main import Ui_MainWindow
 from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, parameter_design
 import sys
@@ -58,7 +54,6 @@ class MyThread(QThread):
         index=0
         while self.runFlag:
             self.callback.emit(index, self.label)
-            # print(threading.currentThread().getName())
             index+=1
             self.msleep(self.delay)
 
@@ -122,13 +117,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.joint_velocity = [0.0,0.0,0.0,0.0,0.0,0.0]
         self.joint_acceleration = [0.0,0.0,0.0,0.0,0.0,0.0]
         self.joint_angle = [0.0,0.0,0.0,0.0,0.0,0.0]
-        # self.pub_ipset = rospy.Publisher("/ip_comm",ipconfig,queue_size=10)
-        # self.pub_closenode = rospy.Publisher("/close_node",closenode,queue_size=10)
-        # self.startthreadflag = False
-        # self.setStyleSheet()
-        # self._creat_menubar()
-        # self.ui.lineEdit_vel.setText(str(self.vel))
-        # self.ui.lineEdit_acc.setText(str(self.acc))
+
         self.ui.btn_dynamics.clicked.connect(self.dyna_buttonClicked)
         self.ui.btn_dyn_space.clicked.connect(self.dyna_space_buttonClicked)
         self.ui.btn_dyn_set.clicked.connect(self.dyna_set_buttonClicked)
@@ -148,36 +137,6 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         # self.ui.comboBox.addItems(choices)
         # self.ui.comboBox.currentIndexChanged.connect(self.display)
         # self.display()
-        
-        
-    #     self.initUi()
-
-
-    # def initUi(self):
-    #     self.status = self.statusBar()
-    #     self.status.showMessage('Update State', 0) #状态栏本身显示的信息 第二个参数是信息停留的时间，单位是毫秒，默认是0（0表示在下一个操作来临前一直显示）
-    #     self.status.setStyleSheet("font-size: 18px;background-color: #F5E8FF")
-    #     self.safetyNum = QtWidgets.QLabel("Safety:")
-    #     self.taskNum = QtWidgets.QLabel("Task:")
-    #     self.reloadNum = QtWidgets.QLabel("Reload:")
-
-    #     self.safetyNum.setFixedWidth(200)
-    #     self.safetyNum.setStyleSheet("font-size: 18px;border-radius: 25px;border: 1px solid black;")
-    #     self.taskNum.setFixedWidth(200)
-    #     self.taskNum.setStyleSheet("font-size: 18px;border-radius: 25px;border: 1px solid black;")
-    #     self.reloadNum.setFixedWidth(200)
-    #     self.reloadNum.setStyleSheet("font-size: 18px;border-radius: 25px;border: 1px solid black;")
-
-    #     self.status.addPermanentWidget(self.safetyNum, stretch=0)
-    #     self.status.addPermanentWidget(self.taskNum, stretch=0)
-    #     self.status.addPermanentWidget(self.reloadNum, stretch=0)
-        
-    # def setStyleSheet(self):
-    #     self.ui.btn_reset.setStyleSheet("QPushButton" + "{" + "background-color:#da7700;\n" + "color:white;\n" + "border-color: black;" 
-    #         + "}" + "QPushButton::pressed" + "{" + "background-color :#5151A2;\n" + "color:white;" +"}")
-    #     self.ui.btn_enable.setStyleSheet("QPushButton" + "{" + "background-color:#00d21a;\n" + "color:white;\n" + "border-color: black;" 
-    #         + "}" + "QPushButton::pressed" + "{" + "background-color :#5151A2;\n" + "color:white;" +"}")
-
 
     def dyna_set_buttonClicked(self):
         self.payload = float(self.ui.lineEdit_payload.text())
@@ -246,22 +205,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
 
     def arm_plot_buttonClicked(self):
         self.pub_cmd.publish(4)
-        # self.init()
-        # self.arm_plot()
 
-        # self.graphic_scene.addWidget(self.arm_plot()) # 把图形放到QGraphicsScene中，注意：图形是作为一个QWidget放到放到QGraphicsScene中的
-        # self.ui.graphicsView.setScene(self.graphic_scene) # 把QGraphicsScene放入QGraphicsView
-        # self.ui.graphicsView.show() # 调用show方法呈现图形
-
-        # x = np.arange(0, 2 * np.pi, np.pi / 100)
-        # y = np.cos(x)
-        # self.gv_visual_data_content.axes.plot(x, y)
-        # self.gv_visual_data_content.axes.set_title('cos()')
-        # # 加载的图形（FigureCanvas）不能直接放到graphicview控件中，必须先放到graphicScene，然后再把graphicscene放到graphicview中
-        # self.graphic_scene = QGraphicsScene() # 创建一个QGraphicsScene
-        # self.graphic_scene.addWidget(self.gv_visual_data_content) # 把图形放到QGraphicsScene中，注意：图形是作为一个QWidget放到放到QGraphicsScene中的
-        # self.ui.graphicsView.setScene(self.graphic_scene) # 把QGraphicsScene放入QGraphicsView
-        # self.ui.graphicsView.show() # 调用show方法呈现图形
     def arm_plot_close_buttonClicked(self):
         self.pub_cmd.publish(5)
     
@@ -271,7 +215,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         arm_weight = float(self.ui.lineEdit_arm_weight.text())
         payload = float(self.ui.lineEdit_payload_2.text())
         dof = int(self.ui.lineEdit_dof.text())
-        # print(axis_2, axis_3) # test 
+
         self.parameter_design.axis_2_length = axis_2
         self.parameter_design.axis_3_length = axis_3
         self.parameter_design.arm_weight = arm_weight
@@ -279,32 +223,6 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.parameter_design.DoF = dof
         
         self.pub_parameter_design.publish(self.parameter_design)
-    # def display(self):
-        
-    #     if self.ui.comboBox.currentText() == "None":
-    #         # self.ui.label_mission_case_show.setText('Choose：%s' % self.ui.comboBox.currentText())
-    #         task_value = 0
-    #         # self.ui_reload_program()
-    #     elif self.ui.comboBox.currentText() == "Show 1":
-    #         self.ui.label_mission_case_show.setText('Choose：%s' % self.ui.comboBox.currentText())
-    #         task_value = 1
-    #         self.ui_reload_program()
-    #         self.ui.comboBox.setCurrentIndex(0)
-    #     self.mission_number = task_value
-        
-
-    # def topic_callback_init(self):
-    #     self.pub_armstatus = rospy.Subscriber("/reply_external_comm",peripheralCmd,self.topic_reply_callback)
-    #     self.sub_taskcmd = rospy.Subscriber("/write_external_comm",peripheralCmd,self.topic_write_callback)
-    #     self.peripheralCmd = peripheralCmd()
-
-    # def topic_write_callback(self,data):
-    #     self.task_cmd = data.actionTypeID
-    #     self.statusID = data.statusID
-
-    # def topic_reply_callback(self,data):
-    #     self.task_cmd_reply = data.actionTypeID
-    #     self.statusID_reply = data.statusID
 
 if __name__=="__main__":
     rospy.init_node("interface_ui")

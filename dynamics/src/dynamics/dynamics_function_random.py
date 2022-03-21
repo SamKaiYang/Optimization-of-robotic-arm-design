@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 # coding: utf-8
 import rospy
+
 import sys
+import importlib
+importlib.reload(sys)
+
 from collections import namedtuple
 # import dyna_space
 from interface_control.msg import cal_cmd, dyna_data, dyna_space_data
+
 import numpy as np
 import roboticstoolbox as rtb
 from spatialmath import *
@@ -14,15 +19,20 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import argparse
 import time
+
 from moveit_msgs.msg import DisplayTrajectory, RobotTrajectory
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import geometry_msgs.msg
+
 import csv
 import openpyxl
 from openpyxl import Workbook
+
 from os import path
+
 from scipy.interpolate import make_interp_spline # draw smooth 
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
+
 from random_robot import RandomRobot
 # from robot_urdf import RandomRobot
 
