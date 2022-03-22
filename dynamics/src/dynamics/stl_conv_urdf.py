@@ -6,45 +6,6 @@ from stl import mesh
 from os import path
 from urdf_parser_py.urdf import URDF, Robot
 from interface_control.msg import parameter_design
-
-
-def test():
-    # your_mesh = mesh.Mesh.from_file('../meshes/1.STL')
-    your_mesh = mesh.Mesh.from_file('combined.STL')
-    volume, cog, inertia = your_mesh.get_mass_properties()
-    print("Volume                                  = {0}".format(volume*1000))
-    print("Position of the center of gravity (COG) = {0}".format(cog))
-    print("Inertia matrix at expressed at the COG  = {0}".format(inertia[0,:]))
-    print("                                          {0}".format(inertia[1,:]))
-    print("                                          {0}".format(inertia[2,:]))
-
-    lines = []
-    with open('tecobot_sample.urdf','r',encoding='utf-8') as urdf_config:
-        lines = urdf_config.readlines()
-        size = urdf_config.read()
-        # print(urdf_config.read())
-        flen=len(lines)
-        print("line count:", flen)
-
-        line_content = lines[151]
-        print("line content:", line_content)
-
-        for i in range(flen):
-            if lines[i].startswith("    name=\"j2\""):
-                print("j2 line number:", i+1)
-            elif lines[i].startswith("    name=\"j3\""):
-                print("j3 line number:", i+1)
-                break
-            else:
-                continue
-
-    
-    with open('tecobot_sample.urdf','w',encoding='utf-8') as urdf_config:
-        lines[154] = ("      xyz=\"0 0.11115 {0}\"\n".format(cog[0]))
-        for data in lines:
-            urdf_config.write(data)
-        urdf_config.flush()
-
 class stl_conv_urdf():
     def __init__(self, robot_name, robot_parameter):
         self.axis_2_length = 0.0
@@ -59,8 +20,8 @@ class stl_conv_urdf():
         self.robot_stl_axis_3 = None
         self.robot_urdf = URDF.from_xml_file(path.dirname(path.realpath(__file__)) + "/urdf/" + robot_name + ".urdf")
         self.lines = []
-        self.j2_line = 0
-        self.j3_line = 0
+        self.J3_line = 0
+        self.J4_line = 0
         self.L2_line = 0
         self.L3_line = 0
         self.L2_volume = 0.0
@@ -114,6 +75,12 @@ class stl_conv_urdf():
                 elif self.lines[i].startswith("    name=\"3\"") and self.lines[i+2].startswith("      <origin"):
                     self.L3_line = i+1
                     print("link 3 line number:", self.L3_line)
+                elif self.lines[i].startswith("    name=\"j3\"") and self.lines[i+2].startswith("      <origin"):
+                    self.J3_line = i+1
+                    print("joint 3 line number:", self.J3_line)
+                elif self.lines[i].startswith("    name=\"j4\"") and self.lines[i+2].startswith("      <origin"):
+                    self.J4_line = i+1
+                    print("joint 4 line number:", self.J4_line)
                     print("read urdf data no problem")
                     print("============================================================")
                     break
@@ -125,7 +92,11 @@ class stl_conv_urdf():
             cog_lines = int(self.L2_line + 2)
             mass_lines = int(self.L2_line + 5)
             inertia_lines = int(self.L2_line + 7)
-            
+            joint_pos = int(self.J3_line + 2)
+
+            self.axis_2_length = 281.5 - self.axis_2_length*10
+            joint3_pos_y = 0.408000000000056 - self.axis_2_length
+
             self.lines[cog_lines] = ("        xyz=\"{0[0]} {0[1]} {0[2]}\"\n".format(self.L2_cog))
             self.lines[mass_lines] = ("        value=\"{0}\"  />\n".format(self.L2_volume))
             self.lines[inertia_lines] = ("        ixx=\"{0[0][0]}\"\n".format(self.L2_inertia))
@@ -134,7 +105,8 @@ class stl_conv_urdf():
             self.lines[inertia_lines+3] = ("        iyy=\"{0[1][1]}\"\n".format(self.L2_inertia))
             self.lines[inertia_lines+4] = ("        iyz=\"{0[1][2]}\"\n".format(self.L2_inertia))
             self.lines[inertia_lines+5] = ("        izz=\"{0[2][2]}\" />\n".format(self.L2_inertia))
-
+            self.lines[joint_pos] = ("        xyz=\"0 {0} 0\"\n".format(joint3_pos_y))
+            # xyz="0 0.408000000000056 0"
             for data in self.lines:
                 urdf_config.write(data)
             urdf_config.flush()
@@ -143,7 +115,11 @@ class stl_conv_urdf():
             cog_lines = int(self.L3_line + 2)
             mass_lines = int(self.L3_line + 5)
             inertia_lines = int(self.L3_line + 7)
-            
+            joint_pos = int(self.J4_line + 2)
+
+            self.axis_3_length = 265 - self.axis_3_length*10
+            joint4_pos_y = 0.372499999999936 - self.axis_3_length
+
             self.lines[cog_lines] = ("        xyz=\"{0[0]} {0[1]} {0[2]}\"\n".format(self.L3_cog))
             self.lines[mass_lines] = ("        value=\"{0}\"  />\n".format(self.L3_volume))
             self.lines[inertia_lines] = ("        ixx=\"{0[0][0]}\"\n".format(self.L3_inertia))
@@ -152,7 +128,8 @@ class stl_conv_urdf():
             self.lines[inertia_lines+3] = ("        iyy=\"{0[1][1]}\"\n".format(self.L3_inertia))
             self.lines[inertia_lines+4] = ("        iyz=\"{0[1][2]}\"\n".format(self.L3_inertia))
             self.lines[inertia_lines+5] = ("        izz=\"{0[2][2]}\" />\n".format(self.L3_inertia))
-
+            self.lines[joint_pos] = ("        xyz=\"0 {0} 0.0109000000011954\"\n".format(joint4_pos_y))
+            # xyz="0 0.372499999999936 0.0109000000011954"
             for data in self.lines:
                 urdf_config.write(data)
             urdf_config.flush()
@@ -177,6 +154,7 @@ class stl_conv_urdf():
         self.stl_read_file()
         self.read_check_urdf()
         self.data_write_urdf()
+
 if __name__ == '__main__':
 
     rospy.init_node('stl_cal')
