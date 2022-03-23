@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
-messages_str = "/home/iclab/Documents/teco_ws/src/interface_control/msg/cal_cmd.msg;/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg;/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_space_data.msg"
+messages_str = "/home/iclab/Documents/teco_ws/src/interface_control/msg/cal_cmd.msg;/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg;/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_space_data.msg;/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg"
 services_str = ""
 pkg_name = "interface_control"
 dependencies_str = "actionlib_msgs;std_msgs"

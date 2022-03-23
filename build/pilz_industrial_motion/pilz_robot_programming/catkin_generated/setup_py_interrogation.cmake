@@ -1,5 +1,5 @@
-set(pilz_robot_programming_SETUP_PY_SETUP_MODULE "distutils.core")
-set(pilz_robot_programming_SETUP_PY_VERSION "0.4.14")
+set(pilz_robot_programming_SETUP_PY_SETUP_MODULE "setuptools")
+set(pilz_robot_programming_SETUP_PY_VERSION "0.5.0")
 set(pilz_robot_programming_SETUP_PY_SCRIPTS "")
 set(pilz_robot_programming_SETUP_PY_PACKAGES "pilz_robot_programming")
 set(pilz_robot_programming_SETUP_PY_PACKAGE_DIRS "src/pilz_robot_programming")

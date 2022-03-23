@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.cmake.em
 
-message(STATUS "interface_control: 3 messages, 0 services")
+message(STATUS "interface_control: 4 messages, 0 services")
 
 set(MSG_I_FLAGS "-Iinterface_control:/home/iclab/Documents/teco_ws/src/interface_control/msg;-Iactionlib_msgs:/opt/ros/melodic/share/actionlib_msgs/cmake/../msg;-Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg")
 
@@ -16,6 +16,11 @@ add_custom_target(interface_control_generate_messages ALL)
 # verify that message/service dependencies have not changed since configure
 
 
+
+get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg" NAME_WE)
+add_custom_target(_interface_control_generate_messages_check_deps_${_filename}
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "interface_control" "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg" ""
+)
 
 get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg" NAME_WE)
 add_custom_target(_interface_control_generate_messages_check_deps_${_filename}
@@ -38,6 +43,12 @@ add_custom_target(_interface_control_generate_messages_check_deps_${_filename}
 
 ### Section generating for lang: gencpp
 ### Generating Messages
+_generate_msg_cpp(interface_control
+  "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/interface_control
+)
 _generate_msg_cpp(interface_control
   "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg"
   "${MSG_I_FLAGS}"
@@ -71,6 +82,8 @@ add_custom_target(interface_control_generate_messages_cpp
 add_dependencies(interface_control_generate_messages interface_control_generate_messages_cpp)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg" NAME_WE)
+add_dependencies(interface_control_generate_messages_cpp _interface_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg" NAME_WE)
 add_dependencies(interface_control_generate_messages_cpp _interface_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_space_data.msg" NAME_WE)
@@ -87,6 +100,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS interface_control_generate_messages
 
 ### Section generating for lang: geneus
 ### Generating Messages
+_generate_msg_eus(interface_control
+  "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/interface_control
+)
 _generate_msg_eus(interface_control
   "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg"
   "${MSG_I_FLAGS}"
@@ -120,6 +139,8 @@ add_custom_target(interface_control_generate_messages_eus
 add_dependencies(interface_control_generate_messages interface_control_generate_messages_eus)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg" NAME_WE)
+add_dependencies(interface_control_generate_messages_eus _interface_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg" NAME_WE)
 add_dependencies(interface_control_generate_messages_eus _interface_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_space_data.msg" NAME_WE)
@@ -136,6 +157,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS interface_control_generate_messages
 
 ### Section generating for lang: genlisp
 ### Generating Messages
+_generate_msg_lisp(interface_control
+  "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/interface_control
+)
 _generate_msg_lisp(interface_control
   "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg"
   "${MSG_I_FLAGS}"
@@ -169,6 +196,8 @@ add_custom_target(interface_control_generate_messages_lisp
 add_dependencies(interface_control_generate_messages interface_control_generate_messages_lisp)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg" NAME_WE)
+add_dependencies(interface_control_generate_messages_lisp _interface_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg" NAME_WE)
 add_dependencies(interface_control_generate_messages_lisp _interface_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_space_data.msg" NAME_WE)
@@ -185,6 +214,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS interface_control_generate_messages
 
 ### Section generating for lang: gennodejs
 ### Generating Messages
+_generate_msg_nodejs(interface_control
+  "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/interface_control
+)
 _generate_msg_nodejs(interface_control
   "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg"
   "${MSG_I_FLAGS}"
@@ -218,6 +253,8 @@ add_custom_target(interface_control_generate_messages_nodejs
 add_dependencies(interface_control_generate_messages interface_control_generate_messages_nodejs)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg" NAME_WE)
+add_dependencies(interface_control_generate_messages_nodejs _interface_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg" NAME_WE)
 add_dependencies(interface_control_generate_messages_nodejs _interface_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_space_data.msg" NAME_WE)
@@ -234,6 +271,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS interface_control_generate_messages
 
 ### Section generating for lang: genpy
 ### Generating Messages
+_generate_msg_py(interface_control
+  "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/interface_control
+)
 _generate_msg_py(interface_control
   "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg"
   "${MSG_I_FLAGS}"
@@ -267,6 +310,8 @@ add_custom_target(interface_control_generate_messages_py
 add_dependencies(interface_control_generate_messages interface_control_generate_messages_py)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg" NAME_WE)
+add_dependencies(interface_control_generate_messages_py _interface_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg" NAME_WE)
 add_dependencies(interface_control_generate_messages_py _interface_control_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_space_data.msg" NAME_WE)

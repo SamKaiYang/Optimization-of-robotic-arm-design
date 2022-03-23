@@ -126,6 +126,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.btn_dyn_axis_set.clicked.connect(self.axis_set_buttonClicked)
         self.ui.btn_arm_plot_close.clicked.connect(self.arm_plot_close_buttonClicked)
         self.ui.btn_dynamics_design.clicked.connect(self.dynamics_design_buttonClicked)
+        self.ui.btn_dyn_torque_limit.clicked.connect(self.dyn_torque_limit_buttonClicked)
         # # Vel. HorizontalSlider
         # self.ui.horizontalSlider_vel.valueChanged.connect(self.VelSliderValue)
         # # Acc. HorizontalSlider
@@ -209,6 +210,9 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
     def arm_plot_close_buttonClicked(self):
         self.pub_cmd.publish(5)
     
+    def dyn_torque_limit_buttonClicked(self):
+        self.pub_cmd.publish(6)
+        
     def dynamics_design_buttonClicked(self):
         axis_2 = float(self.ui.lineEdit_axis_2.text())
         axis_3 = float(self.ui.lineEdit_axis_3.text())

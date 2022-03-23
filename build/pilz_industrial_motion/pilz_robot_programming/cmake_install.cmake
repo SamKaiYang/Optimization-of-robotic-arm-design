@@ -73,3 +73,35 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pilz_robot_programming" TYPE PROGRAM FILES "/home/iclab/Documents/teco_ws/src/build/pilz_industrial_motion/pilz_robot_programming/catkin_generated/installspace/demo_brake_test_program.py")
 endif()
 
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pilz_robot_programming" TYPE PROGRAM FILES "/home/iclab/Documents/teco_ws/src/build/pilz_industrial_motion/pilz_robot_programming/catkin_generated/installspace/acceptance_test_api_cmd.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pilz_robot_programming" TYPE PROGRAM FILES "/home/iclab/Documents/teco_ws/src/build/pilz_industrial_motion/pilz_robot_programming/catkin_generated/installspace/acceptance_test_blending.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pilz_robot_programming" TYPE PROGRAM FILES "/home/iclab/Documents/teco_ws/src/build/pilz_industrial_motion/pilz_robot_programming/catkin_generated/installspace/acceptance_test_brake_test.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pilz_robot_programming" TYPE PROGRAM FILES "/home/iclab/Documents/teco_ws/src/build/pilz_industrial_motion/pilz_robot_programming/catkin_generated/installspace/acceptance_test_circ.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pilz_robot_programming" TYPE PROGRAM FILES "/home/iclab/Documents/teco_ws/src/build/pilz_industrial_motion/pilz_robot_programming/catkin_generated/installspace/acceptance_test_goal_already_reached.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pilz_robot_programming" TYPE PROGRAM FILES "/home/iclab/Documents/teco_ws/src/build/pilz_industrial_motion/pilz_robot_programming/catkin_generated/installspace/acceptance_test_gripper_cmd.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pilz_robot_programming" TYPE PROGRAM FILES "/home/iclab/Documents/teco_ws/src/build/pilz_industrial_motion/pilz_robot_programming/catkin_generated/installspace/acceptance_test_move_ctrl.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pilz_robot_programming" TYPE PROGRAM FILES "/home/iclab/Documents/teco_ws/src/build/pilz_industrial_motion/pilz_robot_programming/catkin_generated/installspace/acceptance_test_manual_move_ctrl.py")
+endif()
+

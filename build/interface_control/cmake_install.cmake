@@ -47,6 +47,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
     "/home/iclab/Documents/teco_ws/src/interface_control/msg/cal_cmd.msg"
     "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_data.msg"
     "/home/iclab/Documents/teco_ws/src/interface_control/msg/dyna_space_data.msg"
+    "/home/iclab/Documents/teco_ws/src/interface_control/msg/parameter_design.msg"
     )
 endif()
 

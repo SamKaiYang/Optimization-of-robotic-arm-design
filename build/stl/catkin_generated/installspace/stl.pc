@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: stl
+Description: Description of stl
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

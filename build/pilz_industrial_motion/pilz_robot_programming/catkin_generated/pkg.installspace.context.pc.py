@@ -5,4 +5,4 @@ PROJECT_CATKIN_DEPENDS = "".replace(';', ' ')
 PKG_CONFIG_LIBRARIES_WITH_PREFIX = "".split(';') if "" != "" else []
 PROJECT_NAME = "pilz_robot_programming"
 PROJECT_SPACE_DIR = "/usr/local"
-PROJECT_VERSION = "0.4.14"
+PROJECT_VERSION = "0.5.0"

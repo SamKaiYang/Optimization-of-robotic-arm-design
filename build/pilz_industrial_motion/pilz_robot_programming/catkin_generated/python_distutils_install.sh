@@ -26,7 +26,7 @@ echo_and_run /usr/bin/env \
     CATKIN_BINARY_DIR="/home/iclab/Documents/teco_ws/src/build" \
     "/usr/bin/python2" \
     "/home/iclab/Documents/teco_ws/src/pilz_industrial_motion/pilz_robot_programming/setup.py" \
-     \
+    egg_info --egg-base /home/iclab/Documents/teco_ws/src/build/pilz_industrial_motion/pilz_robot_programming \
     build --build-base "/home/iclab/Documents/teco_ws/src/build/pilz_industrial_motion/pilz_robot_programming" \
     install \
     --root="${DESTDIR-/}" \
