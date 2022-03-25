@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>963</width>
-    <height>556</height>
+    <width>693</width>
+    <height>548</height>
    </rect>
   </property>
   <property name="palette">
@@ -95,7 +95,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>961</width>
+      <width>681</width>
       <height>501</height>
      </rect>
     </property>
@@ -113,7 +113,7 @@
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_arm">
      <attribute name="title">
@@ -122,8 +122,8 @@
      <widget class="QProgressBar" name="progressBar_design">
       <property name="geometry">
        <rect>
-        <x>750</x>
-        <y>430</y>
+        <x>540</x>
+        <y>260</y>
         <width>118</width>
         <height>23</height>
        </rect>
@@ -146,13 +146,6 @@
         <widget class="QLabel" name="label_9">
          <property name="text">
           <string>Axis 3 length</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit_axis_3">
-         <property name="text">
-          <string>0</string>
          </property>
         </widget>
        </item>
@@ -191,13 +184,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEdit_axis_2">
-         <property name="text">
-          <string>0</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="2">
         <widget class="QLabel" name="label_14">
          <property name="text">
@@ -219,13 +205,6 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="lineEdit_dof">
-         <property name="text">
-          <string>0</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="2">
         <widget class="QLabel" name="label_18">
          <property name="text">
@@ -239,6 +218,15 @@
           <string>kg</string>
          </property>
         </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="comboBox_2_length"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="comboBox_3_length"/>
+       </item>
+       <item row="4" column="1">
+        <widget class="QComboBox" name="comboBox_dof"/>
        </item>
       </layout>
      </widget>
@@ -655,8 +643,8 @@
      <widget class="QPushButton" name="btn_dynamics_para_ident">
       <property name="geometry">
        <rect>
-        <x>460</x>
-        <y>260</y>
+        <x>60</x>
+        <y>200</y>
         <width>331</width>
         <height>33</height>
        </rect>
@@ -851,8 +839,8 @@
      <widget class="QPushButton" name="btn_dynamics_save_para">
       <property name="geometry">
        <rect>
-        <x>550</x>
-        <y>340</y>
+        <x>140</x>
+        <y>280</y>
         <width>161</width>
         <height>33</height>
        </rect>
@@ -1047,8 +1035,8 @@
      <widget class="QProgressBar" name="progressBar_dynParaIdent">
       <property name="geometry">
        <rect>
-        <x>820</x>
-        <y>270</y>
+        <x>410</x>
+        <y>200</y>
         <width>118</width>
         <height>23</height>
        </rect>
@@ -1274,7 +1262,7 @@
      <widget class="QPushButton" name="btn_dynamics">
       <property name="geometry">
        <rect>
-        <x>740</x>
+        <x>450</x>
         <y>420</y>
         <width>201</width>
         <height>33</height>
@@ -2027,16 +2015,6 @@
        <string>0.0</string>
       </property>
      </widget>
-     <widget class="QGraphicsView" name="graphicsView">
-      <property name="geometry">
-       <rect>
-        <x>460</x>
-        <y>20</y>
-        <width>481</width>
-        <height>381</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QPushButton" name="btn_arm_plot">
       <property name="geometry">
        <rect>
@@ -2432,8 +2410,8 @@
      <widget class="QPushButton" name="btn_dyn_torque_limit">
       <property name="geometry">
        <rect>
-        <x>530</x>
-        <y>410</y>
+        <x>480</x>
+        <y>370</y>
         <width>131</width>
         <height>33</height>
        </rect>
@@ -2633,8 +2611,8 @@
      <widget class="QPushButton" name="btn_dyn_space">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>410</y>
+        <x>430</x>
+        <y>340</y>
         <width>201</width>
         <height>33</height>
        </rect>
@@ -3335,21 +3313,11 @@
        <string>Set</string>
       </property>
      </widget>
-     <widget class="QGraphicsView" name="graphicsView_3">
-      <property name="geometry">
-       <rect>
-        <x>460</x>
-        <y>10</y>
-        <width>481</width>
-        <height>381</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QProgressBar" name="progressBar_dynamics_space">
       <property name="geometry">
        <rect>
-        <x>810</x>
-        <y>420</y>
+        <x>470</x>
+        <y>400</y>
         <width>118</width>
         <height>23</height>
        </rect>
@@ -3409,7 +3377,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>963</width>
+     <width>693</width>
      <height>23</height>
     </rect>
    </property>

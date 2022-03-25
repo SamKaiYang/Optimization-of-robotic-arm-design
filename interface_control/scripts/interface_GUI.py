@@ -92,10 +92,10 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.setupUi(self)
 
         # 初始化 gv_visual_data 的显示
-        self.gv_visual_data_content = MyFigureCanvas(width=self.ui.graphicsView.width() / 101,
-                            height=self.ui.graphicsView.height() / 101,
-                            xlim=(0, 2*np.pi),
-                            ylim=(-1, 1)) # 实例化一个FigureCanvas
+        # self.gv_visual_data_content = MyFigureCanvas(width=self.ui.graphicsView.width() / 101,
+        #                     height=self.ui.graphicsView.height() / 101,
+        #                     xlim=(0, 2*np.pi),
+        #                     ylim=(-1, 1)) # 实例化一个FigureCanvas
         # publish cmd to dynamics calculate : use function select 
         self.pub_cmd = rospy.Publisher("/cal_command",cal_cmd, queue_size=10)
         # publish arm dynamics data : float32 payload, joint_angle, payload_position, vel, acc
@@ -118,6 +118,12 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.joint_acceleration = [0.0,0.0,0.0,0.0,0.0,0.0]
         self.joint_angle = [0.0,0.0,0.0,0.0,0.0,0.0]
 
+        # arm design parameters
+        self.axis_2 = 20
+        self.axis_3 = 20
+        self.dof = 6
+
+
         self.ui.btn_dynamics.clicked.connect(self.dyna_buttonClicked)
         self.ui.btn_dyn_space.clicked.connect(self.dyna_space_buttonClicked)
         self.ui.btn_dyn_set.clicked.connect(self.dyna_set_buttonClicked)
@@ -132,12 +138,99 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         # # Acc. HorizontalSlider
         # self.ui.horizontalSlider_acc.valueChanged.connect(self.AccSliderValue)
 
-        # # ComboBox
-        # # choices = ['None','Show 1', 'Show 2', 'Init', 'Home','Stop','Show All Select','jogging']
-        # choices = ['None','Show 1', 'Show 2', 'Init', 'Home','Stop','Show All Select']
-        # self.ui.comboBox.addItems(choices)
-        # self.ui.comboBox.currentIndexChanged.connect(self.display)
-        # self.display()
+        # ComboBox axis 2 length
+        choices = ['0.15','0.2', '0.25', '0.3', '0.4','0.45','0.5']
+        self.ui.comboBox_2_length.addItems(choices)
+        self.ui.comboBox_2_length.currentIndexChanged.connect(self.display_2_length)
+        self.display_2_length()
+        
+        # ComboBox axis 3 length
+        choices = ['0.15','0.2', '0.25', '0.3', '0.4','0.45','0.5']
+        self.ui.comboBox_3_length.addItems(choices)
+        self.ui.comboBox_3_length.currentIndexChanged.connect(self.display_3_length)
+        self.display_3_length()
+
+        # ComboBox dof
+        choices = ['1','2', '3', '4', '5','6','7']
+        self.ui.comboBox_dof.addItems(choices)
+        self.ui.comboBox_dof.currentIndexChanged.connect(self.display_dof)
+        self.display_dof()
+
+    def display_2_length(self):
+        if self.ui.comboBox_2_length.currentText() == "0.15":
+            self.axis_2 = 0.15*100
+            self.ui.comboBox_2_length.setCurrentIndex(0)
+        elif self.ui.comboBox_2_length.currentText() == "0.2":
+            self.axis_2 = 0.2*100
+            self.ui.comboBox_2_length.setCurrentIndex(1)
+        elif self.ui.comboBox_2_length.currentText() == "0.25":
+            self.axis_2 = 0.25*100
+            self.ui.comboBox_2_length.setCurrentIndex(2)
+        elif self.ui.comboBox_2_length.currentText() == "0.3":
+            self.axis_2 = 0.3*100
+            self.ui.comboBox_2_length.setCurrentIndex(3)
+        elif self.ui.comboBox_2_length.currentText() == "0.35":
+            self.axis_2 = 0.35*100
+            self.ui.comboBox_2_length.setCurrentIndex(4)
+        elif self.ui.comboBox_2_length.currentText() == "0.4":
+            self.axis_2 = 0.4*100
+            self.ui.comboBox_2_length.setCurrentIndex(5)
+        elif self.ui.comboBox_2_length.currentText() == "0.45":
+            self.axis_2 = 0.45*100
+            self.ui.comboBox_2_length.setCurrentIndex(6)
+        elif self.ui.comboBox_2_length.currentText() == "0.5":
+            self.axis_2 = 0.5*100
+            self.ui.comboBox_2_length.setCurrentIndex(7)
+
+    def display_3_length(self):
+        if self.ui.comboBox_3_length.currentText() == "0.15":
+            self.axis_3 = 0.15*100
+            self.ui.comboBox_3_length.setCurrentIndex(0)
+        elif self.ui.comboBox_3_length.currentText() == "0.2":
+            self.axis_3 = 0.2*100
+            self.ui.comboBox_3_length.setCurrentIndex(1)
+        elif self.ui.comboBox_3_length.currentText() == "0.25":
+            self.axis_3 = 0.25*100
+            self.ui.comboBox_3_length.setCurrentIndex(2)
+        elif self.ui.comboBox_3_length.currentText() == "0.3":
+            self.axis_3 = 0.3*100
+            self.ui.comboBox_3_length.setCurrentIndex(3)
+        elif self.ui.comboBox_3_length.currentText() == "0.35":
+            self.axis_3 = 0.35*100
+            self.ui.comboBox_3_length.setCurrentIndex(4)
+        elif self.ui.comboBox_3_length.currentText() == "0.4":
+            self.axis_3 = 0.4*100
+            self.ui.comboBox_3_length.setCurrentIndex(5)
+        elif self.ui.comboBox_3_length.currentText() == "0.45":
+            self.axis_3 = 0.45*100
+            self.ui.comboBox_3_length.setCurrentIndex(6)
+        elif self.ui.comboBox_3_length.currentText() == "0.5":
+            self.axis_3 = 0.5*100
+            self.ui.comboBox_3_length.setCurrentIndex(7)
+
+    def display_dof(self):
+        if self.ui.comboBox_dof.currentText() == "1":
+            self.dof = 1
+            self.ui.comboBox_dof.setCurrentIndex(0)
+        elif self.ui.comboBox_dof.currentText() == "2":
+            self.dof = 2
+            self.ui.comboBox_dof.setCurrentIndex(1)
+        elif self.ui.comboBox_dof.currentText() == "3":
+            self.dof = 3
+            self.ui.comboBox_dof.setCurrentIndex(2)
+        elif self.ui.comboBox_dof.currentText() == "4":
+            self.dof = 4
+            self.ui.comboBox_dof.setCurrentIndex(3)
+        elif self.ui.comboBox_dof.currentText() == "5":
+            self.dof = 5
+            self.ui.comboBox_dof.setCurrentIndex(4)
+        elif self.ui.comboBox_dof.currentText() == "6":
+            self.dof = 6
+            self.ui.comboBox_dof.setCurrentIndex(5)
+        elif self.ui.comboBox_dof.currentText() == "7":
+            self.dof = 7
+            self.ui.comboBox_dof.setCurrentIndex(6)
+
 
     def dyna_set_buttonClicked(self):
         self.payload = float(self.ui.lineEdit_payload.text())
@@ -214,17 +307,14 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.pub_cmd.publish(6)
         
     def dynamics_design_buttonClicked(self):
-        axis_2 = float(self.ui.lineEdit_axis_2.text())
-        axis_3 = float(self.ui.lineEdit_axis_3.text())
         arm_weight = float(self.ui.lineEdit_arm_weight.text())
         payload = float(self.ui.lineEdit_payload_2.text())
-        dof = int(self.ui.lineEdit_dof.text())
 
-        self.parameter_design.axis_2_length = axis_2
-        self.parameter_design.axis_3_length = axis_3
+        self.parameter_design.axis_2_length = self.axis_2
+        self.parameter_design.axis_3_length = self.axis_3
         self.parameter_design.arm_weight = arm_weight
         self.parameter_design.payload = payload
-        self.parameter_design.DoF = dof
+        self.parameter_design.DoF = self.dof
         
         self.pub_parameter_design.publish(self.parameter_design)
 

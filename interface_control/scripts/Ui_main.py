@@ -17,7 +17,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(963, 556)
+        MainWindow.resize(693, 548)
         palette = QPalette()
         brush = QBrush(QColor(255, 255, 255, 255))
         brush.setStyle(Qt.SolidPattern)
@@ -41,7 +41,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
-        self.tabWidget.setGeometry(QRect(0, 0, 961, 501))
+        self.tabWidget.setGeometry(QRect(0, 0, 681, 501))
         font1 = QFont()
         font1.setFamily(u"Bitstream Vera Sans Mono")
         font1.setBold(True)
@@ -52,7 +52,7 @@ class Ui_MainWindow(object):
         self.tab_arm.setObjectName(u"tab_arm")
         self.progressBar_design = QProgressBar(self.tab_arm)
         self.progressBar_design.setObjectName(u"progressBar_design")
-        self.progressBar_design.setGeometry(QRect(750, 430, 118, 23))
+        self.progressBar_design.setGeometry(QRect(540, 260, 118, 23))
         self.progressBar_design.setValue(0)
         self.gridLayoutWidget = QWidget(self.tab_arm)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
@@ -64,11 +64,6 @@ class Ui_MainWindow(object):
         self.label_9.setObjectName(u"label_9")
 
         self.gridLayout.addWidget(self.label_9, 1, 0, 1, 1)
-
-        self.lineEdit_axis_3 = QLineEdit(self.gridLayoutWidget)
-        self.lineEdit_axis_3.setObjectName(u"lineEdit_axis_3")
-
-        self.gridLayout.addWidget(self.lineEdit_axis_3, 1, 1, 1, 1)
 
         self.label_11 = QLabel(self.gridLayoutWidget)
         self.label_11.setObjectName(u"label_11")
@@ -95,11 +90,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_8, 0, 0, 1, 1)
 
-        self.lineEdit_axis_2 = QLineEdit(self.gridLayoutWidget)
-        self.lineEdit_axis_2.setObjectName(u"lineEdit_axis_2")
-
-        self.gridLayout.addWidget(self.lineEdit_axis_2, 0, 1, 1, 1)
-
         self.label_14 = QLabel(self.gridLayoutWidget)
         self.label_14.setObjectName(u"label_14")
 
@@ -115,11 +105,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_12, 4, 0, 1, 1)
 
-        self.lineEdit_dof = QLineEdit(self.gridLayoutWidget)
-        self.lineEdit_dof.setObjectName(u"lineEdit_dof")
-
-        self.gridLayout.addWidget(self.lineEdit_dof, 4, 1, 1, 1)
-
         self.label_18 = QLabel(self.gridLayoutWidget)
         self.label_18.setObjectName(u"label_18")
 
@@ -129,6 +114,21 @@ class Ui_MainWindow(object):
         self.label_19.setObjectName(u"label_19")
 
         self.gridLayout.addWidget(self.label_19, 3, 2, 1, 1)
+
+        self.comboBox_2_length = QComboBox(self.gridLayoutWidget)
+        self.comboBox_2_length.setObjectName(u"comboBox_2_length")
+
+        self.gridLayout.addWidget(self.comboBox_2_length, 0, 1, 1, 1)
+
+        self.comboBox_3_length = QComboBox(self.gridLayoutWidget)
+        self.comboBox_3_length.setObjectName(u"comboBox_3_length")
+
+        self.gridLayout.addWidget(self.comboBox_3_length, 1, 1, 1, 1)
+
+        self.comboBox_dof = QComboBox(self.gridLayoutWidget)
+        self.comboBox_dof.setObjectName(u"comboBox_dof")
+
+        self.gridLayout.addWidget(self.comboBox_dof, 4, 1, 1, 1)
 
         self.btn_dynamics_design = QPushButton(self.tab_arm)
         self.btn_dynamics_design.setObjectName(u"btn_dynamics_design")
@@ -195,7 +195,7 @@ class Ui_MainWindow(object):
         self.label_20.setGeometry(QRect(30, 110, 241, 17))
         self.btn_dynamics_para_ident = QPushButton(self.tab)
         self.btn_dynamics_para_ident.setObjectName(u"btn_dynamics_para_ident")
-        self.btn_dynamics_para_ident.setGeometry(QRect(460, 260, 331, 33))
+        self.btn_dynamics_para_ident.setGeometry(QRect(60, 200, 331, 33))
         palette3 = QPalette()
         palette3.setBrush(QPalette.Active, QPalette.WindowText, brush)
         palette3.setBrush(QPalette.Active, QPalette.Button, brush2)
@@ -220,7 +220,7 @@ class Ui_MainWindow(object):
         self.btn_dynamics_para_ident.setStyleSheet(u"background-color:#da7700;color:white;border-color: black;")
         self.btn_dynamics_save_para = QPushButton(self.tab)
         self.btn_dynamics_save_para.setObjectName(u"btn_dynamics_save_para")
-        self.btn_dynamics_save_para.setGeometry(QRect(550, 340, 161, 33))
+        self.btn_dynamics_save_para.setGeometry(QRect(140, 280, 161, 33))
         palette4 = QPalette()
         palette4.setBrush(QPalette.Active, QPalette.WindowText, brush)
         palette4.setBrush(QPalette.Active, QPalette.Button, brush2)
@@ -245,7 +245,7 @@ class Ui_MainWindow(object):
         self.btn_dynamics_save_para.setStyleSheet(u"background-color:#da7700;color:white;border-color: black;")
         self.progressBar_dynParaIdent = QProgressBar(self.tab)
         self.progressBar_dynParaIdent.setObjectName(u"progressBar_dynParaIdent")
-        self.progressBar_dynParaIdent.setGeometry(QRect(820, 270, 118, 23))
+        self.progressBar_dynParaIdent.setGeometry(QRect(410, 200, 118, 23))
         self.progressBar_dynParaIdent.setValue(0)
         self.label_21 = QLabel(self.tab)
         self.label_21.setObjectName(u"label_21")
@@ -280,7 +280,7 @@ class Ui_MainWindow(object):
         self.tab_mission.setObjectName(u"tab_mission")
         self.btn_dynamics = QPushButton(self.tab_mission)
         self.btn_dynamics.setObjectName(u"btn_dynamics")
-        self.btn_dynamics.setGeometry(QRect(740, 420, 201, 33))
+        self.btn_dynamics.setGeometry(QRect(450, 420, 201, 33))
         palette6 = QPalette()
         palette6.setBrush(QPalette.Active, QPalette.WindowText, brush)
         palette6.setBrush(QPalette.Active, QPalette.Button, brush2)
@@ -414,9 +414,6 @@ class Ui_MainWindow(object):
         self.lineEdit_jog_0 = QLineEdit(self.tab_mission)
         self.lineEdit_jog_0.setObjectName(u"lineEdit_jog_0")
         self.lineEdit_jog_0.setGeometry(QRect(20, 70, 61, 26))
-        self.graphicsView = QGraphicsView(self.tab_mission)
-        self.graphicsView.setObjectName(u"graphicsView")
-        self.graphicsView.setGeometry(QRect(460, 20, 481, 381))
         self.btn_arm_plot = QPushButton(self.tab_mission)
         self.btn_arm_plot.setObjectName(u"btn_arm_plot")
         self.btn_arm_plot.setGeometry(QRect(230, 120, 91, 33))
@@ -469,7 +466,7 @@ class Ui_MainWindow(object):
         self.btn_arm_plot_close.setStyleSheet(u"background-color:#00d21a;color:white;border-color: black;")
         self.btn_dyn_torque_limit = QPushButton(self.tab_mission)
         self.btn_dyn_torque_limit.setObjectName(u"btn_dyn_torque_limit")
-        self.btn_dyn_torque_limit.setGeometry(QRect(530, 410, 131, 33))
+        self.btn_dyn_torque_limit.setGeometry(QRect(480, 370, 131, 33))
         palette10 = QPalette()
         palette10.setBrush(QPalette.Active, QPalette.WindowText, brush)
         palette10.setBrush(QPalette.Active, QPalette.Button, brush3)
@@ -497,7 +494,7 @@ class Ui_MainWindow(object):
         self.tab_state.setObjectName(u"tab_state")
         self.btn_dyn_space = QPushButton(self.tab_state)
         self.btn_dyn_space.setObjectName(u"btn_dyn_space")
-        self.btn_dyn_space.setGeometry(QRect(440, 410, 201, 33))
+        self.btn_dyn_space.setGeometry(QRect(430, 340, 201, 33))
         palette11 = QPalette()
         palette11.setBrush(QPalette.Active, QPalette.WindowText, brush)
         palette11.setBrush(QPalette.Active, QPalette.Button, brush3)
@@ -597,12 +594,9 @@ class Ui_MainWindow(object):
         self.btn_dyn_space_set.setPalette(palette13)
         self.btn_dyn_space_set.setFont(font2)
         self.btn_dyn_space_set.setStyleSheet(u"background-color:#00d21a;color:white;border-color: black;")
-        self.graphicsView_3 = QGraphicsView(self.tab_state)
-        self.graphicsView_3.setObjectName(u"graphicsView_3")
-        self.graphicsView_3.setGeometry(QRect(460, 10, 481, 381))
         self.progressBar_dynamics_space = QProgressBar(self.tab_state)
         self.progressBar_dynamics_space.setObjectName(u"progressBar_dynamics_space")
-        self.progressBar_dynamics_space.setGeometry(QRect(810, 420, 118, 23))
+        self.progressBar_dynamics_space.setGeometry(QRect(470, 400, 118, 23))
         self.progressBar_dynamics_space.setValue(0)
         self.tabWidget.addTab(self.tab_state, "")
         self.tab_other = QWidget()
@@ -621,7 +615,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 963, 23))
+        self.menubar.setGeometry(QRect(0, 0, 693, 23))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -629,7 +623,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -641,17 +635,14 @@ class Ui_MainWindow(object):
         self.tabWidget.setWhatsThis(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>dd</p></body></html>", None))
 #endif // QT_CONFIG(whatsthis)
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Axis 3 length", None))
-        self.lineEdit_axis_3.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"Payload", None))
         self.lineEdit_arm_weight.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"Arm Weight", None))
         self.lineEdit_payload_2.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"Axis 2 length", None))
-        self.lineEdit_axis_2.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"m", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"m", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"DoF", None))
-        self.lineEdit_dof.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"kg", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"kg", None))
         self.btn_dynamics_design.setText(QCoreApplication.translate("MainWindow", u"Design", None))

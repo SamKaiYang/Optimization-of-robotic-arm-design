@@ -13,6 +13,7 @@ from interface_control.msg import cal_cmd, dyna_data, dyna_space_data
 import numpy as np
 import roboticstoolbox as rtb
 from spatialmath import *
+import math
 from math import pi
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
@@ -465,6 +466,10 @@ class Dynamics_space():
         torque = np.array([np.zeros(shape=6)])
         # axis_angle = np.array([np.zeros(shape=6)])
         axis_angle = []
+        append_torque_limit_list = []
+        temp_torque_max = []
+        temp_torque_min = []
+        Torque_Max = []
         # 窮舉法正運動學計算工作空間
         start = time.time()
         print("The time used to execute this is given below")
@@ -495,44 +500,31 @@ class Dynamics_space():
                             for n in range(len(q_list)):
                                 q6 = q_list[n]
                                 axis_angle.append([q1, q2, q3, q4, q5, q6])
-                                T = self.robot.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, q6*du])
+                                # T = self.robot.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, q6*du])
                                 load = np.array([self.robot.rne([q1*du, q2*du, q3*du, q4*du, q5*du, q6*du], self.vel, self.acc)])
                                 torque = np.append(torque,load,axis=0)
-                                T_x[i] = T.t[0]
-                                T_y[i] = T.t[1]
-                                T_z[i] = T.t[2]
-        print("X:", T_x)
-        print("Y:", T_y)
-        print("Z:", T_z)
-        print("torque:", torque)
+                                # T_x[i] = T.t[0]
+                                # T_y[i] = T.t[1]
+                                # T_z[i] = T.t[2]
         end = time.time()
         print("繪製工作空間運行時間：%f sec" % (end - start))
-        '''
-        Through the "dynamics space" page in the interface to calculate the results, 
-        output the maximum torque of each axis
-        '''
-        append_sol_list = []
+
         for i in range(6):
             axis = i 
-            # excel output
-            # 建立excel空白活頁簿
             excel_file = Workbook()
-            # 建立一個工作表
             sheet = excel_file.active
-            # 先填入第一列的欄位名稱
-            # sheet['A1'] = 'axis 1'
-            # sheet['B1'] = 'axis 2'
-            # sheet['C1'] = 'axis 3'
-            # sheet['D1'] = 'axis 4'
-            # sheet['E1'] = 'axis 5'
-            # sheet['F1'] = 'axis 6'
-            # sheet['G1'] = 'torque 1'
-            # sheet['H1'] = 'torque 2'
-            # sheet['I1'] = 'torque 3'
-            # sheet['J1'] = 'torque 4'
-            # sheet['K1'] = 'torque 5'
-            # sheet['L1'] = 'torque 6'
-            print("excel_file.active.")
+            sheet['A1'] = 'torque 1'
+            sheet['B1'] = 'torque 2'
+            sheet['C1'] = 'torque 3'
+            sheet['D1'] = 'torque 4'
+            sheet['E1'] = 'torque 5'
+            sheet['F1'] = 'torque 6'
+            sheet['G1'] = 'angle 1'
+            sheet['H1'] = 'angle 2'
+            sheet['I1'] = 'angle 3'
+            sheet['J1'] = 'angle 4'
+            sheet['K1'] = 'angle 5'
+            sheet['L1'] = 'angle 6'
             print("================================")
             print("軸%d torque正最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
             print("axis_max_torque:",torque[np.argmax(torque[:,axis])])
@@ -546,23 +538,20 @@ class Dynamics_space():
             print("toque_min_index:",toque_min_index)
             print("ik_sol:",axis_angle[np.argmin(torque[:,axis])])
             print("================================")
-            # append_sol_list.extend(axis_angle)
-            # append_sol_list_torque = torque[toque_max_index].tolist()
-            # append_sol_list.extend(append_sol_list_torque)
-            # append_sol_list_torque = torque[toque_min_index].tolist()
-            # append_sol_list.extend(append_sol_list_torque)
+            temp_torque_max = torque[toque_max_index].tolist()
+            temp_torque_max.extend(axis_angle[toque_max_index])
+            temp_torque_min = torque[toque_min_index].tolist()
+            temp_torque_min.extend(axis_angle[toque_min_index])
+            append_torque_limit_list.append(temp_torque_max)
+            append_torque_limit_list.append(temp_torque_min)
 
-
-            append_sol_list.extend(torque[toque_max_index].tolist())
-            sheet.append(append_sol_list)
-            # sheet.append(torque[toque_max_index].tolist())
-            # sheet.append(torque[toque_min_index].tolist())
-
-            print("torque[toque_max_index].tolist()",torque[toque_max_index].tolist())
-            print("torque[toque_min_index].tolist()",torque[toque_min_index].tolist())
+            Torque_Max.append(abs(torque[toque_max_index][i]))
+        for info in append_torque_limit_list:
+            sheet.append(info)
+        sheet.append(["Torque 1 max", "Torque 2 max", "Torque 3 max", "Torque 4 max", "Torque 5 max", "Torque 6 max"])
+        sheet.append(Torque_Max)
 
         file_name = self.xlsx_outpath+'/dynamics_limit_torque_calc'+'.xlsx'
-        # excel_file.save('dynamics_calc.xlsx')
         excel_file.save(file_name)
 
         print("output dynamics_torque_limit_calc_axis excel file down.")
