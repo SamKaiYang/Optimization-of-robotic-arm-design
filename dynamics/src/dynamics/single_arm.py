@@ -32,7 +32,7 @@ class single_arm(DHRobot):
 
     :References:
 
-    .. codeauthor:: Sheng Kai Yang
+    .. codeauthor:: Yi He Yang
     """  # noqa
 
     def __init__(self, symbolic=False):
