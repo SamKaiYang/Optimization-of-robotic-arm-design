@@ -5,7 +5,6 @@ import rospy
 import sys
 import importlib
 importlib.reload(sys)
-sys.setdefaultencoding('utf-8')
 from collections import namedtuple
 # import dyna_space
 from interface_control.msg import cal_cmd, dyna_data, dyna_space_data
