@@ -507,7 +507,7 @@ class Dynamics_space():
                                 # T_y[i] = T.t[1]
                                 # T_z[i] = T.t[2]
         end = time.time()
-        print("繪製工作空間運行時間：%f sec" % (end - start))
+        # print("繪製工作空間運行時間：%f sec" % (end - start))
 
         for i in range(6):
             axis = i 
