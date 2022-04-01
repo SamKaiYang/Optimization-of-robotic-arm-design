@@ -142,18 +142,21 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         choices = ['0.15','0.2', '0.25', '0.3', '0.4','0.45','0.5']
         self.ui.comboBox_2_length.addItems(choices)
         self.ui.comboBox_2_length.currentIndexChanged.connect(self.display_2_length)
+        self.ui.comboBox_2_length.setCurrentIndex(1)
         self.display_2_length()
         
         # ComboBox axis 3 length
         choices = ['0.15','0.2', '0.25', '0.3', '0.4','0.45','0.5']
         self.ui.comboBox_3_length.addItems(choices)
         self.ui.comboBox_3_length.currentIndexChanged.connect(self.display_3_length)
+        self.ui.comboBox_3_length.setCurrentIndex(1)
         self.display_3_length()
 
         # ComboBox dof
         choices = ['1','2', '3', '4', '5','6','7']
         self.ui.comboBox_dof.addItems(choices)
         self.ui.comboBox_dof.currentIndexChanged.connect(self.display_dof)
+        self.ui.comboBox_dof.setCurrentIndex(5)
         self.display_dof()
 
     def display_2_length(self):
@@ -307,12 +310,12 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.pub_cmd.publish(6)
         
     def dynamics_design_buttonClicked(self):
-        arm_weight = float(self.ui.lineEdit_arm_weight.text())
+        # arm_weight = float(self.ui.lineEdit_arm_weight.text())
         payload = float(self.ui.lineEdit_payload_2.text())
 
         self.parameter_design.axis_2_length = self.axis_2
         self.parameter_design.axis_3_length = self.axis_3
-        self.parameter_design.arm_weight = arm_weight
+        self.parameter_design.arm_weight = 0
         self.parameter_design.payload = payload
         self.parameter_design.DoF = self.dof
         

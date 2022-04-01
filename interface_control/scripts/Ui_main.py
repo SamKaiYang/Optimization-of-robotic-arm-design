@@ -68,22 +68,12 @@ class Ui_MainWindow(object):
         self.label_11 = QLabel(self.gridLayoutWidget)
         self.label_11.setObjectName(u"label_11")
 
-        self.gridLayout.addWidget(self.label_11, 3, 0, 1, 1)
-
-        self.lineEdit_arm_weight = QLineEdit(self.gridLayoutWidget)
-        self.lineEdit_arm_weight.setObjectName(u"lineEdit_arm_weight")
-
-        self.gridLayout.addWidget(self.lineEdit_arm_weight, 2, 1, 1, 1)
-
-        self.label_10 = QLabel(self.gridLayoutWidget)
-        self.label_10.setObjectName(u"label_10")
-
-        self.gridLayout.addWidget(self.label_10, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_11, 2, 0, 1, 1)
 
         self.lineEdit_payload_2 = QLineEdit(self.gridLayoutWidget)
         self.lineEdit_payload_2.setObjectName(u"lineEdit_payload_2")
 
-        self.gridLayout.addWidget(self.lineEdit_payload_2, 3, 1, 1, 1)
+        self.gridLayout.addWidget(self.lineEdit_payload_2, 2, 1, 1, 1)
 
         self.label_8 = QLabel(self.gridLayoutWidget)
         self.label_8.setObjectName(u"label_8")
@@ -103,17 +93,12 @@ class Ui_MainWindow(object):
         self.label_12 = QLabel(self.gridLayoutWidget)
         self.label_12.setObjectName(u"label_12")
 
-        self.gridLayout.addWidget(self.label_12, 4, 0, 1, 1)
-
-        self.label_18 = QLabel(self.gridLayoutWidget)
-        self.label_18.setObjectName(u"label_18")
-
-        self.gridLayout.addWidget(self.label_18, 2, 2, 1, 1)
+        self.gridLayout.addWidget(self.label_12, 3, 0, 1, 1)
 
         self.label_19 = QLabel(self.gridLayoutWidget)
         self.label_19.setObjectName(u"label_19")
 
-        self.gridLayout.addWidget(self.label_19, 3, 2, 1, 1)
+        self.gridLayout.addWidget(self.label_19, 2, 2, 1, 1)
 
         self.comboBox_2_length = QComboBox(self.gridLayoutWidget)
         self.comboBox_2_length.setObjectName(u"comboBox_2_length")
@@ -128,7 +113,7 @@ class Ui_MainWindow(object):
         self.comboBox_dof = QComboBox(self.gridLayoutWidget)
         self.comboBox_dof.setObjectName(u"comboBox_dof")
 
-        self.gridLayout.addWidget(self.comboBox_dof, 4, 1, 1, 1)
+        self.gridLayout.addWidget(self.comboBox_dof, 3, 1, 1, 1)
 
         self.btn_dynamics_design = QPushButton(self.tab_arm)
         self.btn_dynamics_design.setObjectName(u"btn_dynamics_design")
@@ -636,14 +621,11 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(whatsthis)
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Axis 3 length", None))
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"Payload", None))
-        self.lineEdit_arm_weight.setText(QCoreApplication.translate("MainWindow", u"0", None))
-        self.label_10.setText(QCoreApplication.translate("MainWindow", u"Arm Weight", None))
         self.lineEdit_payload_2.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"Axis 2 length", None))
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"m", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"m", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"DoF", None))
-        self.label_18.setText(QCoreApplication.translate("MainWindow", u"kg", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"kg", None))
         self.btn_dynamics_design.setText(QCoreApplication.translate("MainWindow", u"Design", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_arm), QCoreApplication.translate("MainWindow", u"Arm Design", None))
