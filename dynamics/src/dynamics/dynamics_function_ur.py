@@ -65,7 +65,7 @@ class Dynamics_space():
         self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path", DisplayTrajectory, self.planned_path_callback)
         # self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path",moveit_msgs.msg.JointTrajectory,self.planned_path_callback)
         self.cmd = 0
-        self.ur = UR16e()
+        self.ur = UR10e()
         # self.ur = rtb.models.DH.UR10()
         # self.ur.plot(self.ur.qn, block=False)
         # del self.ur.links[0]

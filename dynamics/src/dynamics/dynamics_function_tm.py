@@ -33,7 +33,7 @@ from os import path
 from scipy.interpolate import make_interp_spline # draw smooth 
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
 
-from TM_robot import TM5700, TM5900, TM12, TM14
+from TM_robot import TM5_700, TM5_900, TM12, TM14
 
 class switch(object):
     def __init__(self, value):
@@ -65,8 +65,8 @@ class Dynamics_space():
         self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path", DisplayTrajectory, self.planned_path_callback)
         # self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path",moveit_msgs.msg.JointTrajectory,self.planned_path_callback)
         self.cmd = 0
-        # self.tm = RandomRobot()
-        self.tm = TM5700()
+        self.tm = TM5_700()
+        # self.tm = rtb.models.DH.tm10()
         # self.tm.plot(self.tm.qn, block=False)
         # del self.tm.links[0]
         # del self.tm.links[1]
@@ -394,7 +394,10 @@ class Dynamics_space():
         self.tm.payload(self.payload , self.payload_position) # set payload
 
         self.qn = qn
-        self.tau_j = self.tm.rne(self.qn, self.vel, self.acc)
+        # self.tau_j = self.tm.rne(self.qn, self.vel, self.acc)
+        # test rne_python
+        self.tau_j = self.tm.rne_python(self.qn, self.vel, self.acc, debug=True)
+        
         print("tau_j:", self.tau_j)
         axis = 2
         self.tm.plot(self.qn)
@@ -434,7 +437,7 @@ class Dynamics_space():
 
     def arm_plot(self):
         '''
-        Through the "plot" button on the interface, draw the current posttme of the arm
+        Through the "plot" button on the interface, draw the current posture of the arm
         '''
         qn = [0,0,0,0,0,0]
         deg = pi/180

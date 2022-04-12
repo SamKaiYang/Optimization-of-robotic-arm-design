@@ -9,17 +9,7 @@ class UR5(DHRobot):
 
     :param symbolic: use symbolic constants
     :type symbolic: bool
-
-    ``UR5()`` is an object which models a Unimation Puma560 robot and
-    describes its kinematic and dynamic characteristics using standard DH
-    conventions.
-
-    .. runblock:: pycon
-
-        >>> import roboticstoolbox as rtb
-        >>> robot = rtb.models.DH.UR5()
-        >>> print(robot)
-
+    
     Defined joint configurations are:
 
     - qz, zero joint angle configuration
@@ -27,16 +17,8 @@ class UR5(DHRobot):
 
     .. note::
         - SI units are used.
-
-    :References:
-
-        - `Parameters for calculations of kinematics and dynamics <https://www.universal-robots.com/articles/ur/parameters-for-calculations-of-kinematics-and-dynamics>`_
-        
-    :sealso: :func:`UR4`, :func:`UR10`
-
-
     .. codeauthor:: Peter Corke
-    """  # noqa
+    """ 
 
     def __init__(self, symbolic=False):
 
@@ -103,16 +85,6 @@ class UR10(DHRobot):
     :param symbolic: use symbolic constants
     :type symbolic: bool
 
-    ``UR10()`` is an object which models a Unimation Puma560 robot and
-    describes its kinematic and dynamic characteristics using standard DH
-    conventions.
-
-    .. runblock:: pycon
-
-        >>> import roboticstoolbox as rtb
-        >>> robot = rtb.models.DH.UR10()
-        >>> print(robot)
-
     Defined joint configurations are:
 
     - qz, zero joint angle configuration
@@ -121,15 +93,8 @@ class UR10(DHRobot):
     .. note::
         - SI units are used.
 
-    :References:
-
-        - `Parameters for calculations of kinematics and dynamics <https://www.universal-robots.com/articles/ur/parameters-for-calculations-of-kinematics-and-dynamics>`_
-        
-    :sealso: :func:`UR3`, :func:`UR5`
-
-
     .. codeauthor:: Peter Corke
-    """  # noqa
+    """
 
     def __init__(self, symbolic=False):
 
@@ -190,20 +155,10 @@ class UR10(DHRobot):
 
 class UR10e(DHRobot):
     """
-    Class that models a Universal Robotics UR5 manipulator
+    Class that models a Universal Robotics UR10e manipulator
 
     :param symbolic: use symbolic constants
     :type symbolic: bool
-
-    ``UR5()`` is an object which models a Unimation Puma560 robot and
-    describes its kinematic and dynamic characteristics using standard DH
-    conventions.
-
-    .. runblock:: pycon
-
-        >>> import roboticstoolbox as rtb
-        >>> robot = rtb.models.DH.UR5()
-        >>> print(robot)
 
     Defined joint configurations are:
 
@@ -213,15 +168,8 @@ class UR10e(DHRobot):
     .. note::
         - SI units are used.
 
-    :References:
-
-        - `Parameters for calculations of kinematics and dynamics <https://www.universal-robots.com/articles/ur/parameters-for-calculations-of-kinematics-and-dynamics>`_
-        
-    :sealso: :func:`UR4`, :func:`UR10`
-
-
     .. codeauthor:: Yi He Yang
-    """  # noqa
+    """
 
     def __init__(self, symbolic=False):
 
@@ -278,7 +226,7 @@ class UR10e(DHRobot):
         # horizontal along the x-axis
         self.addconfiguration("qr", np.r_[180, 0, 0, 0, 90, 0]*deg)
 
-         # nominal table top picking pose
+        # nominal table top picking pose
         self.addconfiguration("qn", np.array([0, 0, 0, 0, 0, 0]))
 
 
@@ -289,16 +237,6 @@ class UR16e(DHRobot):
     :param symbolic: use symbolic constants
     :type symbolic: bool
 
-    ``UR5()`` is an object which models a Unimation Puma560 robot and
-    describes its kinematic and dynamic characteristics using standard DH
-    conventions.
-
-    .. runblock:: pycon
-
-        >>> import roboticstoolbox as rtb
-        >>> robot = rtb.models.DH.UR5()
-        >>> print(robot)
-
     Defined joint configurations are:
 
     - qz, zero joint angle configuration
@@ -307,15 +245,8 @@ class UR16e(DHRobot):
     .. note::
         - SI units are used.
 
-    :References:
-
-        - `Parameters for calculations of kinematics and dynamics <https://www.universal-robots.com/articles/ur/parameters-for-calculations-of-kinematics-and-dynamics>`_
-        
-    :sealso: :func:`UR4`, :func:`UR10`
-
-
     .. codeauthor:: Yi He Yang
-    """  # noqa
+    """
 
     def __init__(self, symbolic=False):
 
@@ -372,11 +303,11 @@ class UR16e(DHRobot):
         # horizontal along the x-axis
         self.addconfiguration("qr", np.r_[180, 0, 0, 0, 90, 0]*deg)
 
-         # nominal table top picking pose
+        # nominal table top picking pose
         self.addconfiguration("qn", np.array([0, 0, 0, 0, 0, 0]))
 
 if __name__ == '__main__':    # pragma nocover
 
-    ur5 = UR5(symbolic=False)
-    print(ur5)
-    print(ur5.dyntable())
+    ur = UR5(symbolic=False)
+    print(ur)
+    # print(ur5.dyntable())
