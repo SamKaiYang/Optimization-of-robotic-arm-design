@@ -11,4 +11,5 @@ CATKIN_IGNORE
 /pilz_robots_tutorials
 /rviz_visual_tools
 /kinematics
+/tecobot/urdf/.vscode/browse.vc.db
 *.STL
