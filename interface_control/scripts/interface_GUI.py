@@ -139,14 +139,14 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         # self.ui.horizontalSlider_acc.valueChanged.connect(self.AccSliderValue)
 
         # ComboBox axis 2 length
-        choices = ['0.15','0.2', '0.25', '0.3', '0.4','0.45','0.5']
+        choices = ['0.15','0.2','0.25','0.3','0.35','0.4','0.45','0.5']
         self.ui.comboBox_2_length.addItems(choices)
         self.ui.comboBox_2_length.currentIndexChanged.connect(self.display_2_length)
         self.ui.comboBox_2_length.setCurrentIndex(1)
         self.display_2_length()
         
         # ComboBox axis 3 length
-        choices = ['0.15','0.2', '0.25', '0.3', '0.4','0.45','0.5']
+        choices = ['0.15','0.2','0.25','0.3','0.35','0.4','0.45','0.5']
         self.ui.comboBox_3_length.addItems(choices)
         self.ui.comboBox_3_length.currentIndexChanged.connect(self.display_3_length)
         self.ui.comboBox_3_length.setCurrentIndex(1)
