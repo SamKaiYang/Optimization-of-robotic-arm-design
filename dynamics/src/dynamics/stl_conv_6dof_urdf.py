@@ -6,6 +6,7 @@ from stl import mesh
 from os import path
 from urdf_parser_py.urdf import URDF, Robot
 from interface_control.msg import parameter_design
+from interface_control.msg import cal_cmd
 class stl_conv_urdf():
     def __init__(self, robot_name, robot_parameter):
         self.axis_2_length = 0.0
@@ -13,6 +14,7 @@ class stl_conv_urdf():
         self.arm_weight = 0.0
         self.payload = 0.0
         self.DoF = 6
+        self.pub_cmd = rospy.Publisher("/cal_command",cal_cmd, queue_size=10)
         self.sub_parameter_design = rospy.Subscriber("/parameter_design",parameter_design, self.parameter_design_callback)
         self.robot_name = robot_name
         self.robot_parameter = robot_parameter
@@ -32,6 +34,8 @@ class stl_conv_urdf():
         self.L3_inertia = []
         self.mesh_2_name = ""
         self.mesh_3_name = ""
+
+        self.cal_cmd = cal_cmd()
         # self.robot_stl = mesh.Mesh.from_file(robot_name + ".stl")
         # self.robot_stl.points = self.robot_stl.points * self.robot_parameter.stl_scale
         # self.robot_stl.update_normals()
@@ -140,8 +144,8 @@ class stl_conv_urdf():
             self.lines[inertia_lines+4] = ("        iyz=\"{0[1][2]}\"\n".format(self.L3_inertia))
             self.lines[inertia_lines+5] = ("        izz=\"{0[2][2]}\" />\n".format(self.L3_inertia))
             self.lines[mesh_lines] = ("          filename=\"package://dynamics/src/dynamics/meshes/{0}\" />\n".format(self.mesh_3_name))
-            self.lines[joint_pos] = ("      xyz=\"0 {0} 0.0109000000011954\"\n".format(joint4_pos_y))
-            # xyz="0 0.372499999999936 0.0109000000011954"
+            self.lines[joint_pos] = ("      xyz=\"0 {0} 0.0203999999999699\"\n".format(joint4_pos_y))
+            # xyz="0 0.372499999999936 0.0203999999999699"
             for data in self.lines:
                 urdf_config.write(data)
             urdf_config.flush()
@@ -166,7 +170,7 @@ class stl_conv_urdf():
         self.stl_read_file()
         self.read_check_urdf()
         self.data_write_urdf()
-
+        self.pub_cmd.publish(7)
 if __name__ == '__main__':
 
     rospy.init_node('stl_cal')

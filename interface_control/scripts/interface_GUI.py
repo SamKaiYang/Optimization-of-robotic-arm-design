@@ -320,6 +320,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.parameter_design.DoF = self.dof
         
         self.pub_parameter_design.publish(self.parameter_design)
+        
 
 if __name__=="__main__":
     rospy.init_node("interface_ui")

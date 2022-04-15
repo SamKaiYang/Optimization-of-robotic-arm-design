@@ -130,6 +130,10 @@ class Dynamics_space():
         self.xlsx_outpath = "./xlsx/"
         self.pic_outpath = "./picture/"
 
+    def robot_rebuild(self):
+        self.robot.__init__()
+        print("robot rebuild")
+
     def cmd_callback(self,data):
         self.cmd = data.cmd
         rospy.loginfo("I heard command is %s", data.cmd)
@@ -591,7 +595,11 @@ class Dynamics_space():
             
             if case(6):
                 Dya.dynamics_torque_limit()
-                # Dya.sol_output_axis()
+                self.cmd = 0
+                break
+            # arm data rebuild
+            if case(7):
+                Dya.robot_rebuild()
                 self.cmd = 0
                 break
             if case():
