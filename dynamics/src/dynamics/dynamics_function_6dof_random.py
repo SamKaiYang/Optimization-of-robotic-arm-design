@@ -7,7 +7,7 @@ import importlib
 importlib.reload(sys)
 from collections import namedtuple
 # import dyna_space
-from interface_control.msg import cal_cmd, dyna_data, dyna_space_data
+from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, cal_process, cal_result
 
 import numpy as np
 import roboticstoolbox as rtb
@@ -59,7 +59,8 @@ class switch(object):
 
 class Dynamics_space():
     def __init__(self):
-        # self.pub_armstatus = rospy.Publisher("/reply_external_comm",peripheralCmd,queue_size=10)
+        self.pub_dyna_space_progress = rospy.Publisher("/dyna_space_progress",cal_process,queue_size=10)
+        self.cal_process = cal_process()
         self.sub_taskcmd = rospy.Subscriber("/cal_command",cal_cmd, self.cmd_callback)
         self.sub_dyna = rospy.Subscriber("/dynamics_data",dyna_data, self.dyna_callback)
         self.sub_dyna_space = rospy.Subscriber("/dynamics_space_data",dyna_space_data, self.dyna_space_callback)
@@ -219,9 +220,9 @@ class Dynamics_space():
         '''
         qd = np.r_[0, 1, 0, 0, 0, 0]
         # print("qd:",qd)
-        self.teco.coriolis(self.teco.qn, qd) @ qd
+        self.robot.coriolis(self.robot.qn, qd) @ qd
         # TODO:  rne 逆動力學 add vel & acc analyses
-        self.teco.rne(self.teco.qn, np.zeros((6,)), np.zeros((6,)))
+        self.robot.rne(self.robot.qn, np.zeros((6,)), np.zeros((6,)))
         # 窮舉法正運動學計算工作空間
         start = time.time()
         print("The time used to execute this is given below")
@@ -234,17 +235,19 @@ class Dynamics_space():
         self.ax = plt.subplot(111, projection='3d')
 
 
-        self.teco.payload(self.payload_space, self.payload_position_space) # set payload 
+        self.robot.payload(self.payload_space, self.payload_position_space) # set payload 
 
         for q1 in range(self.q1_s, self.q1_end, self.step):
             for q2 in range(self.q2_s, self.q2_end, self.step):
                 percent = i/self.T_cell*100
-                print("percent:{:.0f}%".format(percent), end="\r")
+                self.cal_process.dyna_space_progress = int(percent)
+                self.pub_dyna_space_progress.publish(self.cal_process)
+                # print("percent:{:.0f}%".format(percent), end="\r")
                 for q3 in range(self.q3_s, self.q3_end, self.step):
                     for q4 in range(self.q4_s, self.q4_end, self.step):
                         for q5 in range(self.q5_s, self.q5_end, self.step):
-                            self.T = self.teco.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])
-                            load = np.array([self.teco.gravload([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])])
+                            self.T = self.robot.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])
+                            load = np.array([self.robot.gravload([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])])
                             self.torque = np.append(self.torque,load,axis=0)
                             self.T_x[0,i] = self.T.t[0]
                             self.T_y[0,i] = self.T.t[1]

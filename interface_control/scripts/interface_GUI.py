@@ -9,11 +9,12 @@ from PySide2 import QtWidgets, QtGui
 from PySide2.QtCore import *
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
+from PySide2extn.RoundProgressBar import roundProgressBar #IMPORT THE EXTENSION LIBRARY
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from Ui_main import Ui_MainWindow
-from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, parameter_design
+from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, parameter_design, cal_process, cal_result
 import sys
 import importlib
 importlib.reload(sys)
@@ -104,12 +105,17 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.pub_dyna_space = rospy.Publisher("/dynamics_space_data",dyna_space_data, queue_size=10)
         # publish arm design data : arm length, payload, dof
         self.pub_parameter_design = rospy.Publisher("/parameter_design",parameter_design, queue_size=10)
+        self.sub_dyna_space_progress = rospy.Subscriber("/dyna_space_progress",cal_process, self.dyna_cal_process_callback)
+
 
         self.cal_cmd = cal_cmd()
         self.dyna_data = dyna_data()
         self.dyna_space_data = dyna_space_data()
         self.parameter_design = parameter_design()
         
+        self.rpb = self.ui.widget
+        self.rpb.rpb_setValue(0)
+
         self.payload = 0.0
         self.payload_position = [0.0,0.0,0.0]
         self.payload_space = 0.0
@@ -122,7 +128,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.axis_2 = 20
         self.axis_3 = 20
         self.dof = 6
-
+        self.dyna_space_progress = 0
 
         self.ui.btn_dynamics.clicked.connect(self.dyna_buttonClicked)
         self.ui.btn_dyn_space.clicked.connect(self.dyna_space_buttonClicked)
@@ -158,6 +164,14 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.comboBox_dof.currentIndexChanged.connect(self.display_dof)
         self.ui.comboBox_dof.setCurrentIndex(5)
         self.display_dof()
+
+        # self.progressBar_dynamics_space = QtWidgets.QProgressBar(self.ui.graphicsView_2)
+    def dyna_cal_process_callback(self,data):
+        # dyna_cal_process_callback
+        self.dyna_space_progress = data.dyna_space_progress
+        # rospy.loginfo("I heard command is %s", data.dyna_space_progress)
+        self.rpb.rpb_setValue(self.dyna_space_progress) #CHANGING THE VALUE OF THE PROGRESS BAR
+
 
     def display_2_length(self):
         if self.ui.comboBox_2_length.currentText() == "0.15":

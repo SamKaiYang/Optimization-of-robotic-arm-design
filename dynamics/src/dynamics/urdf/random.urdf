@@ -112,17 +112,17 @@
     name="2">
     <inertial>
       <origin
-        xyz="2.941313896880445e-05 0.2015794767913821 -0.0034688462241885157"
+        xyz="2.645519586284716e-05 0.10089603765614477 -0.003932089874750561"
         rpy="0 0 0" />
       <mass
-        value="1.775166295877986"  />
+        value="1.5633927364282878"  />
       <inertia
-        ixx="0.06246018461743256"
-        ixy="-1.2505865572313187e-05"
-        ixz="7.090191995262668e-06"
-        iyy="0.00334175160946326"
-        iyz="-0.00018579430230904363"
-        izz="0.061629092259479386" />
+        ixx="0.017065752714715374"
+        ixy="-6.4742878685796505e-06"
+        ixz="6.838096993978902e-06"
+        iyy="0.0030964508813795567"
+        iyz="-9.35737384267609e-05"
+        izz="0.016237448275647604" />
     </inertial>
     <visual>
       <origin
@@ -130,7 +130,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://dynamics/src/dynamics/meshes/random_2_40.0.STL" />
+          filename="package://dynamics/src/dynamics/meshes/random_2_20.0.STL" />
       </geometry>
       <material
         name="">
@@ -210,7 +210,7 @@
     name="j3"
     type="revolute">
     <origin
-      xyz="0 0.4 0"
+      xyz="0 0.19999999999999998 0"
       rpy="0 0 0" />
     <parent
       link="2" />

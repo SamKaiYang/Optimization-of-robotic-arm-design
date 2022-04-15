@@ -53,6 +53,8 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   cal_cmd.msg
+  cal_result.msg
+  cal_process.msg
   dyna_data.msg
   dyna_space_data.msg
   parameter_design.msg

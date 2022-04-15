@@ -12,12 +12,14 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from PySide2extn.RoundProgressBar import roundProgressBar
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(693, 548)
+        MainWindow.resize(687, 548)
         palette = QPalette()
         brush = QBrush(QColor(255, 255, 255, 255))
         brush.setStyle(Qt.SolidPattern)
@@ -50,10 +52,6 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabShape(QTabWidget.Triangular)
         self.tab_arm = QWidget()
         self.tab_arm.setObjectName(u"tab_arm")
-        self.progressBar_design = QProgressBar(self.tab_arm)
-        self.progressBar_design.setObjectName(u"progressBar_design")
-        self.progressBar_design.setGeometry(QRect(540, 260, 118, 23))
-        self.progressBar_design.setValue(0)
         self.gridLayoutWidget = QWidget(self.tab_arm)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
         self.gridLayoutWidget.setGeometry(QRect(40, 50, 261, 201))
@@ -228,10 +226,6 @@ class Ui_MainWindow(object):
         self.btn_dynamics_save_para.setPalette(palette4)
         self.btn_dynamics_save_para.setFont(font2)
         self.btn_dynamics_save_para.setStyleSheet(u"background-color:#da7700;color:white;border-color: black;")
-        self.progressBar_dynParaIdent = QProgressBar(self.tab)
-        self.progressBar_dynParaIdent.setObjectName(u"progressBar_dynParaIdent")
-        self.progressBar_dynParaIdent.setGeometry(QRect(410, 200, 118, 23))
-        self.progressBar_dynParaIdent.setValue(0)
         self.label_21 = QLabel(self.tab)
         self.label_21.setObjectName(u"label_21")
         self.label_21.setGeometry(QRect(30, 40, 251, 17))
@@ -579,10 +573,9 @@ class Ui_MainWindow(object):
         self.btn_dyn_space_set.setPalette(palette13)
         self.btn_dyn_space_set.setFont(font2)
         self.btn_dyn_space_set.setStyleSheet(u"background-color:#00d21a;color:white;border-color: black;")
-        self.progressBar_dynamics_space = QProgressBar(self.tab_state)
-        self.progressBar_dynamics_space.setObjectName(u"progressBar_dynamics_space")
-        self.progressBar_dynamics_space.setGeometry(QRect(470, 400, 118, 23))
-        self.progressBar_dynamics_space.setValue(0)
+        self.widget = roundProgressBar(self.tab_state)
+        self.widget.setObjectName(u"widget")
+        self.widget.setGeometry(QRect(480, 200, 120, 80))
         self.tabWidget.addTab(self.tab_state, "")
         self.tab_other = QWidget()
         self.tab_other.setObjectName(u"tab_other")
@@ -600,7 +593,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 693, 23))
+        self.menubar.setGeometry(QRect(0, 0, 687, 23))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")

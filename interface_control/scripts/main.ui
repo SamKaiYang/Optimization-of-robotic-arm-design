@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>693</width>
+    <width>687</width>
     <height>548</height>
    </rect>
   </property>
@@ -119,19 +119,6 @@
      <attribute name="title">
       <string>Arm Design</string>
      </attribute>
-     <widget class="QProgressBar" name="progressBar_design">
-      <property name="geometry">
-       <rect>
-        <x>540</x>
-        <y>260</y>
-        <width>118</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="value">
-       <number>0</number>
-      </property>
-     </widget>
      <widget class="QWidget" name="gridLayoutWidget">
       <property name="geometry">
        <rect>
@@ -1009,19 +996,6 @@
       </property>
       <property name="text">
        <string>Save Parameter</string>
-      </property>
-     </widget>
-     <widget class="QProgressBar" name="progressBar_dynParaIdent">
-      <property name="geometry">
-       <rect>
-        <x>410</x>
-        <y>200</y>
-        <width>118</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="value">
-       <number>0</number>
       </property>
      </widget>
      <widget class="QLabel" name="label_21">
@@ -3292,17 +3266,14 @@
        <string>Set</string>
       </property>
      </widget>
-     <widget class="QProgressBar" name="progressBar_dynamics_space">
+     <widget class="roundProgressBar" name="widget" native="true">
       <property name="geometry">
        <rect>
-        <x>470</x>
-        <y>400</y>
-        <width>118</width>
-        <height>23</height>
+        <x>480</x>
+        <y>200</y>
+        <width>120</width>
+        <height>80</height>
        </rect>
-      </property>
-      <property name="value">
-       <number>0</number>
       </property>
      </widget>
     </widget>
@@ -3356,13 +3327,21 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>693</width>
+     <width>687</width>
      <height>23</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>roundProgressBar</class>
+   <extends>QWidget</extends>
+   <header>PySide2extn.RoundProgressBar.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
