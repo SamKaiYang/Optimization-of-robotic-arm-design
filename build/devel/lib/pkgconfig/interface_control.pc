@@ -1,8 +1,0 @@
-prefix=/home/iclab/Documents/teco_ws/src/build/devel
-
-Name: interface_control
-Description: Description of interface_control
-Version: 0.0.0
-Cflags: -I/home/iclab/Documents/teco_ws/src/build/devel/include
-Libs: -L${prefix}/lib 
-Requires: 

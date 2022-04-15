@@ -1,8 +1,0 @@
-prefix=/home/iclab/Documents/teco_ws/src/build/devel
-
-Name: moveit_resources_fanuc_moveit_config
-Description: Description of moveit_resources_fanuc_moveit_config
-Version: 0.8.2
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

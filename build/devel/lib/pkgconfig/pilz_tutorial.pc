@@ -1,8 +1,0 @@
-prefix=/home/iclab/Documents/teco_ws/src/build/devel
-
-Name: pilz_tutorial
-Description: Description of pilz_tutorial
-Version: 0.1.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

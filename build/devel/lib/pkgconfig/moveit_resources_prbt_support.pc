@@ -1,8 +1,0 @@
-prefix=/home/iclab/Documents/teco_ws/src/build/devel
-
-Name: moveit_resources_prbt_support
-Description: Description of moveit_resources_prbt_support
-Version: 0.8.2
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

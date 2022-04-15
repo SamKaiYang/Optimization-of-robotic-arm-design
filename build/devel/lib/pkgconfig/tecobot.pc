@@ -1,8 +1,0 @@
-prefix=/home/iclab/Documents/teco_ws/src/build/devel
-
-Name: tecobot
-Description: Description of tecobot
-Version: 1.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

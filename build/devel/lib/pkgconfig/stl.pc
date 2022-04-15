@@ -1,8 +1,0 @@
-prefix=/home/iclab/Documents/teco_ws/src/build/devel
-
-Name: stl
-Description: Description of stl
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

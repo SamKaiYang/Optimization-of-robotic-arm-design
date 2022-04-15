@@ -12,4 +12,5 @@ CATKIN_IGNORE
 /rviz_visual_tools
 /kinematics
 /tecobot/urdf/.vscode/browse.vc.db
+/build/
 *.STL
