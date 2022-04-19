@@ -74,7 +74,9 @@ class RandomRobot(DHRobot):
             ]
         
         G= [-80,-80,-80,-50,-50,-50]   # gear ratio
-
+        # G= [-1,-1,-1,-1,-1,-1]   # gear ratio
+        # B = [[10,10], [10,10], [10,10], [10,10], [10,10], [10,10]]
+        B = 10.0
         # center_of_mass = [
         #         [-1.55579201081481E-05, 0.00265005484815443, -0.00640979059142413],
         #         [4.90637956589368E-11, 0.205571973027702, -0.003359898058563426],
@@ -92,6 +94,15 @@ class RandomRobot(DHRobot):
                 robot.links[6].inertial.origin.xyz,
                 robot.links[7].inertial.origin.xyz
             ]
+        # signed from a 3 3 matrix or a 6-element vector interpretted as Ixx Iyy Izz Ixy Iyz Ixz
+        inertia = [
+                [robot.links[2].inertial.inertia.ixx, robot.links[2].inertial.inertia.iyy, robot.links[2].inertial.inertia.izz, robot.links[2].inertial.inertia.ixy,robot.links[2].inertial.inertia.iyz, robot.links[2].inertial.inertia.ixz],
+                [robot.links[3].inertial.inertia.ixx, robot.links[3].inertial.inertia.iyy, robot.links[3].inertial.inertia.izz, robot.links[3].inertial.inertia.ixy,robot.links[3].inertial.inertia.iyz, robot.links[3].inertial.inertia.ixz],
+                [robot.links[4].inertial.inertia.ixx, robot.links[4].inertial.inertia.iyy, robot.links[4].inertial.inertia.izz, robot.links[4].inertial.inertia.ixy,robot.links[4].inertial.inertia.iyz, robot.links[4].inertial.inertia.ixz],
+                [robot.links[5].inertial.inertia.ixx, robot.links[5].inertial.inertia.iyy, robot.links[5].inertial.inertia.izz, robot.links[5].inertial.inertia.ixy,robot.links[5].inertial.inertia.iyz, robot.links[5].inertial.inertia.ixz],
+                [robot.links[6].inertial.inertia.ixx, robot.links[6].inertial.inertia.iyy, robot.links[6].inertial.inertia.izz, robot.links[6].inertial.inertia.ixy,robot.links[6].inertial.inertia.iyz, robot.links[6].inertial.inertia.ixz],
+                [robot.links[7].inertial.inertia.ixx, robot.links[7].inertial.inertia.iyy, robot.links[7].inertial.inertia.izz, robot.links[7].inertial.inertia.ixy,robot.links[7].inertial.inertia.iyz, robot.links[7].inertial.inertia.ixz]
+            ]
 
         links = []
 
@@ -102,7 +113,9 @@ class RandomRobot(DHRobot):
                 alpha=alpha[j],
                 m=mass[j],
                 r=center_of_mass[j],
+                I=inertia[j],
                 G=G[j]
+                # B=B[j]
             )
             links.append(link)
     
@@ -113,7 +126,7 @@ class RandomRobot(DHRobot):
             keywords=('dynamics', 'symbolic'),
             symbolic=symbolic
         )
-    
+        # print("FFFFUCCCUCUCUCUCCUCUCCKKKKK")
         # zero angles
         self.addconfiguration("qz", np.array([0, 0, 0, 0, 0, 0]))
         # horizontal along the x-axis

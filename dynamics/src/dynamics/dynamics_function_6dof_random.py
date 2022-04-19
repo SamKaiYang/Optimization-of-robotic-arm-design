@@ -562,6 +562,13 @@ class Dynamics_space():
 
         print("output dynamics_torque_limit_calc_axis excel file down.")
         
+    def excited_trajectory(self, q_list, q_list_2, q_list_3, q_list_4, q_list_5, q_list_6):
+        # 窮舉法正運動學計算工作空間
+        start = time.time()
+        print("The time used to execute this is given below")
+        # 角度轉換
+        du=pi/180
+        
     def task_set(self):
         for case in switch(self.cmd):
             if case(1):
