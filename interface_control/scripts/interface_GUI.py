@@ -14,7 +14,8 @@ from PySide2extn.RoundProgressBar import roundProgressBar #IMPORT THE EXTENSION 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from Ui_main import Ui_MainWindow
-from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, parameter_design, cal_process, cal_result
+from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, parameter_design, cal_process, cal_result, communicate_matlab
+from std_msgs.msg import String
 import sys
 import importlib
 importlib.reload(sys)
@@ -105,6 +106,9 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.pub_dyna_space = rospy.Publisher("/dynamics_space_data",dyna_space_data, queue_size=10)
         # publish arm design data : arm length, payload, dof
         self.pub_parameter_design = rospy.Publisher("/parameter_design",parameter_design, queue_size=10)
+        # publish command for matlab program 
+        self.pub_communicate_matlab = rospy.Publisher("/communicate_matlab",String, queue_size=10)
+        # suscribe dynamics calculate process 
         self.sub_dyna_space_progress = rospy.Subscriber("/dyna_space_progress",cal_process, self.dyna_cal_process_callback)
 
 
@@ -112,6 +116,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.dyna_data = dyna_data()
         self.dyna_space_data = dyna_space_data()
         self.parameter_design = parameter_design()
+        self.communicate_matlab = String()
         
         self.rpb = self.ui.widget
         self.rpb.rpb_setValue(0)
@@ -139,6 +144,9 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.btn_arm_plot_close.clicked.connect(self.arm_plot_close_buttonClicked)
         self.ui.btn_dynamics_design.clicked.connect(self.dynamics_design_buttonClicked)
         self.ui.btn_dyn_torque_limit.clicked.connect(self.dyn_torque_limit_buttonClicked)
+        self.ui.btn_dynamics_new_traj.clicked.connect(self.dynamics_new_traj_buttonClicked)
+        self.ui.btn_dynamics_real_torq.clicked.connect(self.dynamics_real_torq_buttonClicked)
+        self.ui.btn_dynamics_save_para.clicked.connect(self.dynamics_save_para_buttonClicked)
         # # Vel. HorizontalSlider
         # self.ui.horizontalSlider_vel.valueChanged.connect(self.VelSliderValue)
         # # Acc. HorizontalSlider
@@ -335,6 +343,16 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         
         self.pub_parameter_design.publish(self.parameter_design)
         
+
+    def dynamics_new_traj_buttonClicked(self):
+        self.communicate_matlab.data = "1"
+        self.pub_communicate_matlab.publish(self.communicate_matlab)
+
+    def dynamics_real_torq_buttonClicked(self):
+        pass
+
+    def dynamics_save_para_buttonClicked(self):
+        pass
 
 if __name__=="__main__":
     rospy.init_node("interface_ui")

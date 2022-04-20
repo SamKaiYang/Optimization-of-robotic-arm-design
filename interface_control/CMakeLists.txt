@@ -58,6 +58,7 @@ add_message_files(
   dyna_data.msg
   dyna_space_data.msg
   parameter_design.msg
+  communicate_matlab.msg
 )
 
 ## Generate services in the 'srv' folder
