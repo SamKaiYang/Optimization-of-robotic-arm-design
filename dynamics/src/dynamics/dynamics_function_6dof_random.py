@@ -35,6 +35,7 @@ np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if 
 
 from random_robot import RandomRobot
 # from robot_urdf import RandomRobot
+import motor_module
 
 class switch(object):
     def __init__(self, value):
@@ -214,7 +215,7 @@ class Dynamics_space():
     def payload_set(self):
         self.robot.payload(20, [0, 0, 0]) # set payload 
 
-    def dynamics_cal(self):
+    def dynamics_space_cal(self):
         '''
         Through the "dynamics space" page in the interface to calculate the dynamics of the robot
         '''
@@ -258,6 +259,64 @@ class Dynamics_space():
         print("繪製工作空間運行時間：%f sec" % (end - start))
 
 
+    def dynamics_space_cal_Monte_Carlo(self):
+        '''
+        Through the "dynamics space" page in the interface to calculate the dynamics of the robot
+        '''
+        # 窮舉法正運動學計算工作空間
+        start = time.time()
+        print("The time used to execute this is given below")
+        i = 0
+        # 角度轉換
+        du=pi/180;  #度
+        radian=180/pi; #弧度
+
+        fig = plt.figure()
+        self.ax = plt.subplot(111, projection='3d')
+
+        self.q1_s=-160
+        self.q1_end=160
+        self.q2_s=-160
+        self.q2_end=160
+        self.q3_s=-160
+        self.q3_end=160
+        self.q4_s=-160
+        self.q4_end=160
+        self.q5_s=-160
+        self.q5_end=160
+        self.q6_s=-160
+        self.q6_end=160
+
+        self.robot.payload(self.payload_space, self.payload_position_space) # set payload 
+        N = 20000
+        theta1=self.q1_end + (self.q1_end-self.q1_s) * np.random.rand(N,1)
+        theta2=self.q2_end + (self.q2_end-self.q2_s) * np.random.rand(N,1)
+        theta3=self.q3_end + (self.q3_end-self.q3_s) * np.random.rand(N,1)
+        theta4=self.q4_end + (self.q4_end-self.q4_s) * np.random.rand(N,1)
+        theta5=self.q5_end + (self.q5_end-self.q5_s) * np.random.rand(N,1)
+        theta6=self.q6_end + (self.q6_end-self.q6_s) * np.random.rand(N,1)
+
+        for i in range(N):
+            percent = (i+1)/N*100
+            self.cal_process.dyna_space_progress = int(percent)
+            self.pub_dyna_space_progress.publish(self.cal_process)
+            q1 = theta1[i,0]
+            q2 = theta2[i,0]
+            q3 = theta3[i,0]
+            q4 = theta4[i,0]
+            q5 = theta5[i,0]
+            q6 = theta6[i,0]
+            self.T = self.robot.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, q6*du])
+            load = np.array([self.robot.gravload([q1*du, q2*du, q3*du, q4*du, q5*du, q6*du])])
+            self.torque = np.append(self.torque,load,axis=0)
+            self.T_x[0,i] = self.T.t[0]
+            self.T_y[0,i] = self.T.t[1]
+            self.T_z[0,i] = self.T.t[2]
+            i=i+1
+
+        end = time.time()
+        print("繪製工作空間運行時間：%f sec" % (end - start))
+
     def plot_space_scan(self):
         '''
         Calculate the results through the "dynamics space" paging in the interface, 
@@ -268,7 +327,7 @@ class Dynamics_space():
         self.ax.set_ylabel("y") 
         self.ax.set_zlabel("z")
         plt.show()
-        plt.pause(0)
+        # plt.pause(0)
 
     def sol_output_axis(self):
         '''
@@ -301,6 +360,7 @@ class Dynamics_space():
             print("軸%d torque負最大值:%f" %(axis+1, np.min(self.torque[:,axis])))
             print("軸%d torque正最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
             torque_where = np.where(self.torque==np.max(self.torque[:,axis]))
+            append_sol_list = []
             for i in range(len(torque_where[0])):
                 print(torque_where[0][i])
                 max_torque = torque_where[0][i]
@@ -355,6 +415,7 @@ class Dynamics_space():
             self.ik_sol_negative= []
             print("軸%d torque負最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
             torque_where = np.where(self.torque==np.min(self.torque[:,axis]))
+            append_sol_list = []
             for i in range(len(torque_where[0])):
                 print(torque_where[0][i])
                 max_torque = torque_where[0][i]
@@ -575,8 +636,9 @@ class Dynamics_space():
                 print("Start Workspace Scan")
                 print("success get subscriber data ")
                 Dya.payload_set()
-                Dya.dynamics_cal()
-                Dya.sol_output_axis()
+                # Dya.dynamics_space_cal()
+                Dya.dynamics_space_cal_Monte_Carlo()
+                # Dya.sol_output_axis()
                 Dya.plot_space_scan()
                 self.cmd = 0
                 break

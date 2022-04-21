@@ -22,7 +22,11 @@ class FourierTraj:
         self.sample_num_per_period = sample_num_per_period
         self.stable_time = stable_time
         self.frequency = frequency
-
+        # joint limits
+        self.q_min = [-2.9671, -2.0944, -2.9671, -2.0944, -2.9671, -3.0543]
+        self.q_max = [2.9671, 2.0944 ,2.9671, 2.0944, 2.9671, 3.0543]
+        self.qdot_min = [-1.4835, -1.4835, -1.7453, -1.3090, -2.2689, -2.3562]
+        self.qdot_max = [1.4835, 1.4835, 1.7453, 1.3090, 2.2689, 2.3562]
         # if no specified frequency and final_time, generate a one-period trajectory.
         if math.isnan(float(frequency)):
             self.sample_num = self.order * self.sample_num_per_period + 1
