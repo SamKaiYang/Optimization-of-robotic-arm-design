@@ -147,6 +147,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.btn_dynamics_new_traj.clicked.connect(self.dynamics_new_traj_buttonClicked)
         self.ui.btn_dynamics_real_torq.clicked.connect(self.dynamics_real_torq_buttonClicked)
         self.ui.btn_dynamics_save_para.clicked.connect(self.dynamics_save_para_buttonClicked)
+        self.ui.btn_random_robot_structure.clicked.connect(self.random_robot_structure_buttonClicked)
         # # Vel. HorizontalSlider
         # self.ui.horizontalSlider_vel.valueChanged.connect(self.VelSliderValue)
         # # Acc. HorizontalSlider
@@ -353,6 +354,9 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
 
     def dynamics_save_para_buttonClicked(self):
         pass
+
+    def random_robot_structure_buttonClicked(self):
+        self.pub_cmd.publish(20)
 
 if __name__=="__main__":
     rospy.init_node("interface_ui")

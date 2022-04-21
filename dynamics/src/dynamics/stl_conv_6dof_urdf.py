@@ -7,6 +7,7 @@ from os import path
 from urdf_parser_py.urdf import URDF, Robot
 from interface_control.msg import parameter_design
 from interface_control.msg import cal_cmd
+import random
 class stl_conv_urdf():
     def __init__(self, robot_name, robot_parameter):
         self.axis_2_length = 0.0
@@ -16,6 +17,7 @@ class stl_conv_urdf():
         self.DoF = 6
         self.pub_cmd = rospy.Publisher("/cal_command",cal_cmd, queue_size=10)
         self.sub_parameter_design = rospy.Subscriber("/parameter_design",parameter_design, self.parameter_design_callback)
+        self.sub_interface_control = rospy.Subscriber("/cal_command",cal_cmd, self.interface_control_callback)
         self.robot_name = robot_name
         self.robot_parameter = robot_parameter
         self.robot_stl_axis_2 = None
@@ -108,7 +110,7 @@ class stl_conv_urdf():
             # self.axis_2_length = 281.5 - self.axis_2_length*10
             self.axis_2_length = 408.000000000056 - self.axis_2_length*10
             joint3_pos_y = 0.408000000000056 - self.axis_2_length*0.001
-            print(joint3_pos_y)
+            print("joint3_pos_y:",joint3_pos_y)
 
             self.lines[cog_lines] = ("        xyz=\"{0[0]} {0[1]} {0[2]}\"\n".format(self.L2_cog))
             self.lines[mass_lines] = ("        value=\"{0}\"  />\n".format(self.L2_volume))
@@ -134,7 +136,7 @@ class stl_conv_urdf():
 
             self.axis_3_length = 372.50368954 - self.axis_3_length*10
             joint4_pos_y = 0.37250368954 - self.axis_3_length*0.001
-            print(joint4_pos_y)
+            print("joint4_pos_y",joint4_pos_y)
             self.lines[cog_lines] = ("        xyz=\"{0[0]} {0[1]} {0[2]}\"\n".format(self.L3_cog))
             self.lines[mass_lines] = ("        value=\"{0}\"  />\n".format(self.L3_volume))
             self.lines[inertia_lines] = ("        ixx=\"{0[0][0]}\"\n".format(self.L3_inertia))
@@ -170,7 +172,88 @@ class stl_conv_urdf():
         self.stl_read_file()
         self.read_check_urdf()
         self.data_write_urdf()
-        self.pub_cmd.publish(7)
+        self.pub_cmd.publish(7) # rebuild robot
+
+    def interface_control_callback(self,data):
+        cmd = data.cmd
+
+        if cmd == 20:
+            self.random_generate_write_urdf()
+            self.pub_cmd.publish(7) # rebuild robot 
+
+    def random_generate_write_urdf(self):
+        your_mesh = mesh.Mesh.from_file(path.dirname(path.realpath(__file__)) + "/meshes/" +'random_3_25.0.STL')
+        # print('random_3_25.0.STL')
+        volume_1, cog_1, inertia_1 = your_mesh.get_mass_properties()
+        # print("Volume                                  = {0}".format(volume_1))
+        # print("Position of the center of gravity (COG) = {0}".format(cog_1))
+        # print("Inertia matrix at expressed at the COG  = {0}".format(inertia_1[0,:]))
+        # print("                                          {0}".format(inertia_1[1,:]))
+        # print("                                          {0}".format(inertia_1[2,:]))
+
+        your_mesh = mesh.Mesh.from_file(path.dirname(path.realpath(__file__)) + "/meshes/" +'random_3_30.0.STL')
+        # print('random_3_30.0.STL')
+        volume_2, cog_2, inertia_2 = your_mesh.get_mass_properties()
+        # print("Volume                                  = {0}".format(volume_2))
+        # print("Position of the center of gravity (COG) = {0}".format(cog_2))
+        # print("Inertia matrix at expressed at the COG  = {0}".format(inertia_2[0,:]))
+        # print("                                          {0}".format(inertia_2[1,:]))
+        # print("                                          {0}".format(inertia_2[2,:]))
+
+        vol = volume_2 - volume_1
+        cog = cog_2 - cog_1
+        inertia = inertia_2 - inertia_1
+
+        # ===================================
+        self.axis_2_length = 35.0
+        self.axis_3_length = 35.0
+        self.robot_stl_axis_2 = mesh.Mesh.from_file(path.dirname(path.realpath(__file__))+"/meshes/" + self.robot_name + "_2_"+ str(self.axis_2_length) + ".STL")
+        self.robot_stl_axis_3 = mesh.Mesh.from_file(path.dirname(path.realpath(__file__))+"/meshes/" + self.robot_name + "_3_"+ str(self.axis_3_length) + ".STL")
+        self.mesh_2_name = self.robot_name + "_2_"+ str(self.axis_2_length) + ".STL"
+        self.mesh_3_name = self.robot_name + "_3_"+ str(self.axis_3_length) + ".STL"
+
+        self.L2_volume, self.L2_cog, self.L2_inertia = self.robot_stl_axis_2.get_mass_properties()
+        # random axis 2 length
+        random_axis_2_length = random.uniform(self.axis_2_length - 15.0, self.axis_2_length + 15.0)
+        print("random_axis_2_length                    = {0}".format(random_axis_2_length))
+        diff_axis_2_length = random_axis_2_length - self.axis_2_length
+        self.axis_2_length = random_axis_2_length
+        self.L2_volume = self.L2_volume + vol*(diff_axis_2_length/5)
+        self.L2_cog = self.L2_cog + cog*(diff_axis_2_length/5)
+        self.L2_inertia = self.L2_inertia + inertia*(diff_axis_2_length/5)
+
+        self.L2_volume = self.L2_volume*1000
+        self.L2_inertia = self.L2_inertia*1000
+        print("============================================================")
+        print("Volume                                  = {0}".format(self.L2_volume))
+        print("Position of the center of gravity (COG) = {0}".format(self.L2_cog))
+        print("Inertia matrix at expressed at the COG  = {0}".format(self.L2_inertia[0,:]))
+        print("                                          {0}".format(self.L2_inertia[1,:]))
+        print("                                          {0}".format(self.L2_inertia[2,:]))
+
+        self.L3_volume, self.L3_cog, self.L3_inertia = self.robot_stl_axis_3.get_mass_properties()
+        # random axis 3 length
+        random_axis_3_length = random.uniform(self.axis_3_length - 15.0, self.axis_3_length + 15.0)
+        print("random_axis_3_length                    = {0}".format(random_axis_3_length))
+        diff_axis_3_length = random_axis_3_length - self.axis_3_length
+        self.axis_3_length = random_axis_3_length
+        self.L3_volume = self.L3_volume + vol*(diff_axis_3_length/5)
+        self.L3_cog = self.L3_cog + cog*(diff_axis_3_length/5)
+        self.L3_inertia = self.L3_inertia + inertia*(diff_axis_3_length/5)
+
+        self.L3_volume = self.L3_volume*1000
+        self.L3_inertia = self.L3_inertia*1000
+        print("============================================================")
+        print("Volume                                  = {0}".format(self.L3_volume))
+        print("Position of the center of gravity (COG) = {0}".format(self.L3_cog))
+        print("Inertia matrix at expressed at the COG  = {0}".format(self.L3_inertia[0,:]))
+        print("                                          {0}".format(self.L3_inertia[1,:]))
+        print("                                          {0}".format(self.L3_inertia[2,:]))
+        print("============================================================")
+        # ===================================
+        self.read_check_urdf()
+        self.data_write_urdf()
+
 if __name__ == '__main__':
 
     rospy.init_node('stl_cal')
