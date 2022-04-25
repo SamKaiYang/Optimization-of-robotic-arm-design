@@ -5,8 +5,7 @@ import rospy
 from stl import mesh
 from os import path
 from urdf_parser_py.urdf import URDF, Robot
-from interface_control.msg import parameter_design
-from interface_control.msg import cal_cmd
+from interface_control.msg import specified_parameter_design, cal_cmd, optimal_random
 import random
 class stl_conv_urdf():
     def __init__(self, robot_name, robot_parameter):
@@ -16,7 +15,8 @@ class stl_conv_urdf():
         self.payload = 0.0
         self.DoF = 6
         self.pub_cmd = rospy.Publisher("/cal_command",cal_cmd, queue_size=10)
-        self.sub_parameter_design = rospy.Subscriber("/parameter_design",parameter_design, self.parameter_design_callback)
+        self.pub_optimal_random = rospy.Publisher("/optimal_random",optimal_random, queue_size=10)
+        self.sub_specified_parameter_design = rospy.Subscriber("/specified_parameter_design",specified_parameter_design, self.specified_parameter_design_callback)
         self.sub_interface_control = rospy.Subscriber("/cal_command",cal_cmd, self.interface_control_callback)
         self.robot_name = robot_name
         self.robot_parameter = robot_parameter
@@ -37,7 +37,11 @@ class stl_conv_urdf():
         self.mesh_2_name = ""
         self.mesh_3_name = ""
 
+        self.op_axis_2_length = 0.0
+        self.op_axis_3_length = 0.0
+
         self.cal_cmd = cal_cmd()
+        self.optimal_random = optimal_random()
         # self.robot_stl = mesh.Mesh.from_file(robot_name + ".stl")
         # self.robot_stl.points = self.robot_stl.points * self.robot_parameter.stl_scale
         # self.robot_stl.update_normals()
@@ -156,8 +160,8 @@ class stl_conv_urdf():
 
     def task_set(self):
         pass
-
-    def parameter_design_callback(self, data):
+    # Generate information specified on the interface
+    def specified_parameter_design_callback(self, data):
         self.axis_2_length = data.axis_2_length
         self.axis_3_length = data.axis_3_length
         self.arm_weight = data.arm_weight
@@ -175,18 +179,24 @@ class stl_conv_urdf():
         self.read_check_urdf()
         self.data_write_urdf()
         self.pub_cmd.publish(7) # rebuild robot
-
+    # Randomly generated information on the interface
     def interface_control_callback(self,data):
         cmd = data.cmd
         # rebuild robot modules
         if cmd == 20:
             self.random_generate_write_urdf()
-            self.pub_cmd.publish(7) # rebuild robot 
+            self.pub_cmd.publish(7) # rebuild robot
         # rebuild robot & motor match
         elif cmd == 21:
             self.random_generate_write_urdf()
-            self.pub_cmd.publish(8)
+            # self.pub_cmd.publish(8)
+            # TODO: return axis 2, 3 random length
+            self.optimal_random.axis_2_length = self.op_axis_2_length
+            self.optimal_random.axis_3_length = self.op_axis_3_length
+            self.pub_optimal_random.publish(self.optimal_random)
 
+
+    # Randomly generated information on the interface
     def random_generate_write_urdf(self):
         your_mesh = mesh.Mesh.from_file(path.dirname(path.realpath(__file__)) + "/meshes/" +'random_3_25.0.STL')
         volume_1, cog_1, inertia_1 = your_mesh.get_mass_properties()
@@ -210,6 +220,7 @@ class stl_conv_urdf():
         print("random_axis_2_length                    = {0}".format(random_axis_2_length))
         diff_axis_2_length = random_axis_2_length - self.axis_2_length
         self.axis_2_length = random_axis_2_length
+        self.op_axis_2_length = random_axis_2_length
         self.L2_volume = self.L2_volume + vol*(diff_axis_2_length/5)
         self.L2_cog = self.L2_cog + cog*(diff_axis_2_length/5)
         self.L2_inertia = self.L2_inertia + inertia*(diff_axis_2_length/5)
@@ -229,6 +240,7 @@ class stl_conv_urdf():
         print("random_axis_3_length                    = {0}".format(random_axis_3_length))
         diff_axis_3_length = random_axis_3_length - self.axis_3_length
         self.axis_3_length = random_axis_3_length
+        self.op_axis_3_length = random_axis_3_length
         self.L3_volume = self.L3_volume + vol*(diff_axis_3_length/5)
         self.L3_cog = self.L3_cog + cog*(diff_axis_3_length/5)
         self.L3_inertia = self.L3_inertia + inertia*(diff_axis_3_length/5)

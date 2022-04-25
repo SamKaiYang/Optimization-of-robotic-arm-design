@@ -57,8 +57,10 @@ add_message_files(
   cal_process.msg
   dyna_data.msg
   dyna_space_data.msg
-  parameter_design.msg
+  specified_parameter_design.msg
   communicate_matlab.msg
+  optimal_design.msg
+  optimal_random.msg
 )
 
 ## Generate services in the 'srv' folder

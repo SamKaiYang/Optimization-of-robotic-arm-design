@@ -14,7 +14,7 @@ from PySide2extn.RoundProgressBar import roundProgressBar #IMPORT THE EXTENSION 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from Ui_main import Ui_MainWindow
-from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, parameter_design, cal_process, cal_result, communicate_matlab
+from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, specified_parameter_design, cal_process, cal_result, communicate_matlab, optimal_design
 from std_msgs.msg import String
 import sys
 import importlib
@@ -105,9 +105,11 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         # publish arm dynamics use space scan data 
         self.pub_dyna_space = rospy.Publisher("/dynamics_space_data",dyna_space_data, queue_size=10)
         # publish arm design data : arm length, payload, dof
-        self.pub_parameter_design = rospy.Publisher("/parameter_design",parameter_design, queue_size=10)
+        self.pub_specified_parameter_design = rospy.Publisher("/specified_parameter_design",specified_parameter_design, queue_size=10)
         # publish command for matlab program 
         self.pub_communicate_matlab = rospy.Publisher("/communicate_matlab",String, queue_size=10)
+        # publish data for optimal design 
+        self.pub_optimal_design = rospy.Publisher("/optimal_design",optimal_design, queue_size=10)
         # suscribe dynamics calculate process 
         self.sub_dyna_space_progress = rospy.Subscriber("/dyna_space_progress",cal_process, self.dyna_cal_process_callback)
 
@@ -115,8 +117,10 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.cal_cmd = cal_cmd()
         self.dyna_data = dyna_data()
         self.dyna_space_data = dyna_space_data()
-        self.parameter_design = parameter_design()
+        self.specified_parameter_design = specified_parameter_design()
         self.communicate_matlab = String()
+        self.optimal_design = optimal_design()
+
         
         self.rpb = self.ui.widget
         self.rpb.rpb_setValue(0)
@@ -149,6 +153,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.btn_dynamics_save_para.clicked.connect(self.dynamics_save_para_buttonClicked)
         self.ui.btn_random_robot_structure.clicked.connect(self.random_robot_structure_buttonClicked)
         self.ui.btn_random_robot_motor.clicked.connect(self.random_robot_motor_buttonClicked)
+        self.ui.btn_optimization_analysis.clicked.connect(self.optimization_analysis_buttonClicked)
         # # Vel. HorizontalSlider
         # self.ui.horizontalSlider_vel.valueChanged.connect(self.VelSliderValue)
         # # Acc. HorizontalSlider
@@ -337,14 +342,14 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         # arm_weight = float(self.ui.lineEdit_arm_weight.text())
         payload = float(self.ui.lineEdit_payload_2.text())
         reachable_radius = float(self.ui.lineEdit_reachable_radius.text())
-        self.parameter_design.axis_2_length = self.axis_2
-        self.parameter_design.axis_3_length = self.axis_3
-        self.parameter_design.arm_weight = 0
-        self.parameter_design.payload = payload
-        self.parameter_design.radius = reachable_radius
-        self.parameter_design.DoF = self.dof
+        self.specified_parameter_design.axis_2_length = self.axis_2
+        self.specified_parameter_design.axis_3_length = self.axis_3
+        self.specified_parameter_design.arm_weight = 0
+        self.specified_parameter_design.payload = payload
+        self.specified_parameter_design.radius = reachable_radius
+        self.specified_parameter_design.DoF = self.dof
         
-        self.pub_parameter_design.publish(self.parameter_design)
+        self.pub_specified_parameter_design.publish(self.specified_parameter_design)
         
 
     def dynamics_new_traj_buttonClicked(self):
@@ -362,6 +367,52 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
 
     def random_robot_motor_buttonClicked(self):
         self.pub_cmd.publish(21)
+
+    def optimization_analysis_buttonClicked(self):
+        # input data: robot workspace, robot payload, robot joint velocity, robot joint acceleration
+        
+        payload = float(self.ui.lineEdit_op_payload.text())
+        payload_x = float(self.ui.lineEdit_op_payload_x.text())
+        payload_y = float(self.ui.lineEdit_op_payload_y.text())
+        payload_z = float(self.ui.lineEdit_op_payload_z.text())
+        payload_position = [payload_x, payload_y, payload_z]
+
+        vel_0 = float(self.ui.lineEdit_op_vel_1.text())
+        vel_1 = float(self.ui.lineEdit_op_vel_2.text())
+        vel_2 = float(self.ui.lineEdit_op_vel_3.text())
+        vel_3 = float(self.ui.lineEdit_op_vel_4.text())
+        vel_4 = float(self.ui.lineEdit_op_vel_5.text())
+        vel_5 = float(self.ui.lineEdit_op_vel_6.text())
+        joint_velocity = [vel_0, vel_1, vel_2, vel_3, vel_4, vel_5]
+
+        
+
+        acc_0 = float(self.ui.lineEdit_op_acc_1.text())
+        acc_1 = float(self.ui.lineEdit_op_acc_2.text())
+        acc_2 = float(self.ui.lineEdit_op_acc_3.text())
+        acc_3 = float(self.ui.lineEdit_op_acc_4.text())
+        acc_4 = float(self.ui.lineEdit_op_acc_5.text())
+        acc_5 = float(self.ui.lineEdit_op_acc_6.text())
+        joint_acceleration = [acc_0, acc_1, acc_2, acc_3, acc_4, acc_5]
+
+        reachable_radius = float(self.ui.lineEdit_op_reachable_radius.text())
+
+        # print ("payload: ", payload)
+        # print ("payload_position: ", payload_position)
+        # print ("joint_velocity: ", joint_velocity)
+        # print ("joint_acceleration: ", joint_acceleration)
+        # print ("Reachable radius: ", reachable_radius)
+
+        # self.optimization_data.payload = payload
+        self.optimal_design.payload = payload
+        self.optimal_design.payload_position = payload_position
+        self.optimal_design.vel = joint_velocity
+        self.optimal_design.acc = joint_acceleration
+        self.optimal_design.radius = reachable_radius
+
+        self.pub_optimal_design.publish(self.optimal_design)
+        self.pub_cmd.publish(21)
+
 
 if __name__=="__main__":
     rospy.init_node("interface_ui")

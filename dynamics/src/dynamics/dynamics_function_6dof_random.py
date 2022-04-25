@@ -7,8 +7,8 @@ import importlib
 importlib.reload(sys)
 from collections import namedtuple
 # import dyna_space
-from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, cal_process, cal_result, parameter_design
-
+from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, cal_process
+from interface_control.msg import cal_result, specified_parameter_design, optimal_design, optimal_random
 import numpy as np
 import roboticstoolbox as rtb
 from spatialmath import *
@@ -67,7 +67,11 @@ class Dynamics_space():
         self.sub_dyna = rospy.Subscriber("/dynamics_data",dyna_data, self.dyna_callback)
         self.sub_dyna_space = rospy.Subscriber("/dynamics_space_data",dyna_space_data, self.dyna_space_callback)
         self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path", DisplayTrajectory, self.planned_path_callback)
-        self.sub_parameter_design = rospy.Subscriber("/parameter_design",parameter_design, self.parameter_design_callback)
+        self.specified_parameter_design = rospy.Subscriber("/specified_parameter_design",specified_parameter_design, self.specified_parameter_design_callback)
+        # callback:Enter the parameters of the algorithm to be optimized on the interface
+        self.sub_optimal_design = rospy.Subscriber("/optimal_design",optimal_design, self.optimal_design_callback)
+        # callback:Randomly generated shaft length due to optimization algorithm
+        self.sub_optimal_random = rospy.Subscriber("/optimal_random",optimal_random, self.optimal_random_callback)
         # self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path",moveit_msgs.msg.JointTrajectory,self.planned_path_callback)
         self.cmd = 0
         self.robot = RandomRobot()
@@ -87,6 +91,13 @@ class Dynamics_space():
         self.payload_space = 0
         self.payload_position_space = np.array([0,0,0])
         self.axis_num = 1
+
+        self.op_payload = 0
+        self.op_payload_position = np.array([0,0,0])
+        self.op_vel = np.array([0,0,0,0,0,0]) # cycle / sec
+        self.op_acc = np.array([0,0,0,0,0,0]) # cycle / sec2
+        self.op_radius = 0
+
 
         self.tau_j = self.robot.rne(self.robot.qn, self.vel, self.acc)
 
@@ -215,7 +226,7 @@ class Dynamics_space():
         # plt.clf()
         # plt.close()      # 關閉圖表      
 
-    def parameter_design_callback(self, data):
+    def specified_parameter_design_callback(self, data):
         self.axis_2_length = data.axis_2_length
         self.axis_3_length = data.axis_3_length
         self.arm_weight = data.arm_weight
@@ -685,6 +696,50 @@ class Dynamics_space():
         print(res)
 
         self.robot.plot(self.qn)
+
+
+    def optimal_design_callback(self, data):
+        # print(data.data)
+        self.op_payload = data.payload
+        self.op_payload_position = data.payload_position
+        self.op_vel = data.vel
+        self.op_acc = data.acc
+        self.op_radius = data.radius
+
+        rospy.loginfo("I heard op_payload is %s", self.op_payload)
+        rospy.loginfo("I heard op_payload_position is %s", self.op_payload_position)
+        rospy.loginfo("I heard op_vel is %s", self.op_vel)
+        rospy.loginfo("I heard op_acc is %s", self.op_acc)
+        rospy.loginfo("I heard op_radius is %s", self.op_radius)
+
+        # print(self.optimal_design_flag)
+    def optimal_random_callback(self, data):
+        self.op_axis_2_length = data.axis_2_length
+        self.op_axis_3_length = data.axis_3_length
+
+        rospy.loginfo("I heard op_axis_2_length is %s", self.op_axis_2_length)
+        rospy.loginfo("I heard op_axis_3_length is %s", self.op_axis_3_length)
+        
+    # TODO: optimization_algorithm: use Random forest
+    def optimization_algorithm(self):
+        # input data: random axis2,3 length, robot workspace, robot payload, robot joint velocity, robot joint acceleration, motor data
+        '''
+        self.op_payload = data.payload
+        self.op_payload_position = data.payload_position
+        self.op_vel = data.vel
+        self.op_acc = data.acc
+        self.op_radius = data.radius
+        '''
+        # TODO: random axis2,3 length
+        # TODO: rebuild robot
+
+        
+        # output data: robot torque, robot module, motor select
+        # TODO: use dynamics to calculate torque
+
+        # TODO: through optimization algorithm to find the best solution
+        
+        pass
 
     def task_set(self):
         for case in switch(self.cmd):
