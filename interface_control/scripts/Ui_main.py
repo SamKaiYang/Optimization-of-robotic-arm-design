@@ -54,7 +54,7 @@ class Ui_MainWindow(object):
         self.tab_arm.setObjectName(u"tab_arm")
         self.gridLayoutWidget = QWidget(self.tab_arm)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(40, 50, 261, 201))
+        self.gridLayoutWidget.setGeometry(QRect(40, 50, 271, 201))
         self.gridLayout = QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -73,15 +73,15 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.lineEdit_payload_2, 2, 1, 1, 1)
 
-        self.label_8 = QLabel(self.gridLayoutWidget)
-        self.label_8.setObjectName(u"label_8")
-
-        self.gridLayout.addWidget(self.label_8, 0, 0, 1, 1)
-
         self.label_14 = QLabel(self.gridLayoutWidget)
         self.label_14.setObjectName(u"label_14")
 
         self.gridLayout.addWidget(self.label_14, 1, 2, 1, 1)
+
+        self.label_8 = QLabel(self.gridLayoutWidget)
+        self.label_8.setObjectName(u"label_8")
+
+        self.gridLayout.addWidget(self.label_8, 0, 0, 1, 1)
 
         self.label_13 = QLabel(self.gridLayoutWidget)
         self.label_13.setObjectName(u"label_13")
@@ -91,7 +91,7 @@ class Ui_MainWindow(object):
         self.label_12 = QLabel(self.gridLayoutWidget)
         self.label_12.setObjectName(u"label_12")
 
-        self.gridLayout.addWidget(self.label_12, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_12, 4, 0, 1, 1)
 
         self.label_19 = QLabel(self.gridLayoutWidget)
         self.label_19.setObjectName(u"label_19")
@@ -111,7 +111,22 @@ class Ui_MainWindow(object):
         self.comboBox_dof = QComboBox(self.gridLayoutWidget)
         self.comboBox_dof.setObjectName(u"comboBox_dof")
 
-        self.gridLayout.addWidget(self.comboBox_dof, 3, 1, 1, 1)
+        self.gridLayout.addWidget(self.comboBox_dof, 4, 1, 1, 1)
+
+        self.label_18 = QLabel(self.gridLayoutWidget)
+        self.label_18.setObjectName(u"label_18")
+
+        self.gridLayout.addWidget(self.label_18, 3, 0, 1, 1)
+
+        self.lineEdit_reachable_radius = QLineEdit(self.gridLayoutWidget)
+        self.lineEdit_reachable_radius.setObjectName(u"lineEdit_reachable_radius")
+
+        self.gridLayout.addWidget(self.lineEdit_reachable_radius, 3, 1, 1, 1)
+
+        self.label_22 = QLabel(self.gridLayoutWidget)
+        self.label_22.setObjectName(u"label_22")
+
+        self.gridLayout.addWidget(self.label_22, 3, 2, 1, 1)
 
         self.btn_dynamics_design = QPushButton(self.tab_arm)
         self.btn_dynamics_design.setObjectName(u"btn_dynamics_design")
@@ -604,6 +619,31 @@ class Ui_MainWindow(object):
         self.btn_random_robot_structure.setPalette(palette14)
         self.btn_random_robot_structure.setFont(font2)
         self.btn_random_robot_structure.setStyleSheet(u"background-color:#da7700;color:white;border-color: black;")
+        self.btn_random_robot_motor = QPushButton(self.tab_other)
+        self.btn_random_robot_motor.setObjectName(u"btn_random_robot_motor")
+        self.btn_random_robot_motor.setGeometry(QRect(40, 130, 261, 33))
+        palette15 = QPalette()
+        palette15.setBrush(QPalette.Active, QPalette.WindowText, brush)
+        palette15.setBrush(QPalette.Active, QPalette.Button, brush2)
+        palette15.setBrush(QPalette.Active, QPalette.Text, brush)
+        palette15.setBrush(QPalette.Active, QPalette.ButtonText, brush)
+        palette15.setBrush(QPalette.Active, QPalette.Base, brush2)
+        palette15.setBrush(QPalette.Active, QPalette.Window, brush2)
+        palette15.setBrush(QPalette.Inactive, QPalette.WindowText, brush)
+        palette15.setBrush(QPalette.Inactive, QPalette.Button, brush2)
+        palette15.setBrush(QPalette.Inactive, QPalette.Text, brush)
+        palette15.setBrush(QPalette.Inactive, QPalette.ButtonText, brush)
+        palette15.setBrush(QPalette.Inactive, QPalette.Base, brush2)
+        palette15.setBrush(QPalette.Inactive, QPalette.Window, brush2)
+        palette15.setBrush(QPalette.Disabled, QPalette.WindowText, brush)
+        palette15.setBrush(QPalette.Disabled, QPalette.Button, brush2)
+        palette15.setBrush(QPalette.Disabled, QPalette.Text, brush)
+        palette15.setBrush(QPalette.Disabled, QPalette.ButtonText, brush)
+        palette15.setBrush(QPalette.Disabled, QPalette.Base, brush2)
+        palette15.setBrush(QPalette.Disabled, QPalette.Window, brush2)
+        self.btn_random_robot_motor.setPalette(palette15)
+        self.btn_random_robot_motor.setFont(font2)
+        self.btn_random_robot_motor.setStyleSheet(u"background-color:#da7700;color:white;border-color: black;")
         self.tabWidget.addTab(self.tab_other, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -630,11 +670,14 @@ class Ui_MainWindow(object):
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Axis 3 length", None))
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"Payload", None))
         self.lineEdit_payload_2.setText(QCoreApplication.translate("MainWindow", u"0", None))
-        self.label_8.setText(QCoreApplication.translate("MainWindow", u"Axis 2 length", None))
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"m", None))
+        self.label_8.setText(QCoreApplication.translate("MainWindow", u"Axis 2 length", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"m", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"DoF", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"kg", None))
+        self.label_18.setText(QCoreApplication.translate("MainWindow", u"Reachable radius", None))
+        self.lineEdit_reachable_radius.setText(QCoreApplication.translate("MainWindow", u"0", None))
+        self.label_22.setText(QCoreApplication.translate("MainWindow", u"mm", None))
         self.btn_dynamics_design.setText(QCoreApplication.translate("MainWindow", u"Design", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_arm), QCoreApplication.translate("MainWindow", u"Arm Design", None))
         self.btn_dynamics_real_torq.setText(QCoreApplication.translate("MainWindow", u"Run", None))
@@ -692,6 +735,7 @@ class Ui_MainWindow(object):
         self.btn_dyn_space_set.setText(QCoreApplication.translate("MainWindow", u"Set", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_state), QCoreApplication.translate("MainWindow", u"Dynamics Space", None))
         self.btn_random_robot_structure.setText(QCoreApplication.translate("MainWindow", u"random robot structure", None))
+        self.btn_random_robot_motor.setText(QCoreApplication.translate("MainWindow", u"random robot & motor", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_other), QCoreApplication.translate("MainWindow", u"Other", None))
     # retranslateUi
 

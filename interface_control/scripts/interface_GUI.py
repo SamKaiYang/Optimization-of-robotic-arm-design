@@ -148,6 +148,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.btn_dynamics_real_torq.clicked.connect(self.dynamics_real_torq_buttonClicked)
         self.ui.btn_dynamics_save_para.clicked.connect(self.dynamics_save_para_buttonClicked)
         self.ui.btn_random_robot_structure.clicked.connect(self.random_robot_structure_buttonClicked)
+        self.ui.btn_random_robot_motor.clicked.connect(self.random_robot_motor_buttonClicked)
         # # Vel. HorizontalSlider
         # self.ui.horizontalSlider_vel.valueChanged.connect(self.VelSliderValue)
         # # Acc. HorizontalSlider
@@ -335,11 +336,12 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
     def dynamics_design_buttonClicked(self):
         # arm_weight = float(self.ui.lineEdit_arm_weight.text())
         payload = float(self.ui.lineEdit_payload_2.text())
-
+        reachable_radius = float(self.ui.lineEdit_reachable_radius.text())
         self.parameter_design.axis_2_length = self.axis_2
         self.parameter_design.axis_3_length = self.axis_3
         self.parameter_design.arm_weight = 0
         self.parameter_design.payload = payload
+        self.parameter_design.radius = reachable_radius
         self.parameter_design.DoF = self.dof
         
         self.pub_parameter_design.publish(self.parameter_design)
@@ -357,6 +359,9 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
 
     def random_robot_structure_buttonClicked(self):
         self.pub_cmd.publish(20)
+
+    def random_robot_motor_buttonClicked(self):
+        self.pub_cmd.publish(21)
 
 if __name__=="__main__":
     rospy.init_node("interface_ui")

@@ -7,7 +7,7 @@ import importlib
 importlib.reload(sys)
 from collections import namedtuple
 # import dyna_space
-from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, cal_process, cal_result
+from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, cal_process, cal_result, parameter_design
 
 import numpy as np
 import roboticstoolbox as rtb
@@ -35,7 +35,8 @@ np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if 
 
 from random_robot import RandomRobot
 # from robot_urdf import RandomRobot
-import motor_module
+from motor_module import mootor_data
+import pandas as pd
 
 class switch(object):
     def __init__(self, value):
@@ -66,6 +67,7 @@ class Dynamics_space():
         self.sub_dyna = rospy.Subscriber("/dynamics_data",dyna_data, self.dyna_callback)
         self.sub_dyna_space = rospy.Subscriber("/dynamics_space_data",dyna_space_data, self.dyna_space_callback)
         self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path", DisplayTrajectory, self.planned_path_callback)
+        self.sub_parameter_design = rospy.Subscriber("/parameter_design",parameter_design, self.parameter_design_callback)
         # self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path",moveit_msgs.msg.JointTrajectory,self.planned_path_callback)
         self.cmd = 0
         self.robot = RandomRobot()
@@ -136,6 +138,7 @@ class Dynamics_space():
         self.robot.__init__()
         print("robot rebuild")
 
+    
     def cmd_callback(self,data):
         self.cmd = data.cmd
         rospy.loginfo("I heard command is %s", data.cmd)
@@ -212,6 +215,20 @@ class Dynamics_space():
         # plt.clf()
         # plt.close()      # 關閉圖表      
 
+    def parameter_design_callback(self, data):
+        self.axis_2_length = data.axis_2_length
+        self.axis_3_length = data.axis_3_length
+        self.arm_weight = data.arm_weight
+        self.payload = data.payload
+        self.radius = data.radius  # 半径
+        self.DoF = data.DoF
+        rospy.loginfo("I heard axis_2_length is %s", self.axis_2_length)
+        rospy.loginfo("I heard axis_3_length is %s", self.axis_3_length)
+        rospy.loginfo("I heard arm_weight is %s", self.arm_weight)
+        rospy.loginfo("I heard payload is %s", self.payload)
+        rospy.loginfo("I heard radius is %s", self.radius)
+        rospy.loginfo("I heard DoF is %s", self.DoF)
+
     def payload_set(self):
         self.robot.payload(20, [0, 0, 0]) # set payload 
 
@@ -273,6 +290,7 @@ class Dynamics_space():
 
         fig = plt.figure()
         self.ax = plt.subplot(111, projection='3d')
+        self.ax_2d = plt.subplot(111)
 
         self.q1_s=-160
         self.q1_end=160
@@ -322,10 +340,31 @@ class Dynamics_space():
         Calculate the results through the "dynamics space" paging in the interface, 
         and draw the distribution points
         '''
-        self.ax.scatter(self.T_x[0,:], self.T_y[0,:], self.T_z[0,:], c='r', marker='o')
-        self.ax.set_xlabel("x")
-        self.ax.set_ylabel("y") 
-        self.ax.set_zlabel("z")
+        print("T_x:",self.T_x[0,:].max()-self.T_x[0,:].min())
+        print("T_y:",self.T_y[0,:].max()-self.T_y[0,:].min())
+        print("T_z:",self.T_z[0,:].max()-self.T_z[0,:].min())
+        # self.ax.scatter(self.T_x[0,:], self.T_y[0,:], self.T_z[0,:], c='r', marker='o')
+        # self.ax.set_xlabel("y")
+        # self.ax.set_ylabel("z") 
+        # self.ax.set_zlabel("z")
+        ax1 = plt.subplot(311)
+        ax1.scatter(self.T_x[0,:], self.T_y[0,:], c='r', marker='o')
+        
+        ax1.set_xlabel("x")
+        ax1.set_ylabel("y") 
+
+        ax2 = plt.subplot(312)
+        ax2.scatter(self.T_x[0,:], self.T_z[0,:], c='r', marker='o')
+        
+        ax2.set_xlabel("x")
+        ax2.set_ylabel("z") 
+
+        ax3 = plt.subplot(313)
+        ax3.scatter(self.T_y[0,:], self.T_z[0,:], c='r', marker='o')
+        
+        ax3.set_xlabel("y")
+        ax3.set_ylabel("z") 
+        # self.ax.set_zlabel("z")
         plt.show()
         # plt.pause(0)
 
@@ -630,6 +669,23 @@ class Dynamics_space():
         # 角度轉換
         du=pi/180
         
+    def robot_motor_random_build(self):
+        self.robot.__init__()
+        print("robot rebuild")
+        motor = mootor_data()
+        # print(motor.TECO_member.head())
+        # print(motor.TECO_member.groupby("rated_torque").mean())
+        print(pd.concat([motor.TECO_member, motor.Kollmorgen_member, motor.UR_member, motor.TM_member], axis=0))
+
+
+        res = motor.TECO_member.append(other=motor.Kollmorgen_member, ignore_index=True)
+        print(res)
+
+        res = motor.TECO_member.append([motor.Kollmorgen_member, motor.UR_member, motor.TM_member], ignore_index=True)
+        print(res)
+
+        self.robot.plot(self.qn)
+
     def task_set(self):
         for case in switch(self.cmd):
             if case(1):
@@ -672,6 +728,11 @@ class Dynamics_space():
             # arm data rebuild
             if case(7):
                 Dya.robot_rebuild()
+                self.cmd = 0
+                break
+            # arm data & motor data rebuild
+            if case(8):
+                Dya.robot_motor_random_build()
                 self.cmd = 0
                 break
             if case():

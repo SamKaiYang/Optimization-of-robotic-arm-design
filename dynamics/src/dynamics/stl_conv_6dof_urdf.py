@@ -162,12 +162,14 @@ class stl_conv_urdf():
         self.axis_3_length = data.axis_3_length
         self.arm_weight = data.arm_weight
         self.payload = data.payload
+        self.radius = data.radius  # 半径
         self.DoF = data.DoF
-        rospy.loginfo("I heard command is %s", self.axis_2_length)
-        rospy.loginfo("I heard command is %s", self.axis_3_length)
-        rospy.loginfo("I heard command is %s", self.arm_weight)
-        rospy.loginfo("I heard command is %s", self.payload)
-        rospy.loginfo("I heard command is %s", self.DoF)
+        rospy.loginfo("I heard axis_2_length is %s", self.axis_2_length)
+        rospy.loginfo("I heard axis_3_length is %s", self.axis_3_length)
+        rospy.loginfo("I heard arm_weight is %s", self.arm_weight)
+        rospy.loginfo("I heard payload is %s", self.payload)
+        rospy.loginfo("I heard radius is %s", self.radius)
+        rospy.loginfo("I heard DoF is %s", self.DoF)
 
         self.stl_read_file()
         self.read_check_urdf()
@@ -176,30 +178,20 @@ class stl_conv_urdf():
 
     def interface_control_callback(self,data):
         cmd = data.cmd
-
+        # rebuild robot modules
         if cmd == 20:
             self.random_generate_write_urdf()
             self.pub_cmd.publish(7) # rebuild robot 
+        # rebuild robot & motor match
+        elif cmd == 21:
+            self.random_generate_write_urdf()
+            self.pub_cmd.publish(8)
 
     def random_generate_write_urdf(self):
         your_mesh = mesh.Mesh.from_file(path.dirname(path.realpath(__file__)) + "/meshes/" +'random_3_25.0.STL')
-        # print('random_3_25.0.STL')
         volume_1, cog_1, inertia_1 = your_mesh.get_mass_properties()
-        # print("Volume                                  = {0}".format(volume_1))
-        # print("Position of the center of gravity (COG) = {0}".format(cog_1))
-        # print("Inertia matrix at expressed at the COG  = {0}".format(inertia_1[0,:]))
-        # print("                                          {0}".format(inertia_1[1,:]))
-        # print("                                          {0}".format(inertia_1[2,:]))
-
         your_mesh = mesh.Mesh.from_file(path.dirname(path.realpath(__file__)) + "/meshes/" +'random_3_30.0.STL')
-        # print('random_3_30.0.STL')
         volume_2, cog_2, inertia_2 = your_mesh.get_mass_properties()
-        # print("Volume                                  = {0}".format(volume_2))
-        # print("Position of the center of gravity (COG) = {0}".format(cog_2))
-        # print("Inertia matrix at expressed at the COG  = {0}".format(inertia_2[0,:]))
-        # print("                                          {0}".format(inertia_2[1,:]))
-        # print("                                          {0}".format(inertia_2[2,:]))
-
         vol = volume_2 - volume_1
         cog = cog_2 - cog_1
         inertia = inertia_2 - inertia_1

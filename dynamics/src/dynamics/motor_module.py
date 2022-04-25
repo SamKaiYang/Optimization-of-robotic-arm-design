@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import numpy as np
 import os 
+import pandas as pd
+
+
 
 class TECO_motor():
     '''
@@ -38,6 +41,8 @@ class Kollmorgen_motor():
         length = [120, 123, 127, 131] # mm
         weight = [1.57, 2.13, 2.65, 4.43] # kg
 
+
+
 class UR_motor():
     '''
         UR size 0, 1, 2, 3, 4
@@ -56,6 +61,8 @@ class UR_motor():
         height = [76.8158,	84.2327,	99.8623,	130.2477,	161.3661] # mm
         length = [88.7783,	104.6882,	122.9227,	133.6598,	177.1094] # mm
         weight = [0.8,	1.219,	2,	3.7,	7.1] # kg
+
+
 
 class TM_motor():
     '''
@@ -76,8 +83,59 @@ class TM_motor():
         length = [117.6,	117.6,	108.7092,	160.0011,	201.8001] # mm
         weight = [1.45,	1.45,	2,	4.5,	7] # kg
 
+class mootor_data():
+    def __init__(self, symbolic=False):
+        self.TECO_motor_data = {"rated_torque":[16, 38, 60, 114],
+                    "rated_speed":[35.0, 25.0, 22.5, 15.0],
+                    "max_torque":[32.0, 66.0, 120.0, 198.0],
+                    "max_output_speed":[44, 31, 42, 25],
+                    "diameter":[80, 90, 102, 130],
+                    "height":[89.5, 105, 113.5, 145],
+                    "length":[123, 125, 141, 130],
+                    "weight":[1.3, 2.0, 2.6, 4.5]}
+        self.TECO_member = pd.DataFrame(self.TECO_motor_data)
+
+        self.Kollmorgen_motor_data = {"rated_torque":[13.5, 49, 61, 118],
+                    "rated_speed":[20.0, 20.0, 15.0, 10.0], 
+                    "max_torque":[34.0, 66.0, 102.0, 194.0],
+                    "max_output_speed":[35, 30, 25, 20],
+                    "diameter":[79, 90, 102, 127],
+                    "height":[95, 105, 117, 145],
+                    "length":[120, 123, 127, 131],
+                    "weight":[1.57, 2.13, 2.65, 4.43]}
+        self.Kollmorgen_member = pd.DataFrame(self.Kollmorgen_motor_data)
+
+        self.UR_motor_data = {"rated_torque":[16, 38, 60, 114, 311],
+                    "rated_speed":[60,	30,	30,	30,	20],
+                    "max_torque":[12,	28,	56,	150,	330],
+                    "diameter":[64.3208,	77.584,	90.8154,	118.9042,	150.9524],
+                    "height":[76.8158,	84.2327,	99.8623,	130.2477,	161.3661],
+                    "length":[88.7783,	104.6882,	122.9227,	133.6598,	177.1094],
+                    "weight":[0.8,	1.219,	2,	3.7,	7.1]}
+        self.UR_member = pd.DataFrame(self.UR_motor_data)
+
+        self.TM_motor_data = {"rated_torque":[23,	34,	41,	118,	311],
+                    "rated_speed":[37.5,	30,	25,	30,	20],
+                    "max_torque":[43,	54,	54,	157,	353],
+                    "diameter":[90.586,	90.586,	90.0038,	121.286,	151.5741],
+                    "height":[94.495,	94.495,	97.5295,	127.386,	155.397],
+                    "length":[117.6,	117.6,	108.7092,	160.0011,	201.8001],
+                    "weight":[1.45,	1.45,	2,	4.5,	7]}
+        self.TM_member = pd.DataFrame(self.TM_motor_data)
+
 if __name__ == '__main__':    # pragma nocover
 
-    motor = TECO_motor()
-    print(motor)
+    motor = mootor_data()
+    # print(motor.TECO_member.head())
+    # print(motor.TECO_member.groupby("rated_torque").mean())
+
+    print(pd.concat([motor.TECO_member, motor.Kollmorgen_member, motor.UR_member, motor.TM_member], axis=0))
+
+
+    res = motor.TECO_member.append(other=motor.Kollmorgen_member, ignore_index=True)
+    print(res)
+
+    res = motor.TECO_member.append([motor.Kollmorgen_member, motor.UR_member, motor.TM_member], ignore_index=True)
+    print(res)
+    # print(motor.TECO_member.merge(right=motor.Kollmorgen_member, how="outer"))
     # print(robot.dynamics())
