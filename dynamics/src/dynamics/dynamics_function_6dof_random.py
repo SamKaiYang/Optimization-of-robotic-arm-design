@@ -291,7 +291,7 @@ class Dynamics_space():
         '''
         Through the "dynamics space" page in the interface to calculate the dynamics of the robot
         '''
-        # 窮舉法正運動學計算工作空間
+        # 蒙地卡羅法正運動學計算工作空間
         start = time.time()
         print("The time used to execute this is given below")
         i = 0
@@ -345,6 +345,53 @@ class Dynamics_space():
 
         end = time.time()
         print("繪製工作空間運行時間：%f sec" % (end - start))
+
+    def Workspace_cal_Monte_Carlo(self):
+        '''
+        Through the "Work space" page in the interface to calculate of the robot
+        '''
+        i = 0
+        # 角度轉換
+        du=pi/180;  #度
+        radian=180/pi; #弧度
+
+        # fig = plt.figure()
+        # self.ax = plt.subplot(111, projection='3d')
+        # self.ax_2d = plt.subplot(111)
+
+        self.q1_s=-160
+        self.q1_end=160
+        self.q2_s=-160
+        self.q2_end=160
+        self.q3_s=-160
+        self.q3_end=160
+        self.q4_s=-160
+        self.q4_end=160
+        self.q5_s=-160
+        self.q5_end=160
+        self.q6_s=-160
+        self.q6_end=160
+        N = 20000
+        theta1=self.q1_end + (self.q1_end-self.q1_s) * np.random.rand(N,1)
+        theta2=self.q2_end + (self.q2_end-self.q2_s) * np.random.rand(N,1)
+        theta3=self.q3_end + (self.q3_end-self.q3_s) * np.random.rand(N,1)
+        theta4=self.q4_end + (self.q4_end-self.q4_s) * np.random.rand(N,1)
+        theta5=self.q5_end + (self.q5_end-self.q5_s) * np.random.rand(N,1)
+        theta6=self.q6_end + (self.q6_end-self.q6_s) * np.random.rand(N,1)
+
+        for i in range(N):
+            percent = (i+1)/N*100
+            q1 = theta1[i,0]
+            q2 = theta2[i,0]
+            q3 = theta3[i,0]
+            q4 = theta4[i,0]
+            q5 = theta5[i,0]
+            q6 = theta6[i,0]
+            self.T = self.robot.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, q6*du])
+            self.T_x[0,i] = self.T.t[0]
+            self.T_y[0,i] = self.T.t[1]
+            self.T_z[0,i] = self.T.t[2]
+            i=i+1
 
     def plot_space_scan(self):
         '''
@@ -723,23 +770,81 @@ class Dynamics_space():
     # TODO: optimization_algorithm: use Random forest
     def optimization_algorithm(self):
         # input data: random axis2,3 length, robot workspace, robot payload, robot joint velocity, robot joint acceleration, motor data
-        '''
-        self.op_payload = data.payload
-        self.op_payload_position = data.payload_position
-        self.op_vel = data.vel
-        self.op_acc = data.acc
-        self.op_radius = data.radius
-        '''
-        # TODO: random axis2,3 length
-        # TODO: rebuild robot
+        ''' 
+        Agent :
+            robot payload set
+            robot velocity
+            robot acceleration
 
+        Action :
+            axis 2 length increase
+            axis 2 length reduce
+            axis 3 length increase
+            axis 3 length reduce
+            Change the motor configuration of each axis
+
+        Rewards :
+            torque
+            motor cost
+            robot workspace
+            robot weight
+
+        Status : 
+            After the parameter of action is changed, the torque value of each axis
+        '''
         
+        ''' transfer the data to the dataframe
+        agent:
+            self.op_payload
+            self.op_payload_position
+            self.op_vel
+            self.op_acc
+            self.op_radius
+        '''
+        # TODO: axis2,3 length change
+        ''' receive the data from the topic
+        action:
+            axis 2 length increase
+            axis 2 length reduce
+            axis 3 length increase
+            axis 3 length reduce
+            Change the motor configuration of each axis
+        '''
+        # TODO: rebuild robot
+        self.robot_motor_random_build()
+        # update dynamics torque calculation parameters
+        self.payload = self.op_payload
+        self.payload_position = self.op_payload_position
+        self.vel = self.op_vel
+        self.acc = self.op_acc
+        # calculate the robotic arm workspace
+        self.Workspace_cal_Monte_Carlo()
+        # Compare ideal radius with the workspace radius
+        print("T_x:",self.T_x[0,:].max()-self.T_x[0,:].min())
+        print("T_y:",self.T_y[0,:].max()-self.T_y[0,:].min())
+        print("T_z:",self.T_z[0,:].max()-self.T_z[0,:].min())
+        radius_max = self.T_x[0,:].max()-self.T_x[0,:].min()
+        radius_reward = self.op_radius - radius_max
+        # TODO: before reward
         # output data: robot torque, robot module, motor select
         # TODO: use dynamics to calculate torque
-
+        self.dynamics_torque_limit()
+        ''' transfer the data to the topic
+        rewards:
+            torque : Use torque reduction
+            motor cost
+            robot workspace
+            robot weight
+        '''
+        # Use torque reduction, motor score (the higher the cost, the lower the score),
+        # Motor score (the higher the cost, the lower the score)
+        # Scope of work (the larger the scope of work, the higher the score)
+        ''' transfer the data to the topic
+        state:
+        After the parameter of action is changed, the torque value of each axis
+        '''
         # TODO: through optimization algorithm to find the best solution
         
-        pass
 
     def task_set(self):
         for case in switch(self.cmd):
