@@ -797,17 +797,20 @@ class Dynamics_space():
         self.robot.__init__()
         print("robot rebuild")
         motor = mootor_data()
-        # print(motor.TECO_member.head())
-        # print(motor.TECO_member.groupby("rated_torque").mean())
-        # print(pd.concat([motor.TECO_member, motor.Kollmorgen_member, motor.UR_member, motor.TM_member], axis=0))
-        # print("================================")
-
-        # res = motor.TECO_member.append(other=motor.Kollmorgen_member, ignore_index=True)
-        # print(res)
         res = motor.TECO_member
-        print(res)
         print("torque dynamics static limit:",self.torque_static_limit)
         print("torque dynamics limit:",self.torque_dynamics_limit)
+
+        for i in range(len(res)):
+            if res.rated_torque[i] > self.torque_static_limit[1]:
+                # res.drop(i, inplace=True)
+                print("i:",i)
+        
+        for i in range(len(res)):
+            if res.rated_torque[i] > self.torque_dynamics_limit[1]:
+                # res.drop(i, inplace=True)
+                print("i:",i)
+        
 
     def excited_trajectory(self, q_list, q_list_2, q_list_3, q_list_4, q_list_5, q_list_6):
         # 窮舉法正運動學計算工作空間
