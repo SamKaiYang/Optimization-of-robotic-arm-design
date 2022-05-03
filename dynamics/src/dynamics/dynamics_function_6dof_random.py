@@ -30,7 +30,7 @@ from openpyxl import Workbook
 
 from os import path
 
-from scipy.interpolate import make_interp_spline # draw smooth 
+from scipy.interpolate import make_interp_spline # draw smooth
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
 
 from random_robot import RandomRobot
@@ -47,7 +47,7 @@ class switch(object):
         """Return the match method once, then stop"""
         yield self.match
         raise StopIteration
-    
+
     def match(self, *args):
         """Indicate whether or not to enter a case suite"""
         if self.fall or not args:
@@ -84,7 +84,7 @@ class Dynamics_space():
 
         self.payload = 0
         self.payload_position = np.array([0,0,0])
-        self.joint_angle = np.array([0,0,0,0,0,0]) # degree 
+        self.joint_angle = np.array([0,0,0,0,0,0]) # degree
         self.vel = np.array([0,0,0,0,0,0]) # cycle / sec
         self.acc = np.array([0,0,0,0,0,0]) # cycle / sec2
 
@@ -103,7 +103,7 @@ class Dynamics_space():
 
         self.tau_j = self.robot.rne(self.robot.qn, self.vel, self.acc)
 
-        self.qn = np.array([0,0,0,0,0,0]) # degree 
+        self.qn = np.array([0,0,0,0,0,0]) # degree
         ## 數值法 求取工作空間
         # 關節角限位
         self.q1_s=-160
@@ -120,20 +120,20 @@ class Dynamics_space():
         self.q6_end=160
         # 計算參數
         self.step= 20 #計算步距 % 解析度   # original = 20
-        # t=0:1:(q5_end-q5_s)/step # 產生時間向量 
-        step1 = (self.q1_end - self.q1_s)/self.step 
-        step2 = (self.q2_end - self.q2_s)/self.step 
-        step3 = (self.q3_end - self.q3_s)/self.step 
-        step4 = (self.q4_end - self.q4_s)/self.step 
+        # t=0:1:(q5_end-q5_s)/step # 產生時間向量
+        step1 = (self.q1_end - self.q1_s)/self.step
+        step2 = (self.q2_end - self.q2_s)/self.step
+        step3 = (self.q3_end - self.q3_s)/self.step
+        step4 = (self.q4_end - self.q4_s)/self.step
         step5 = (self.q5_end - self.q5_s)/self.step
-        step6 = (self.q6_end - self.q6_s)/self.step 
+        step6 = (self.q6_end - self.q6_s)/self.step
         self.step_num = int(step1*step2*step3*step4*step5)
         self.T_cell=step1*step2*step3*step4*step5
         self.T = np.zeros((3,1))
         self.T_x = np.zeros((1,self.step_num))
         self.T_y = np.zeros((1,self.step_num))
         self.T_z = np.zeros((1,self.step_num))
-        
+
         N = 100
         (Q2, Q3) = np.meshgrid(np.linspace(-pi, pi, N), np.linspace(-pi, pi, N))
         M11 = np.zeros((N,N))
@@ -151,11 +151,11 @@ class Dynamics_space():
         self.robot.__init__()
         print("robot rebuild")
 
-    
+
     def cmd_callback(self,data):
         self.cmd = data.cmd
         rospy.loginfo("I heard command is %s", data.cmd)
-    
+
     def dyna_callback(self,data):
         self.joint_angle = data.joint_angle
         self.payload = data.payload
@@ -167,7 +167,7 @@ class Dynamics_space():
         rospy.loginfo("I heard command is %s", data.payload_position)
         rospy.loginfo("I heard command is %s", data.vel)
         rospy.loginfo("I heard command is %s", data.acc)
-    
+
     def dyna_space_callback(self,data):
         self.payload_space = data.payload
         self.payload_position_space = data.payload_position
@@ -198,7 +198,7 @@ class Dynamics_space():
             time_from_start_nsecs.append(self.robot_trajectory[0].joint_trajectory.points[i].time_from_start.nsecs)
 
         self.trajectory_dynamics_calc(points_num, positions, velocities, accelerations, time_from_start)
-        # TODO: plot trajectory torque 
+        # TODO: plot trajectory torque
         # rospy.loginfo("tau_j_array 1 is %s", self.tau_j_array[1,:].tolist())
         time_array_secs = np.array(time_from_start_secs)
         time_array_nsecs = np.array(time_from_start_nsecs)
@@ -214,7 +214,7 @@ class Dynamics_space():
         axis = 6
         for i in range(axis):
             y_smooth = make_interp_spline(time_array, tau_array[:,i])(x_smooth)
-            plt.subplot(2,3,i+1) 
+            plt.subplot(2,3,i+1)
             plt.plot(x_smooth, y_smooth,"b--")
             string_axis = str(i+1)
             plt.title("torque "+string_axis, {'fontsize':10})  # 設定圖標題及其文字大小
@@ -226,7 +226,7 @@ class Dynamics_space():
         plt.pause(0.0001)
         fig.canvas.draw()
         # plt.clf()
-        # plt.close()      # 關閉圖表      
+        # plt.close()      # 關閉圖表
 
     def specified_parameter_design_callback(self, data):
         self.axis_2_length = data.axis_2_length
@@ -243,7 +243,7 @@ class Dynamics_space():
         rospy.loginfo("I heard DoF is %s", self.DoF)
 
     def payload_set(self):
-        self.robot.payload(20, [0, 0, 0]) # set payload 
+        self.robot.payload(20, [0, 0, 0]) # set payload
 
     # def dynamics_space_cal(self):
     #     '''
@@ -266,7 +266,7 @@ class Dynamics_space():
     #     self.ax = plt.subplot(111, projection='3d')
 
 
-    #     self.robot.payload(self.payload_space, self.payload_position_space) # set payload 
+    #     self.robot.payload(self.payload_space, self.payload_position_space) # set payload
 
     #     for q1 in range(self.q1_s, self.q1_end, self.step):
     #         for q2 in range(self.q2_s, self.q2_end, self.step):
@@ -284,7 +284,7 @@ class Dynamics_space():
     #                         self.T_y[0,i] = self.T.t[1]
     #                         self.T_z[0,i] = self.T.t[2]
     #                         i=i+1
-                            
+
     #     end = time.time()
     #     print("繪製工作空間運行時間：%f sec" % (end - start))
 
@@ -298,7 +298,7 @@ class Dynamics_space():
         self.robot.coriolis(self.robot.qn, qd) @ qd
         # TODO:  rne 逆動力學 add vel & acc analyses
         self.robot.rne(self.robot.qn, np.zeros((6,)), np.zeros((6,)))
-        
+
         torque = np.array([np.zeros(shape=6)])
         # axis_angle = np.array([np.zeros(shape=6)])
         axis_angle = []
@@ -318,20 +318,20 @@ class Dynamics_space():
         self.ax = plt.subplot(111, projection='3d')
         self.ax_2d = plt.subplot(111)
 
-        self.q1_s=-160
-        self.q1_end=160
-        self.q2_s=-160
-        self.q2_end=160
-        self.q3_s=-160
-        self.q3_end=160
-        self.q4_s=-160
-        self.q4_end=160
+        self.q1_s=-90
+        self.q1_end=90
+        self.q2_s=-90
+        self.q2_end=90
+        self.q3_s=-120
+        self.q3_end=120
+        self.q4_s=-120
+        self.q4_end=120
         self.q5_s=-160
         self.q5_end=160
         self.q6_s=-160
         self.q6_end=160
 
-        self.robot.payload(self.payload_space, self.payload_position_space) # set payload 
+        self.robot.payload(self.payload_space, self.payload_position_space) # set payload
         N = 20000
         theta1=self.q1_end + (self.q1_end-self.q1_s) * np.random.rand(N,1)
         theta2=self.q2_end + (self.q2_end-self.q2_s) * np.random.rand(N,1)
@@ -363,7 +363,7 @@ class Dynamics_space():
         print("繪製工作空間運行時間：%f sec" % (end - start))
 
         for i in range(6):
-            axis = i 
+            axis = i
             excel_file = Workbook()
             sheet = excel_file.active
             sheet['A1'] = 'torque 1'
@@ -463,154 +463,154 @@ class Dynamics_space():
 
     def plot_space_scan(self):
         '''
-        Calculate the results through the "dynamics space" paging in the interface, 
+        Calculate the results through the "dynamics space" paging in the interface,
         and draw the distribution points
         '''
-        print("T_x:",self.T_x[0,:].max()-self.T_x[0,:].min())
-        print("T_y:",self.T_y[0,:].max()-self.T_y[0,:].min())
-        print("T_z:",self.T_z[0,:].max()-self.T_z[0,:].min())
+        print("T_x:{} (meter)" .format(self.T_x[0,:].max()-self.T_x[0,:].min()))
+        print("T_y:{} (meter)" .format(self.T_y[0,:].max()-self.T_y[0,:].min()))
+        print("T_z:{} (meter)" .format(self.T_z[0,:].max()-self.T_z[0,:].min()))
         # self.ax.scatter(self.T_x[0,:], self.T_y[0,:], self.T_z[0,:], c='r', marker='o')
         # self.ax.set_xlabel("y")
-        # self.ax.set_ylabel("z") 
+        # self.ax.set_ylabel("z")
         # self.ax.set_zlabel("z")
         ax1 = plt.subplot(311)
         ax1.scatter(self.T_x[0,:], self.T_y[0,:], c='r', marker='o')
-        
-        ax1.set_xlabel("x")
-        ax1.set_ylabel("y") 
+
+        ax1.set_xlabel("x (meter)")
+        ax1.set_ylabel("y (meter)")
 
         ax2 = plt.subplot(312)
         ax2.scatter(self.T_x[0,:], self.T_z[0,:], c='r', marker='o')
-        
-        ax2.set_xlabel("x")
-        ax2.set_ylabel("z") 
+
+        ax2.set_xlabel("x (meter)")
+        ax2.set_ylabel("z (meter)")
 
         ax3 = plt.subplot(313)
         ax3.scatter(self.T_y[0,:], self.T_z[0,:], c='r', marker='o')
-        
-        ax3.set_xlabel("y")
-        ax3.set_ylabel("z") 
+
+        ax3.set_xlabel("y (meter)")
+        ax3.set_ylabel("z (meter)")
         # self.ax.set_zlabel("z")
         plt.show()
         # plt.pause(0)
 
-    def sol_output_axis(self):
-        '''
-        Through the "dynamics space" page in the interface to calculate the results, 
-        output the maximum torque of each axis
-        '''
-        for i in range(6):
-            axis = i 
-            # excel output
-            # 建立excel空白活頁簿
-            excel_file = Workbook()
-            # 建立一個工作表
-            sheet = excel_file.active
-            # 先填入第一列的欄位名稱
-            sheet['A1'] = 'axis 1'
-            sheet['B1'] = 'axis 2'
-            sheet['C1'] = 'axis 3'
-            sheet['D1'] = 'axis 4'
-            sheet['E1'] = 'axis 5'
-            sheet['F1'] = 'axis 6'
-            sheet['G1'] = 'torque 1'
-            sheet['H1'] = 'torque 2'
-            sheet['I1'] = 'torque 3'
-            sheet['J1'] = 'torque 4'
-            sheet['K1'] = 'torque 5'
-            sheet['L1'] = 'torque 6'
+    # def sol_output_axis(self):
+    #     '''
+    #     Through the "dynamics space" page in the interface to calculate the results,
+    #     output the maximum torque of each axis
+    #     '''
+    #     for i in range(6):
+    #         axis = i
+    #         # excel output
+    #         # 建立excel空白活頁簿
+    #         excel_file = Workbook()
+    #         # 建立一個工作表
+    #         sheet = excel_file.active
+    #         # 先填入第一列的欄位名稱
+    #         sheet['A1'] = 'axis 1'
+    #         sheet['B1'] = 'axis 2'
+    #         sheet['C1'] = 'axis 3'
+    #         sheet['D1'] = 'axis 4'
+    #         sheet['E1'] = 'axis 5'
+    #         sheet['F1'] = 'axis 6'
+    #         sheet['G1'] = 'torque 1'
+    #         sheet['H1'] = 'torque 2'
+    #         sheet['I1'] = 'torque 3'
+    #         sheet['J1'] = 'torque 4'
+    #         sheet['K1'] = 'torque 5'
+    #         sheet['L1'] = 'torque 6'
 
-            self.ik_sol_positive= []
-            print("軸%d torque正最大值:%f" %(axis+1, np.max(self.torque[:,axis])))
-            print("軸%d torque負最大值:%f" %(axis+1, np.min(self.torque[:,axis])))
-            print("軸%d torque正最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
-            torque_where = np.where(self.torque==np.max(self.torque[:,axis]))
-            append_sol_list = []
-            for i in range(len(torque_where[0])):
-                print(torque_where[0][i])
-                max_torque = torque_where[0][i]
-                print("torque:",self.torque[max_torque])
-                print("末端位置",[self.T_x[0,i], self.T_y[0,i], self.T_z[0,i]])
-                # TODO: 求解逆運動學 各軸角度self.robot.ikine_a()
-                self.T.t[0] = self.T_x[0,i]
-                self.T.t[1] = self.T_y[0,i]
-                self.T.t[2] = self.T_z[0,i]
-                sol = self.robot.ikine_LM(self.T)  # original sol = self.robot.ikine_a(self.T, "lun")
-                print("sol:",sol)
-                # self.robot.plot(sol.q, dt=0.1)
-                # self.robot.plot(sol.q)
-                # # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
-                # # TODO: 匯入至CSV檔案
-                # plt.savefig(path.join(self.pic_outpath,"dataname_positive_{0}_{1}.png".format(axis+1,i)))
-                # plt.close()
-                
-                # TODO:# output excel file
-                append_sol_list_angle = sol.q.tolist()
-                append_sol_list_torque = self.torque[max_torque].tolist()
-                append_sol_list.extend(append_sol_list_torque)
-                sheet.append(append_sol_list)
-                # self.ik_sol_positive.append(sol)
+    #         self.ik_sol_positive= []
+    #         print("軸%d torque正最大值:%f" %(axis+1, np.max(self.torque[:,axis])))
+    #         print("軸%d torque負最大值:%f" %(axis+1, np.min(self.torque[:,axis])))
+    #         print("軸%d torque正最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
+    #         torque_where = np.where(self.torque==np.max(self.torque[:,axis]))
+    #         append_sol_list = []
+    #         for i in range(len(torque_where[0])):
+    #             print(torque_where[0][i])
+    #             max_torque = torque_where[0][i]
+    #             print("torque:",self.torque[max_torque])
+    #             print("末端位置",[self.T_x[0,i], self.T_y[0,i], self.T_z[0,i]])
+    #             # TODO: 求解逆運動學 各軸角度self.robot.ikine_a()
+    #             self.T.t[0] = self.T_x[0,i]
+    #             self.T.t[1] = self.T_y[0,i]
+    #             self.T.t[2] = self.T_z[0,i]
+    #             sol = self.robot.ikine_LM(self.T)  # original sol = self.robot.ikine_a(self.T, "lun")
+    #             print("sol:",sol)
+    #             # self.robot.plot(sol.q, dt=0.1)
+    #             # self.robot.plot(sol.q)
+    #             # # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
+    #             # # TODO: 匯入至CSV檔案
+    #             # plt.savefig(path.join(self.pic_outpath,"dataname_positive_{0}_{1}.png".format(axis+1,i)))
+    #             # plt.close()
 
-            # original # output excel file
-            # for x in self.ik_sol_positive:
-            #     sheet.append(x.q.tolist())
+    #             # TODO:# output excel file
+    #             append_sol_list_angle = sol.q.tolist()
+    #             append_sol_list_torque = self.torque[max_torque].tolist()
+    #             append_sol_list.extend(append_sol_list_torque)
+    #             sheet.append(append_sol_list)
+    #             # self.ik_sol_positive.append(sol)
 
-            file_name = self.xlsx_outpath+'/dynamics_space_calc_axis'+str(axis+1)+'_positive'+'.xlsx'
-            excel_file.save(file_name)
+    #         # original # output excel file
+    #         # for x in self.ik_sol_positive:
+    #         #     sheet.append(x.q.tolist())
 
-            # excel output
-            # 建立excel空白活頁簿
-            excel_file = Workbook()
-            # 建立一個工作表
-            sheet = excel_file.active
-            # 先填入第一列的欄位名稱
-            sheet['A1'] = 'axis 1'
-            sheet['B1'] = 'axis 2'
-            sheet['C1'] = 'axis 3'
-            sheet['D1'] = 'axis 4'
-            sheet['E1'] = 'axis 5'
-            sheet['F1'] = 'axis 6'
-            sheet['G1'] = 'torque 1'
-            sheet['H1'] = 'torque 2'
-            sheet['I1'] = 'torque 3'
-            sheet['J1'] = 'torque 4'
-            sheet['K1'] = 'torque 5'
-            sheet['L1'] = 'torque 6'
+    #         file_name = self.xlsx_outpath+'/dynamics_space_calc_axis'+str(axis+1)+'_positive'+'.xlsx'
+    #         excel_file.save(file_name)
 
-            self.ik_sol_negative= []
-            print("軸%d torque負最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
-            torque_where = np.where(self.torque==np.min(self.torque[:,axis]))
-            append_sol_list = []
-            for i in range(len(torque_where[0])):
-                print(torque_where[0][i])
-                max_torque = torque_where[0][i]
-                print("torque:",self.torque[max_torque])
-                print("末端位置",[self.T_x[0,i], self.T_y[0,i], self.T_z[0,i]])
-                # TODO: 求解逆運動學 各軸角度self.robot.ikine_a()
-                self.T.t[0] = self.T_x[0,i]
-                self.T.t[1] = self.T_y[0,i]
-                self.T.t[2] = self.T_z[0,i]
-                sol = self.robot.ikine_LM(self.T)  # original sol = self.robot.ikine_a(self.T, "lun")
-                print("sol:",sol)
-                # self.robot.plot(sol.q, dt=0.1)
-                # self.robot.plot(sol.q)
-                # # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
-                # # TODO: 匯入至CSV檔案
-                # plt.savefig(path.join(self.pic_outpath,"dataname_negative_{0}_{1}.png".format(axis+1,i)))
-                # plt.close()
-                # TODO:# output excel file
-                append_sol_list_angle = sol.q.tolist()
-                append_sol_list_torque = self.torque[max_torque].tolist()
-                append_sol_list.extend(append_sol_list_torque)
-                sheet.append(append_sol_list)
-                # self.ik_sol_negative.append(sol)
+    #         # excel output
+    #         # 建立excel空白活頁簿
+    #         excel_file = Workbook()
+    #         # 建立一個工作表
+    #         sheet = excel_file.active
+    #         # 先填入第一列的欄位名稱
+    #         sheet['A1'] = 'axis 1'
+    #         sheet['B1'] = 'axis 2'
+    #         sheet['C1'] = 'axis 3'
+    #         sheet['D1'] = 'axis 4'
+    #         sheet['E1'] = 'axis 5'
+    #         sheet['F1'] = 'axis 6'
+    #         sheet['G1'] = 'torque 1'
+    #         sheet['H1'] = 'torque 2'
+    #         sheet['I1'] = 'torque 3'
+    #         sheet['J1'] = 'torque 4'
+    #         sheet['K1'] = 'torque 5'
+    #         sheet['L1'] = 'torque 6'
 
-            # original # output excel file
-            # for x in self.ik_sol_negative:
-            #     sheet.append(x.q.tolist())
+    #         self.ik_sol_negative= []
+    #         print("軸%d torque負最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
+    #         torque_where = np.where(self.torque==np.min(self.torque[:,axis]))
+    #         append_sol_list = []
+    #         for i in range(len(torque_where[0])):
+    #             print(torque_where[0][i])
+    #             max_torque = torque_where[0][i]
+    #             print("torque:",self.torque[max_torque])
+    #             print("末端位置",[self.T_x[0,i], self.T_y[0,i], self.T_z[0,i]])
+    #             # TODO: 求解逆運動學 各軸角度self.robot.ikine_a()
+    #             self.T.t[0] = self.T_x[0,i]
+    #             self.T.t[1] = self.T_y[0,i]
+    #             self.T.t[2] = self.T_z[0,i]
+    #             sol = self.robot.ikine_LM(self.T)  # original sol = self.robot.ikine_a(self.T, "lun")
+    #             print("sol:",sol)
+    #             # self.robot.plot(sol.q, dt=0.1)
+    #             # self.robot.plot(sol.q)
+    #             # # TODO: 新增plot圖關閉功能, button close plot , 之後須增加需要自動關閉的情況
+    #             # # TODO: 匯入至CSV檔案
+    #             # plt.savefig(path.join(self.pic_outpath,"dataname_negative_{0}_{1}.png".format(axis+1,i)))
+    #             # plt.close()
+    #             # TODO:# output excel file
+    #             append_sol_list_angle = sol.q.tolist()
+    #             append_sol_list_torque = self.torque[max_torque].tolist()
+    #             append_sol_list.extend(append_sol_list_torque)
+    #             sheet.append(append_sol_list)
+    #             # self.ik_sol_negative.append(sol)
 
-            file_name = self.xlsx_outpath+'/dynamics_space_calc_axis'+str(axis+1)+'_negative'+'.xlsx'
-            excel_file.save(file_name)
+    #         # original # output excel file
+    #         # for x in self.ik_sol_negative:
+    #         #     sheet.append(x.q.tolist())
+
+    #         file_name = self.xlsx_outpath+'/dynamics_space_calc_axis'+str(axis+1)+'_negative'+'.xlsx'
+    #         excel_file.save(file_name)
 
     def dynamics_calc(self):
         '''
@@ -620,7 +620,7 @@ class Dynamics_space():
         '''
         qn = [0,0,0,0,0,0]
         deg = pi/180
-        
+
         for i in range(6):
             qn[i] = self.joint_angle[i]*deg
         # print(self.robot.gravload(qn))
@@ -631,7 +631,7 @@ class Dynamics_space():
         print("tau_j:", self.tau_j)
         axis = 2
         self.robot.plot(self.qn)
-        
+
         plt.savefig(path.join(self.pic_outpath,"dataname_dynamics_calc.png"))
         plt.close()
         # excel output
@@ -671,7 +671,7 @@ class Dynamics_space():
         '''
         qn = [0,0,0,0,0,0]
         deg = pi/180
-        
+
         for i in range(6):
             qn[i] = self.joint_angle[i]*deg
 
@@ -682,7 +682,7 @@ class Dynamics_space():
         self.robot.plot(self.qn, backend='pyplot', block=False, vellipse=False, fellipse=False)
         # self.robot.plot(self.qt.q, backend=self.args.backend, block=False, movie="trajectory_generation.gif", vellipse=False, fellipse=False)
         plt.show()
-        
+
     def plot_close(self):
         '''
         Drawing on the interface is turned off
@@ -691,8 +691,8 @@ class Dynamics_space():
 
     def dynamics_torque_limit(self):
         '''
-        Calculate the maximum torque required by 
-        
+        Calculate the maximum torque required by
+
         each axis when the arm of each axis is the longest and the acceleration is the highest
         '''
         torque = np.array([np.zeros(shape=6)])
@@ -708,7 +708,7 @@ class Dynamics_space():
         # 角度轉換
         du=pi/180;  #度
         radian=180/pi; #弧度
-        self.robot.payload(self.payload, self.payload_position) # set payload 
+        self.robot.payload(self.payload, self.payload_position) # set payload
         torque = np.array([np.zeros(shape=6)])
         q_list = [0, 90, -90, 180, -180]
         T_cell = len(q_list) * len(q_list) * len(q_list) * len(q_list) * len(q_list) *len(q_list)
@@ -742,7 +742,7 @@ class Dynamics_space():
         # print("繪製工作空間運行時間：%f sec" % (end - start))
 
         for i in range(6):
-            axis = i 
+            axis = i
             excel_file = Workbook()
             sheet = excel_file.active
             sheet['A1'] = 'torque 1'
@@ -791,7 +791,7 @@ class Dynamics_space():
 
         print("output dynamics_torque_limit_calc_axis excel file down.")
         print("================================")
-        
+
     def CJM_select(self):
         # 初始化
         self.robot.__init__()
@@ -801,16 +801,19 @@ class Dynamics_space():
         print("torque dynamics static limit:",self.torque_static_limit)
         print("torque dynamics limit:",self.torque_dynamics_limit)
 
-        for i in range(len(res)):
-            if res.rated_torque[i] > self.torque_static_limit[1]:
-                # res.drop(i, inplace=True)
-                print("i:",i)
-        
-        for i in range(len(res)):
-            if res.rated_torque[i] > self.torque_dynamics_limit[1]:
-                # res.drop(i, inplace=True)
-                print("i:",i)
-        
+        for j in range(6):
+            # for i in range(len(res)):
+            #     if res.rated_torque[i] > self.torque_static_limit[j]:
+            #         # res.drop(i, inplace=True)
+            #         print("i:",i)
+
+            for i in range(len(res)):
+                if res.rated_torque[i] > self.torque_dynamics_limit[j]:
+                    # res.drop(i, inplace=True)
+                    print("軸數:",j+1)
+                    print("關節型號:",i)
+                    break
+
 
     def excited_trajectory(self, q_list, q_list_2, q_list_3, q_list_4, q_list_5, q_list_6):
         # 窮舉法正運動學計算工作空間
@@ -818,7 +821,7 @@ class Dynamics_space():
         print("The time used to execute this is given below")
         # 角度轉換
         du=pi/180
-        
+
     def robot_motor_random_build(self):
         self.robot.__init__()
         print("robot rebuild")
@@ -858,11 +861,11 @@ class Dynamics_space():
 
         rospy.loginfo("I heard op_axis_2_length is %s", self.op_axis_2_length)
         rospy.loginfo("I heard op_axis_3_length is %s", self.op_axis_3_length)
-        
+
     # TODO: optimization_algorithm: use Random forest
     def optimization_algorithm(self):
         # input data: random axis2,3 length, robot workspace, robot payload, robot joint velocity, robot joint acceleration, motor data
-        ''' 
+        '''
         Agent :
             robot payload set
             robot velocity
@@ -881,10 +884,10 @@ class Dynamics_space():
             robot workspace
             robot weight
 
-        Status : 
+        Status :
             After the parameter of action is changed, the torque value of each axis
         '''
-        
+
         ''' transfer the data to the dataframe
         agent:
             self.op_payload
@@ -936,7 +939,7 @@ class Dynamics_space():
         After the parameter of action is changed, the torque value of each axis
         '''
         # TODO: through optimization algorithm to find the best solution
-        
+
 
     def task_set(self):
         for case in switch(self.cmd):
@@ -962,7 +965,7 @@ class Dynamics_space():
                 Dya.sol_output_axis()
                 self.cmd = 0
                 break
-            
+
             if case(4):
                 Dya.arm_plot()
                 self.cmd = 0
@@ -972,7 +975,7 @@ class Dynamics_space():
                 Dya.plot_close()
                 self.cmd = 0
                 break
-            
+
             if case(6):
                 Dya.dynamics_torque_limit()
                 self.cmd = 0
@@ -998,7 +1001,7 @@ class Dynamics_space():
 
 if __name__=="__main__":
     rospy.init_node("dynamics_space")
-    
+
     Dya = Dynamics_space()
     while not rospy.is_shutdown():
         Dya.task_set()
