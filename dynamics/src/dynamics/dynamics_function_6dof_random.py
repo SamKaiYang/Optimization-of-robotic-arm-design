@@ -85,8 +85,8 @@ class Dynamics_space():
         self.payload = 0
         self.payload_position = np.array([0,0,0])
         self.joint_angle = np.array([0,0,0,0,0,0]) # degree 
-        self.vel = np.array([0,0,0,0,0,0]) # degree / sec
-        self.acc = np.array([0,0,0,0,0,0]) # degree / sec2
+        self.vel = np.array([0,0,0,0,0,0]) # cycle / sec
+        self.acc = np.array([0,0,0,0,0,0]) # cycle / sec2
 
         self.payload_space = 0
         self.payload_position_space = np.array([0,0,0])
@@ -98,6 +98,8 @@ class Dynamics_space():
         self.op_acc = np.array([0,0,0,0,0,0]) # cycle / sec2
         self.op_radius = 0
 
+        self.torque_dynamics_limit = np.array([0,0,0,0,0,0])
+        self.torque_static_limit = np.array([0,0,0,0,0,0])
 
         self.tau_j = self.robot.rne(self.robot.qn, self.vel, self.acc)
 
@@ -243,7 +245,51 @@ class Dynamics_space():
     def payload_set(self):
         self.robot.payload(20, [0, 0, 0]) # set payload 
 
-    def dynamics_space_cal(self):
+    # def dynamics_space_cal(self):
+    #     '''
+    #     Through the "dynamics space" page in the interface to calculate the dynamics of the robot
+    #     '''
+    #     qd = np.r_[0, 1, 0, 0, 0, 0]
+    #     # print("qd:",qd)
+    #     self.robot.coriolis(self.robot.qn, qd) @ qd
+    #     # TODO:  rne 逆動力學 add vel & acc analyses
+    #     self.robot.rne(self.robot.qn, np.zeros((6,)), np.zeros((6,)))
+    #     # 窮舉法正運動學計算工作空間
+    #     start = time.time()
+    #     print("The time used to execute this is given below")
+    #     i = 0
+    #     # 角度轉換
+    #     du=pi/180;  #度
+    #     radian=180/pi; #弧度
+
+    #     fig = plt.figure()
+    #     self.ax = plt.subplot(111, projection='3d')
+
+
+    #     self.robot.payload(self.payload_space, self.payload_position_space) # set payload 
+
+    #     for q1 in range(self.q1_s, self.q1_end, self.step):
+    #         for q2 in range(self.q2_s, self.q2_end, self.step):
+    #             percent = i/self.T_cell*100
+    #             self.cal_process.dyna_space_progress = int(percent)
+    #             self.pub_dyna_space_progress.publish(self.cal_process)
+    #             # print("percent:{:.0f}%".format(percent), end="\r")
+    #             for q3 in range(self.q3_s, self.q3_end, self.step):
+    #                 for q4 in range(self.q4_s, self.q4_end, self.step):
+    #                     for q5 in range(self.q5_s, self.q5_end, self.step):
+    #                         self.T = self.robot.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])
+    #                         load = np.array([self.robot.gravload([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])])
+    #                         self.torque = np.append(self.torque,load,axis=0)
+    #                         self.T_x[0,i] = self.T.t[0]
+    #                         self.T_y[0,i] = self.T.t[1]
+    #                         self.T_z[0,i] = self.T.t[2]
+    #                         i=i+1
+                            
+    #     end = time.time()
+    #     print("繪製工作空間運行時間：%f sec" % (end - start))
+
+
+    def dynamics_space_cal_Monte_Carlo(self):
         '''
         Through the "dynamics space" page in the interface to calculate the dynamics of the robot
         '''
@@ -252,45 +298,14 @@ class Dynamics_space():
         self.robot.coriolis(self.robot.qn, qd) @ qd
         # TODO:  rne 逆動力學 add vel & acc analyses
         self.robot.rne(self.robot.qn, np.zeros((6,)), np.zeros((6,)))
-        # 窮舉法正運動學計算工作空間
-        start = time.time()
-        print("The time used to execute this is given below")
-        i = 0
-        # 角度轉換
-        du=pi/180;  #度
-        radian=180/pi; #弧度
-
-        fig = plt.figure()
-        self.ax = plt.subplot(111, projection='3d')
-
-
-        self.robot.payload(self.payload_space, self.payload_position_space) # set payload 
-
-        for q1 in range(self.q1_s, self.q1_end, self.step):
-            for q2 in range(self.q2_s, self.q2_end, self.step):
-                percent = i/self.T_cell*100
-                self.cal_process.dyna_space_progress = int(percent)
-                self.pub_dyna_space_progress.publish(self.cal_process)
-                # print("percent:{:.0f}%".format(percent), end="\r")
-                for q3 in range(self.q3_s, self.q3_end, self.step):
-                    for q4 in range(self.q4_s, self.q4_end, self.step):
-                        for q5 in range(self.q5_s, self.q5_end, self.step):
-                            self.T = self.robot.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])
-                            load = np.array([self.robot.gravload([q1*du, q2*du, q3*du, q4*du, q5*du, 0*du])])
-                            self.torque = np.append(self.torque,load,axis=0)
-                            self.T_x[0,i] = self.T.t[0]
-                            self.T_y[0,i] = self.T.t[1]
-                            self.T_z[0,i] = self.T.t[2]
-                            i=i+1
-                            
-        end = time.time()
-        print("繪製工作空間運行時間：%f sec" % (end - start))
-
-
-    def dynamics_space_cal_Monte_Carlo(self):
-        '''
-        Through the "dynamics space" page in the interface to calculate the dynamics of the robot
-        '''
+        
+        torque = np.array([np.zeros(shape=6)])
+        # axis_angle = np.array([np.zeros(shape=6)])
+        axis_angle = []
+        append_torque_limit_list = []
+        temp_torque_max = []
+        temp_torque_min = []
+        Torque_Max = []
         # 蒙地卡羅法正運動學計算工作空間
         start = time.time()
         print("The time used to execute this is given below")
@@ -335,9 +350,10 @@ class Dynamics_space():
             q4 = theta4[i,0]
             q5 = theta5[i,0]
             q6 = theta6[i,0]
+            axis_angle.append([q1, q2, q3, q4, q5, q6])
             self.T = self.robot.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, q6*du])
             load = np.array([self.robot.gravload([q1*du, q2*du, q3*du, q4*du, q5*du, q6*du])])
-            self.torque = np.append(self.torque,load,axis=0)
+            torque = np.append(torque,load,axis=0)
             self.T_x[0,i] = self.T.t[0]
             self.T_y[0,i] = self.T.t[1]
             self.T_z[0,i] = self.T.t[2]
@@ -345,6 +361,58 @@ class Dynamics_space():
 
         end = time.time()
         print("繪製工作空間運行時間：%f sec" % (end - start))
+
+        for i in range(6):
+            axis = i 
+            excel_file = Workbook()
+            sheet = excel_file.active
+            sheet['A1'] = 'torque 1'
+            sheet['B1'] = 'torque 2'
+            sheet['C1'] = 'torque 3'
+            sheet['D1'] = 'torque 4'
+            sheet['E1'] = 'torque 5'
+            sheet['F1'] = 'torque 6'
+            sheet['G1'] = 'angle 1'
+            sheet['H1'] = 'angle 2'
+            sheet['I1'] = 'angle 3'
+            sheet['J1'] = 'angle 4'
+            sheet['K1'] = 'angle 5'
+            sheet['L1'] = 'angle 6'
+            print("================================")
+            print("軸%d torque正最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
+            print("axis_max_torque:",torque[np.argmax(torque[:,axis])])
+            toque_max_index = np.argmax(torque[:,axis])
+            print("toque_max_index:",toque_max_index)
+            print("ik_sol:",axis_angle[np.argmax(torque[:,axis])])
+            print("================================")
+            print("軸%d torque負最大值時, 各軸torque, 末端位置, 各軸角度" %(axis+1))
+            print("axis_max_torque:",torque[np.argmin(torque[:,axis])])
+            toque_min_index = np.argmin(torque[:,axis])
+            print("toque_min_index:",toque_min_index)
+            print("ik_sol:",axis_angle[np.argmin(torque[:,axis])])
+            print("================================")
+            temp_torque_max = torque[toque_max_index].tolist()
+            temp_torque_max.extend(axis_angle[toque_max_index])
+            temp_torque_min = torque[toque_min_index].tolist()
+            temp_torque_min.extend(axis_angle[toque_min_index])
+            append_torque_limit_list.append(temp_torque_max)
+            append_torque_limit_list.append(temp_torque_min)
+
+            Torque_Max.append(abs(torque[toque_max_index][i]))
+            print("Torque_Max:",Torque_Max)
+            self.torque_static_limit = Torque_Max
+
+        for info in append_torque_limit_list:
+            sheet.append(info)
+        sheet.append(["Torque 1 max", "Torque 2 max", "Torque 3 max", "Torque 4 max", "Torque 5 max", "Torque 6 max"])
+        sheet.append(Torque_Max)
+
+        file_name = self.xlsx_outpath+'/dynamics_static_torque_calc'+'.xlsx'
+        excel_file.save(file_name)
+
+        print("output dynamics static torque_calc axis excel file down.")
+        print("================================")
+
 
     def Workspace_cal_Monte_Carlo(self):
         '''
@@ -710,6 +778,9 @@ class Dynamics_space():
             append_torque_limit_list.append(temp_torque_min)
 
             Torque_Max.append(abs(torque[toque_max_index][i]))
+            print("Torque_Max:",Torque_Max)
+            self.torque_dynamics_limit = Torque_Max
+
         for info in append_torque_limit_list:
             sheet.append(info)
         sheet.append(["Torque 1 max", "Torque 2 max", "Torque 3 max", "Torque 4 max", "Torque 5 max", "Torque 6 max"])
@@ -719,7 +790,25 @@ class Dynamics_space():
         excel_file.save(file_name)
 
         print("output dynamics_torque_limit_calc_axis excel file down.")
+        print("================================")
         
+    def CJM_select(self):
+        # 初始化
+        self.robot.__init__()
+        print("robot rebuild")
+        motor = mootor_data()
+        # print(motor.TECO_member.head())
+        # print(motor.TECO_member.groupby("rated_torque").mean())
+        # print(pd.concat([motor.TECO_member, motor.Kollmorgen_member, motor.UR_member, motor.TM_member], axis=0))
+        # print("================================")
+
+        # res = motor.TECO_member.append(other=motor.Kollmorgen_member, ignore_index=True)
+        # print(res)
+        res = motor.TECO_member
+        print(res)
+        print("torque dynamics static limit:",self.torque_static_limit)
+        print("torque dynamics limit:",self.torque_dynamics_limit)
+
     def excited_trajectory(self, q_list, q_list_2, q_list_3, q_list_4, q_list_5, q_list_6):
         # 窮舉法正運動學計算工作空間
         start = time.time()
@@ -854,7 +943,7 @@ class Dynamics_space():
                 Dya.payload_set()
                 # Dya.dynamics_space_cal()
                 Dya.dynamics_space_cal_Monte_Carlo()
-                # Dya.sol_output_axis()
+                # Dya.static_sol_output_axis()
                 Dya.plot_space_scan()
                 self.cmd = 0
                 break
@@ -893,6 +982,11 @@ class Dynamics_space():
             # arm data & motor data rebuild
             if case(8):
                 Dya.robot_motor_random_build()
+                self.cmd = 0
+                break
+            # CJM select
+            if case(9):
+                Dya.CJM_select()
                 self.cmd = 0
                 break
             if case():
