@@ -646,7 +646,6 @@ class Dynamics_space():
         print("output dynamics_torque_limit_calc_axis excel file down.")
         print("================================")
 
-    # TODO: CJM關節模組選配
     def CJM_select(self):
         # 初始化
         self.robot.__init__()
@@ -665,20 +664,21 @@ class Dynamics_space():
         dynamic_data_payload_input_head = ["dynamic payload","dynamic payload position x", "dynamic payload position y", "dynamic payload position z"]
         dynamic_data_vel_input_head = ["velocity of axis 1", "velocity of axis 2", "velocity of axis 3", "velocity of axis 4", "velocity of axis 5", "velocity of axis 6"]
         dynamic_data_acc_input_head = ["acceralation of axis 1", "acceralation of axis 2", "acceralation of axis 3", "acceralation of axis 4", "acceralation of axis 5", "acceralation of axis 6"]
-        
         dynamic_data_input = []
+        alignment = Alignment(horizontal='center', vertical='center', text_rotation=0, wrap_text=True)
+
         # excel output
         # 建立excel空白活頁簿
         excel_file = Workbook()
         # 建立一個工作表
         sheet = excel_file.active
         # 先填入第一列的欄位名稱
-        sheet['A1'] = '關節型號 axis 1'
-        sheet['B1'] = '關節型號 axis 2'
-        sheet['C1'] = '關節型號 axis 3'
-        sheet['D1'] = '關節型號 axis 4'
-        sheet['E1'] = '關節型號 axis 5'
-        sheet['F1'] = '關節型號 axis 6'
+        sheet['A1'] = 'model number of axis 1'
+        sheet['B1'] = 'model number of axis 2'
+        sheet['C1'] = 'model number of axis 3'
+        sheet['D1'] = 'model number of axis 4'
+        sheet['E1'] = 'model number of axis 5'
+        sheet['F1'] = 'model number of axis 6'
         # sheet['G1'] = 'dynamic關節型號 axis 1'
         # sheet['H1'] = 'dynamic關節型號 axis 2'
         # sheet['I1'] = 'dynamic關節型號 axis 3'
@@ -695,9 +695,12 @@ class Dynamics_space():
                     static_sol_module.append(i)
                     # show_static.append("static")
                     break
-        show_static.append("static")
+                
+        show_static = ["static analysis result"]
         sheet.append(show_static)
         sheet.merge_cells('A2:F2')
+        sheet['A2'].font = Font(name='Courier', size=12, color='8A3F2F')
+        sheet['A2'].alignment = alignment
         sheet.append(static_sol_module)
         sheet.append([])
 
@@ -709,15 +712,19 @@ class Dynamics_space():
                     dynamic_sol_module.append(i)
                     # show_dynamic.append("dynamic")
                     break
-        show_dynamic.append("dynamic")
+        show_dynamic = ["dynamic analysis result"]
         sheet.append(show_dynamic)
         sheet.merge_cells('A5:F5')
+        sheet['A5'].font = Font(name='Courier', size=12, color='8A3F2F')
+        sheet['A5'].alignment = alignment
         sheet.append(dynamic_sol_module)
         sheet.append([])
 
-        # TODO: 輸入最初輸入參數 如靜態設定payload, payload position ,動態payload, payload position, joint vel, joint acc 
+        show_static = ["static analysis input data"]
         sheet.append(show_static)
         sheet.merge_cells('A8:F8')
+        sheet['A8'].font = Font(name='Courier', size=12, color='8A3F2F')
+        sheet['A8'].alignment = alignment
         sheet.append(static_data_input_head)
         static_data_input.append(self.payload_space)
         static_data_input.append(self.payload_position_space[0])
@@ -726,8 +733,11 @@ class Dynamics_space():
         sheet.append(static_data_input)
         sheet.append([])
 
+        show_dynamic = ["dynamic analysis input data"]
         sheet.append(show_dynamic)
         sheet.merge_cells('A12:F12')
+        sheet['A12'].font = Font(name='Courier', size=12, color='8A3F2F')
+        sheet['A12'].alignment = alignment
         sheet.append(dynamic_data_payload_input_head)
         dynamic_data_input.append(self.payload)
         dynamic_data_input.append(self.payload_position[0])
@@ -748,6 +758,35 @@ class Dynamics_space():
         sheet.append(dynamic_data_input)
         
         file_name = self.xlsx_outpath+'/CJM_select.xlsx'
+        # 調整列寬
+        ncols = 1
+        for i in range(sheet.max_column):
+            col_letter = get_column_letter(ncols)
+            # print(type(col_letter))
+            sheet.column_dimensions[col_letter].width = 25
+            sheet[col_letter+str(1)].font = Font(name='Courier', size=12, color='2F468A')
+            sheet[col_letter+str(1)].alignment = alignment
+            sheet[col_letter+str(3)].font = Font(name='Courier', size=12, color='2F468A')
+            sheet[col_letter+str(3)].alignment = alignment
+            sheet[col_letter+str(6)].font = Font(name='Courier', size=12, color='2F468A')
+            sheet[col_letter+str(6)].alignment = alignment
+            # sheet[col_letter+str(14)].font = Font(name='Courier', size=14, color='EF0A1D')
+            ncols = ncols + 1
+        # 調整行高
+        sheet.row_dimensions[1].height = 40
+        # sheet['A'+str(i+1)].font = Font(name='Courier', size=14, color='EF0A1D')
+        sheet['A1'].alignment = alignment
+        sheet.append([])
+
+        show_joint_module_model = ["The selected joint module model"]
+        sheet.append(show_joint_module_model)
+        sheet.merge_cells('A20:I20')
+        sheet['A20'].font = Font(name='Courier', size=12, color='8A3F2F')
+        sheet['A20'].alignment = alignment
+        sheet.append(['model number'] + list(res.columns))
+        for i in range(len(res.index)):
+            sheet.append([i] + list(res.iloc[i]))
+
         excel_file.save(file_name)
 
     def excited_trajectory(self, q_list, q_list_2, q_list_3, q_list_4, q_list_5, q_list_6):
