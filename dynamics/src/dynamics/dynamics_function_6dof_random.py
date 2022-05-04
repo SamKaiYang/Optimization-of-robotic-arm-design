@@ -14,9 +14,16 @@ import roboticstoolbox as rtb
 from spatialmath import *
 import math
 from math import pi
+import sympy as sp
+
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
+
+from plotly.offline import download_plotlyjs, plot, iplot
+import plotly.offline as py
+import plotly.graph_objs as go
+
 import argparse
 import time
 
@@ -428,24 +435,131 @@ class Dynamics_space():
         print("T_y:{} (meter)" .format(self.T_y[0,:].max()-self.T_y[0,:].min()))
         print("T_z:{} (meter)" .format(self.T_z[0,:].max()-self.T_z[0,:].min()))
         
-        ax1 = plt.subplot(311)
-        ax1.scatter(self.T_x[0,:], self.T_y[0,:], c='r', marker='o')
+        # ax1 = plt.subplot(311)
+        # ax1.scatter(self.T_x[0,:], self.T_y[0,:], c='r', marker='o')
 
-        ax1.set_xlabel("x (meter)")
-        ax1.set_ylabel("y (meter)")
+        # ax1.set_xlabel("x (meter)")
+        # ax1.set_ylabel("y (meter)")
 
-        ax2 = plt.subplot(312)
-        ax2.scatter(self.T_x[0,:], self.T_z[0,:], c='r', marker='o')
+        # ax2 = plt.subplot(312)
+        # ax2.scatter(self.T_x[0,:], self.T_z[0,:], c='r', marker='o')
 
-        ax2.set_xlabel("x (meter)")
-        ax2.set_ylabel("z (meter)")
+        # ax2.set_xlabel("x (meter)")
+        # ax2.set_ylabel("z (meter)")
 
-        ax3 = plt.subplot(313)
-        ax3.scatter(self.T_y[0,:], self.T_z[0,:], c='r', marker='o')
+        # ax3 = plt.subplot(313)
+        # ax3.scatter(self.T_y[0,:], self.T_z[0,:], c='r', marker='o')
 
-        ax3.set_xlabel("y (meter)")
-        ax3.set_ylabel("z (meter)")
-        plt.show()
+        # ax3.set_xlabel("y (meter)")
+        # ax3.set_ylabel("z (meter)")
+        # plt.show()
+        # TODO:2~6 連桿長度 畫xy平面工作範圍
+        # d2r = np.deg2rad
+        # theta11 = np.linspace(d2r(-160),d2r(160))
+        # theta22 = np.linspace(d2r(0), d2r(360))
+        # theta1, theta2 = np.meshgrid(theta11, theta22)
+        # print(theta1)
+        # print(theta2)
+        # l_range = [10] # we can use more than one value here
+
+        # px1 = {}
+        # py1 = {}
+        # pz1 = {}
+        # l1 = 5
+        # l2 = 4
+        # for i in l_range:
+            
+            
+        #     pxa = l1*np.cos(theta1) + l2*np.cos(theta1 + theta2)
+        #     pya = l1*np.sin(theta1) + l2*np.sin(theta1 + theta2)
+            
+        #     # px1['x{0}'.format(i)] = pxa
+        #     # py1['x{0}'.format(i)] = pya
+        #     px1['x{0}'.format(i)] = pxa
+        #     py1['x{0}'.format(i)] = pya
+
+        # pxx = px1['x10']
+        # pyy = py1['x10']
+        # pzz = pyy*0 #dummy zero points for z-axis, as it doesn't exist
+        # trace1 = go.Surface(z=pzz, x=pyy, y=pxx,
+        #             colorscale='Reds', 
+        #             showscale=False, 
+        #             opacity=0.7,
+        #             )
+        # data = [trace1]
+        # layout = go.Layout(scene = dict(
+        #             xaxis = dict(title='X (mm)'),
+        #             yaxis = dict(title='Y (mm)'),
+        #             zaxis = dict(title='Z (mm)'),
+        #             ),
+        #             )
+        # fig = go.Figure(data=data, layout=layout)
+        # fig.update_layout(title='Mt Bruno Elevation', autosize=False,
+        #           width=500, height=500,
+        #           margin=dict(l=65, r=50, b=65, t=90))
+        # py.iplot(fig)
+        # TODO: 2, 3, 4 軸旋轉畫工作空間
+        d2r = np.deg2rad
+        theta11 = np.linspace(d2r(-160),d2r(160))
+        theta22 = np.linspace(d2r(-170), d2r(170))
+        theta33 = np.linspace(d2r(-170), d2r(170))
+        # theta1, theta2, theta3 = np.meshgrid(theta11, theta22, theta33, indexing = 'ij')
+        theta1, theta2 = np.meshgrid(theta11, theta22)
+        theta2, theta3 = np.meshgrid(theta22, theta33)
+        # theta23 = np.meshgrid(theta22, theta33)
+        l_range = [10] # we can use more than one value here
+        print(theta1)
+        px1 = {}
+        py1 = {}
+        pz1 = {}
+        l1 = 5
+        l2 = 4
+        l3 = 6
+        # for i in l_range:
+            
+            
+        #     pxa = l1*np.cos(theta1) + l2*np.cos(theta1 + theta2)
+        #     pya = l1*np.sin(theta1) + l2*np.sin(theta1 + theta2)
+            
+        #     # px1['x{0}'.format(i)] = pxa
+        #     # py1['x{0}'.format(i)] = pya
+        #     px1['x{0}'.format(i)] = pxa
+        #     py1['x{0}'.format(i)] = pya
+        for i in l_range:
+            #Position of link 1
+            x1=l1*np.cos(theta1)
+            y1=l1*np.sin(theta1)
+
+            #position of link 2
+            x2=x1+l2*np.cos(theta2)
+            y2=y1+l2*np.sin(theta2)
+
+            #position of link 3
+            pxa=x1+x2+l3*np.cos(theta3)
+            pya=y1+y2+l3*np.sin(theta3)
+
+            px1['x{0}'.format(i)] = pxa
+            py1['x{0}'.format(i)] = pya
+        pxx = px1['x10']
+        pyy = py1['x10']
+        pzz = pyy*0 #dummy zero points for z-axis, as it doesn't exist
+        trace1 = go.Surface(z=pzz, x=pyy, y=pxx,
+                    colorscale='Reds', 
+                    showscale=False, 
+                    opacity=0.7,
+                    )
+        data = [trace1]
+        layout = go.Layout(scene = dict(
+                    xaxis = dict(title='X (mm)'),
+                    yaxis = dict(title='Y (mm)'),
+                    zaxis = dict(title='Z (mm)'),
+                    ),
+                    )
+        fig = go.Figure(data=data, layout=layout)
+        fig.update_layout(title='Mt Bruno Elevation', autosize=False,
+                  width=500, height=500,
+                  margin=dict(l=65, r=50, b=65, t=90))
+        py.iplot(fig)
 
     def dynamics_calc(self):
         '''
