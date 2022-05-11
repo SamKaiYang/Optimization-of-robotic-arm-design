@@ -126,12 +126,12 @@ class mootor_data():
 if __name__ == '__main__':    # pragma nocover
 
     motor = mootor_data()
-    # print(motor.TECO_member.head())
+    print(motor.TECO_member.head())
     # print(motor.TECO_member.groupby("rated_torque").mean())
-    print(motor.TECO_member.columns)
-    print(len(motor.TECO_member.columns))
-    print(motor.TECO_member.index)
-    print(len(motor.TECO_member.index))
+    # print(motor.TECO_member.columns)
+    # print(len(motor.TECO_member.columns))
+    # print(motor.TECO_member.index)
+    # print(len(motor.TECO_member.index))
 
     # print(pd.concat([motor.TECO_member, motor.Kollmorgen_member, motor.UR_member, motor.TM_member], axis=0))
 

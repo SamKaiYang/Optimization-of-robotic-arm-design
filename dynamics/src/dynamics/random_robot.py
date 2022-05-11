@@ -74,7 +74,7 @@ class RandomRobot(DHRobot):
             ]
         
         G= [-80,-80,-80,-50,-50,-50]   # gear ratio
-        # G= [-1,-1,-1,-1,-1,-1]   # gear ratio
+        G= [-1,-1,-1,-1,-1,-1]   # gear ratio
         # B = [[10,10], [10,10], [10,10], [10,10], [10,10], [10,10]]
         B = 10.0
         # center_of_mass = [
