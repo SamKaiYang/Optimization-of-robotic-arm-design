@@ -54,10 +54,15 @@ class Ui_MainWindow(object):
         self.tab_arm.setObjectName(u"tab_arm")
         self.gridLayoutWidget = QWidget(self.tab_arm)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(40, 50, 271, 201))
+        self.gridLayoutWidget.setGeometry(QRect(10, 30, 271, 348))
         self.gridLayout = QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.lineEdit_payload_2 = QLineEdit(self.gridLayoutWidget)
+        self.lineEdit_payload_2.setObjectName(u"lineEdit_payload_2")
+
+        self.gridLayout.addWidget(self.lineEdit_payload_2, 2, 1, 1, 1)
+
         self.label_9 = QLabel(self.gridLayoutWidget)
         self.label_9.setObjectName(u"label_9")
 
@@ -68,20 +73,15 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_11, 2, 0, 1, 1)
 
-        self.lineEdit_payload_2 = QLineEdit(self.gridLayoutWidget)
-        self.lineEdit_payload_2.setObjectName(u"lineEdit_payload_2")
+        self.label_8 = QLabel(self.gridLayoutWidget)
+        self.label_8.setObjectName(u"label_8")
 
-        self.gridLayout.addWidget(self.lineEdit_payload_2, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.label_8, 0, 0, 1, 1)
 
         self.label_14 = QLabel(self.gridLayoutWidget)
         self.label_14.setObjectName(u"label_14")
 
         self.gridLayout.addWidget(self.label_14, 1, 2, 1, 1)
-
-        self.label_8 = QLabel(self.gridLayoutWidget)
-        self.label_8.setObjectName(u"label_8")
-
-        self.gridLayout.addWidget(self.label_8, 0, 0, 1, 1)
 
         self.label_13 = QLabel(self.gridLayoutWidget)
         self.label_13.setObjectName(u"label_13")
@@ -130,7 +130,7 @@ class Ui_MainWindow(object):
 
         self.btn_dynamics_design = QPushButton(self.tab_arm)
         self.btn_dynamics_design.setObjectName(u"btn_dynamics_design")
-        self.btn_dynamics_design.setGeometry(QRect(370, 80, 141, 33))
+        self.btn_dynamics_design.setGeometry(QRect(530, 200, 141, 33))
         palette1 = QPalette()
         palette1.setBrush(QPalette.Active, QPalette.WindowText, brush)
         brush2 = QBrush(QColor(218, 119, 0, 255))
@@ -160,6 +160,192 @@ class Ui_MainWindow(object):
         font2.setWeight(75)
         self.btn_dynamics_design.setFont(font2)
         self.btn_dynamics_design.setStyleSheet(u"background-color:#da7700;color:white;border-color: black;")
+        self.gridLayoutWidget_2 = QWidget(self.tab_arm)
+        self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
+        self.gridLayoutWidget_2.setGeometry(QRect(290, 20, 221, 380))
+        self.gridLayout_2 = QGridLayout(self.gridLayoutWidget_2)
+        self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.label_46 = QLabel(self.gridLayoutWidget_2)
+        self.label_46.setObjectName(u"label_46")
+
+        self.gridLayout_2.addWidget(self.label_46, 11, 2, 1, 1)
+
+        self.label_31 = QLabel(self.gridLayoutWidget_2)
+        self.label_31.setObjectName(u"label_31")
+
+        self.gridLayout_2.addWidget(self.label_31, 0, 0, 1, 1)
+
+        self.lineEdit_joint5_ = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint5_.setObjectName(u"lineEdit_joint5_")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint5_, 9, 1, 1, 1)
+
+        self.label_51 = QLabel(self.gridLayoutWidget_2)
+        self.label_51.setObjectName(u"label_51")
+
+        self.gridLayout_2.addWidget(self.label_51, 8, 0, 1, 1)
+
+        self.label_48 = QLabel(self.gridLayoutWidget_2)
+        self.label_48.setObjectName(u"label_48")
+
+        self.gridLayout_2.addWidget(self.label_48, 5, 0, 1, 1)
+
+        self.label_35 = QLabel(self.gridLayoutWidget_2)
+        self.label_35.setObjectName(u"label_35")
+
+        self.gridLayout_2.addWidget(self.label_35, 2, 2, 1, 1)
+
+        self.label_44 = QLabel(self.gridLayoutWidget_2)
+        self.label_44.setObjectName(u"label_44")
+
+        self.gridLayout_2.addWidget(self.label_44, 9, 2, 1, 1)
+
+        self.lineEdit_joint4_ = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint4_.setObjectName(u"lineEdit_joint4_")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint4_, 7, 1, 1, 1)
+
+        self.label_32 = QLabel(self.gridLayoutWidget_2)
+        self.label_32.setObjectName(u"label_32")
+
+        self.gridLayout_2.addWidget(self.label_32, 1, 0, 1, 1)
+
+        self.lineEdit_joint3 = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint3.setObjectName(u"lineEdit_joint3")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint3, 4, 1, 1, 1)
+
+        self.label_37 = QLabel(self.gridLayoutWidget_2)
+        self.label_37.setObjectName(u"label_37")
+
+        self.gridLayout_2.addWidget(self.label_37, 3, 2, 1, 1)
+
+        self.lineEdit_joint1 = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint1.setObjectName(u"lineEdit_joint1")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint1, 0, 1, 1, 1)
+
+        self.lineEdit_joint1_ = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint1_.setObjectName(u"lineEdit_joint1_")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint1_, 1, 1, 1, 1)
+
+        self.label_54 = QLabel(self.gridLayoutWidget_2)
+        self.label_54.setObjectName(u"label_54")
+
+        self.gridLayout_2.addWidget(self.label_54, 11, 0, 1, 1)
+
+        self.label_39 = QLabel(self.gridLayoutWidget_2)
+        self.label_39.setObjectName(u"label_39")
+
+        self.gridLayout_2.addWidget(self.label_39, 4, 2, 1, 1)
+
+        self.label_43 = QLabel(self.gridLayoutWidget_2)
+        self.label_43.setObjectName(u"label_43")
+
+        self.gridLayout_2.addWidget(self.label_43, 8, 2, 1, 1)
+
+        self.label_42 = QLabel(self.gridLayoutWidget_2)
+        self.label_42.setObjectName(u"label_42")
+
+        self.gridLayout_2.addWidget(self.label_42, 7, 2, 1, 1)
+
+        self.lineEdit_joint2 = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint2.setObjectName(u"lineEdit_joint2")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint2, 2, 1, 1, 1)
+
+        self.label_45 = QLabel(self.gridLayoutWidget_2)
+        self.label_45.setObjectName(u"label_45")
+
+        self.gridLayout_2.addWidget(self.label_45, 10, 2, 1, 1)
+
+        self.label_50 = QLabel(self.gridLayoutWidget_2)
+        self.label_50.setObjectName(u"label_50")
+
+        self.gridLayout_2.addWidget(self.label_50, 7, 0, 1, 1)
+
+        self.lineEdit_joint4 = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint4.setObjectName(u"lineEdit_joint4")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint4, 6, 1, 1, 1)
+
+        self.label_53 = QLabel(self.gridLayoutWidget_2)
+        self.label_53.setObjectName(u"label_53")
+
+        self.gridLayout_2.addWidget(self.label_53, 10, 0, 1, 1)
+
+        self.label_36 = QLabel(self.gridLayoutWidget_2)
+        self.label_36.setObjectName(u"label_36")
+
+        self.gridLayout_2.addWidget(self.label_36, 3, 0, 1, 1)
+
+        self.label_49 = QLabel(self.gridLayoutWidget_2)
+        self.label_49.setObjectName(u"label_49")
+
+        self.gridLayout_2.addWidget(self.label_49, 6, 0, 1, 1)
+
+        self.lineEdit_joint6 = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint6.setObjectName(u"lineEdit_joint6")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint6, 10, 1, 1, 1)
+
+        self.lineEdit_joint2_ = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint2_.setObjectName(u"lineEdit_joint2_")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint2_, 3, 1, 1, 1)
+
+        self.lineEdit_joint5 = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint5.setObjectName(u"lineEdit_joint5")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint5, 8, 1, 1, 1)
+
+        self.lineEdit_joint3_ = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint3_.setObjectName(u"lineEdit_joint3_")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint3_, 5, 1, 1, 1)
+
+        self.label_41 = QLabel(self.gridLayoutWidget_2)
+        self.label_41.setObjectName(u"label_41")
+
+        self.gridLayout_2.addWidget(self.label_41, 6, 2, 1, 1)
+
+        self.label_38 = QLabel(self.gridLayoutWidget_2)
+        self.label_38.setObjectName(u"label_38")
+
+        self.gridLayout_2.addWidget(self.label_38, 1, 2, 1, 1)
+
+        self.label_33 = QLabel(self.gridLayoutWidget_2)
+        self.label_33.setObjectName(u"label_33")
+
+        self.gridLayout_2.addWidget(self.label_33, 0, 2, 1, 1)
+
+        self.label_40 = QLabel(self.gridLayoutWidget_2)
+        self.label_40.setObjectName(u"label_40")
+
+        self.gridLayout_2.addWidget(self.label_40, 5, 2, 1, 1)
+
+        self.label_52 = QLabel(self.gridLayoutWidget_2)
+        self.label_52.setObjectName(u"label_52")
+
+        self.gridLayout_2.addWidget(self.label_52, 9, 0, 1, 1)
+
+        self.label_34 = QLabel(self.gridLayoutWidget_2)
+        self.label_34.setObjectName(u"label_34")
+
+        self.gridLayout_2.addWidget(self.label_34, 2, 0, 1, 1)
+
+        self.label_47 = QLabel(self.gridLayoutWidget_2)
+        self.label_47.setObjectName(u"label_47")
+
+        self.gridLayout_2.addWidget(self.label_47, 4, 0, 1, 1)
+
+        self.lineEdit_joint6_ = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint6_.setObjectName(u"lineEdit_joint6_")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint6_, 11, 1, 1, 1)
+
         self.tabWidget.addTab(self.tab_arm, "")
         self.tab = QWidget()
         self.tab.setObjectName(u"tab")
@@ -806,7 +992,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(5)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -817,11 +1003,11 @@ class Ui_MainWindow(object):
 #if QT_CONFIG(whatsthis)
         self.tabWidget.setWhatsThis(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>dd</p></body></html>", None))
 #endif // QT_CONFIG(whatsthis)
+        self.lineEdit_payload_2.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Axis 3 length", None))
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"Payload", None))
-        self.lineEdit_payload_2.setText(QCoreApplication.translate("MainWindow", u"0", None))
-        self.label_14.setText(QCoreApplication.translate("MainWindow", u"m", None))
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"Axis 2 length", None))
+        self.label_14.setText(QCoreApplication.translate("MainWindow", u"m", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"m", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"DoF", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"kg", None))
@@ -829,6 +1015,42 @@ class Ui_MainWindow(object):
         self.lineEdit_reachable_radius.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label_22.setText(QCoreApplication.translate("MainWindow", u"mm", None))
         self.btn_dynamics_design.setText(QCoreApplication.translate("MainWindow", u"Design", None))
+        self.label_46.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.label_31.setText(QCoreApplication.translate("MainWindow", u"Joint 1+", None))
+        self.lineEdit_joint5_.setText(QCoreApplication.translate("MainWindow", u"-176", None))
+        self.label_51.setText(QCoreApplication.translate("MainWindow", u"Joint 5+", None))
+        self.label_48.setText(QCoreApplication.translate("MainWindow", u"Joint 3-", None))
+        self.label_35.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.label_44.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.lineEdit_joint4_.setText(QCoreApplication.translate("MainWindow", u"-176", None))
+        self.label_32.setText(QCoreApplication.translate("MainWindow", u"Joint 1-", None))
+        self.lineEdit_joint3.setText(QCoreApplication.translate("MainWindow", u"176", None))
+        self.label_37.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.lineEdit_joint1.setText(QCoreApplication.translate("MainWindow", u"176", None))
+        self.lineEdit_joint1_.setText(QCoreApplication.translate("MainWindow", u"-176", None))
+        self.label_54.setText(QCoreApplication.translate("MainWindow", u"Joint 6-", None))
+        self.label_39.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.label_43.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.label_42.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.lineEdit_joint2.setText(QCoreApplication.translate("MainWindow", u"176", None))
+        self.label_45.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.label_50.setText(QCoreApplication.translate("MainWindow", u"Joint 4-", None))
+        self.lineEdit_joint4.setText(QCoreApplication.translate("MainWindow", u"176", None))
+        self.label_53.setText(QCoreApplication.translate("MainWindow", u"Joint 6+", None))
+        self.label_36.setText(QCoreApplication.translate("MainWindow", u"Joint 2-", None))
+        self.label_49.setText(QCoreApplication.translate("MainWindow", u"Joint 4+", None))
+        self.lineEdit_joint6.setText(QCoreApplication.translate("MainWindow", u"176", None))
+        self.lineEdit_joint2_.setText(QCoreApplication.translate("MainWindow", u"-176", None))
+        self.lineEdit_joint5.setText(QCoreApplication.translate("MainWindow", u"176", None))
+        self.lineEdit_joint3_.setText(QCoreApplication.translate("MainWindow", u"-176", None))
+        self.label_41.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.label_38.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.label_33.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.label_40.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.label_52.setText(QCoreApplication.translate("MainWindow", u"Joint 5-", None))
+        self.label_34.setText(QCoreApplication.translate("MainWindow", u"Joint 2+", None))
+        self.label_47.setText(QCoreApplication.translate("MainWindow", u"Joint 3+", None))
+        self.lineEdit_joint6_.setText(QCoreApplication.translate("MainWindow", u"-176", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_arm), QCoreApplication.translate("MainWindow", u"Arm Design", None))
         self.btn_dynamics_real_torq.setText(QCoreApplication.translate("MainWindow", u"Run", None))
         self.label_20.setText(QCoreApplication.translate("MainWindow", u"Read Real Arm Torque", None))

@@ -343,13 +343,27 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         # arm_weight = float(self.ui.lineEdit_arm_weight.text())
         payload = float(self.ui.lineEdit_payload_2.text())
         reachable_radius = float(self.ui.lineEdit_reachable_radius.text())
+        joint_limits = []
+        joint_limits.append(float(self.ui.lineEdit_joint1.text()))
+        joint_limits.append(float(self.ui.lineEdit_joint1_.text()))
+        joint_limits.append(float(self.ui.lineEdit_joint2.text()))
+        joint_limits.append(float(self.ui.lineEdit_joint2_.text()))
+        joint_limits.append(float(self.ui.lineEdit_joint3.text()))
+        joint_limits.append(float(self.ui.lineEdit_joint3_.text()))
+        joint_limits.append(float(self.ui.lineEdit_joint4.text()))
+        joint_limits.append(float(self.ui.lineEdit_joint4_.text()))
+        joint_limits.append(float(self.ui.lineEdit_joint5.text()))
+        joint_limits.append(float(self.ui.lineEdit_joint5_.text()))
+        joint_limits.append(float(self.ui.lineEdit_joint6.text()))
+        joint_limits.append(float(self.ui.lineEdit_joint6_.text()))
+        
         self.specified_parameter_design.axis_2_length = self.axis_2
         self.specified_parameter_design.axis_3_length = self.axis_3
         self.specified_parameter_design.arm_weight = 0
         self.specified_parameter_design.payload = payload
         self.specified_parameter_design.radius = reachable_radius
         self.specified_parameter_design.DoF = self.dof
-        
+        self.specified_parameter_design.joint_limit = joint_limits
         self.pub_specified_parameter_design.publish(self.specified_parameter_design)
         
 

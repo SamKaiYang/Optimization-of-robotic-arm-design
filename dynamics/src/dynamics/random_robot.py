@@ -34,6 +34,9 @@ class RandomRobot(DHRobot):
     """  # noqa
 
     def __init__(self, symbolic=False):
+        self.length_1 = 0.1
+        self.length_2 = 0.1
+        self.length_3 = 0.1
 
         robot = URDF.from_xml_file(os.path.dirname(os.path.realpath(__file__))+"/urdf"+"/random.urdf")
         if symbolic:
@@ -47,6 +50,9 @@ class RandomRobot(DHRobot):
         deg = pi / 180
         inch = 0.0254
 
+        self.length_1 = robot.joints[3].origin.xyz[1]
+        self.length_2 = robot.joints[4].origin.xyz[1]
+        self.length_3 = robot.joints[5].origin.xyz[2]
         # robot length values (metres)
         # a = [0, -0.314, -0.284, 0, 0, 0] #m # teco
         a = [0, -robot.joints[3].origin.xyz[1], -robot.joints[4].origin.xyz[1], 0, 0, 0]
@@ -134,6 +140,9 @@ class RandomRobot(DHRobot):
 
         # nominal table top picking pose
         self.addconfiguration("qn", np.array([0, 0, 0, 0, 0, 0]))
+        
+    def return_configuration(self):
+        return self.length_1, self.length_2, self.length_3
 if __name__ == '__main__':    # pragma nocover
 
     robot = RandomRobot(symbolic=False)

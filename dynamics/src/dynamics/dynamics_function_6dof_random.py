@@ -49,6 +49,7 @@ from random_robot import RandomRobot
 from motor_module import mootor_data
 import pandas as pd
 
+from arm_workspace import arm_workspace_plane
 class switch(object):
     def __init__(self, value):
         self.value = value
@@ -86,6 +87,7 @@ class Dynamics_space():
         # self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path",moveit_msgs.msg.JointTrajectory,self.planned_path_callback)
         self.cmd = 0
         self.robot = RandomRobot()
+        # self.arm_workspace_plane = arm_workspace_plane()
         # self.robot.plot(self.robot.qn, block=False)
         # del self.robot.links[0]
         # del self.robot.links[1]
@@ -115,6 +117,8 @@ class Dynamics_space():
         self.tau_j = self.robot.rne(self.robot.qn, self.vel, self.acc)
 
         self.qn = np.array([0,0,0,0,0,0]) # degree
+
+        self.joint_limit = [-100,100,-100,100,-100,100,-100,100,-100,100,-100,100]
         ## 數值法 求取工作空間
         # 關節角限位
         self.q1_s=-160
@@ -245,17 +249,19 @@ class Dynamics_space():
         self.payload = data.payload
         self.radius = data.radius  # 半径
         self.DoF = data.DoF
+        self.joint_limit = data.joint_limit
         rospy.loginfo("I heard axis_2_length is %s", self.axis_2_length)
         rospy.loginfo("I heard axis_3_length is %s", self.axis_3_length)
         rospy.loginfo("I heard arm_weight is %s", self.arm_weight)
         rospy.loginfo("I heard payload is %s", self.payload)
         rospy.loginfo("I heard radius is %s", self.radius)
         rospy.loginfo("I heard DoF is %s", self.DoF)
+        rospy.loginfo("I heard joint limit is %s", self.joint_limit)
 
     def payload_set(self):
         self.robot.payload(20, [0, 0, 0]) # set payload
 
-    def dynamics_space_cal_Monte_Carlo(self):
+    def dynamics_space_cal_Monte_Carlo(self, joint_limit):
         '''
         Through the "dynamics space" page in the interface to calculate the dynamics of the robot
         '''
@@ -279,22 +285,22 @@ class Dynamics_space():
         du=pi/180;  #度
         radian=180/pi; #弧度
 
-        fig = plt.figure()
-        self.ax = plt.subplot(111, projection='3d')
-        self.ax_2d = plt.subplot(111)
+        # fig = plt.figure()
+        # self.ax = plt.subplot(111, projection='3d')
+        # self.ax_2d = plt.subplot(111)
 
-        self.q1_s=-90
-        self.q1_end=90
-        self.q2_s=-90
-        self.q2_end=90
-        self.q3_s=-120
-        self.q3_end=120
-        self.q4_s=-120
-        self.q4_end=120
-        self.q5_s=-160
-        self.q5_end=160
-        self.q6_s=-160
-        self.q6_end=160
+        self.q1_s=joint_limit[0]
+        self.q1_end=joint_limit[1]
+        self.q2_s=joint_limit[2]
+        self.q2_end=joint_limit[3]
+        self.q3_s=joint_limit[4]
+        self.q3_end=joint_limit[5]
+        self.q4_s=joint_limit[6]
+        self.q4_end=joint_limit[7]
+        self.q5_s=joint_limit[8]
+        self.q5_end=joint_limit[9]
+        self.q6_s=joint_limit[10]
+        self.q6_end=joint_limit[11]
 
         self.robot.payload(self.payload_space, self.payload_position_space) # set payload
         N = 20000
@@ -435,6 +441,36 @@ class Dynamics_space():
         print("T_y:{} (meter)" .format(self.T_y[0,:].max()-self.T_y[0,:].min()))
         print("T_z:{} (meter)" .format(self.T_z[0,:].max()-self.T_z[0,:].min()))
         print("================================")
+        fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(5,15))
+        
+        axes[0].scatter(self.T_x[0,:], self.T_y[0,:], c='r', marker='o')
+
+        axes[0].set_xlabel("x (meter)")
+        axes[0].set_ylabel("y (meter)")
+
+        # ax2 = plt.subplot(nrows=1, ncols=2, figsize=(5,5))
+        axes[1].scatter(self.T_x[0,:], self.T_z[0,:], c='r', marker='o')
+
+        axes[1].set_xlabel("x (meter)")
+        axes[1].set_ylabel("z (meter)")
+
+        # ax3 = plt.subplot(nrows=1, ncols=3, figsize=(5,5))
+        axes[2].scatter(self.T_y[0,:], self.T_z[0,:], c='r', marker='o')
+
+        axes[2].set_xlabel("y (meter)")
+        axes[2].set_ylabel("z (meter)")
+        
+        ln1,ln2,ln3 = self.robot.return_configuration()
+        
+        # Ang_arr = np.array([- math.pi * 125 / 180, math.pi * 85 / 180, -math.pi * 145 / 180, math.pi * 95 / 180, -math.pi * 115 / 180, math.pi * 115 / 180])
+        # Ang_arr1 = np.array([- math.pi * 170 / 180, math.pi * 170 / 180])
+        Ang_arr = np.array([math.pi * self.joint_limit[2] / 180, math.pi * self.joint_limit[3] / 180, math.pi * self.joint_limit[4] / 180, math.pi * self.joint_limit[5] / 180, math.pi * self.joint_limit[6] / 180, math.pi * self.joint_limit[7] / 180])
+        Ang_arr1 = np.array([math.pi * self.joint_limit[0] / 180, math.pi * self.joint_limit[1] / 180])
+        L_arr = np.array([ln1,ln2,ln3])
+        Wspace = arm_workspace_plane(ang_arr1= Ang_arr1, ang_arr=Ang_arr, link_lengths=L_arr)
+        bb,aa = Wspace.xy_Wspace_mod(Wspace.L_arr, Wspace.Ang_arr_angle1, 360)
+        CA,maxmin = Wspace.Wspace_mod(Wspace.L_arr, Wspace.Ang_arr, res=30)
+        Wspace.plot_Wspace_mod(CA,maxmin,False)
 
     def dynamics_calc(self):
         '''
@@ -911,7 +947,7 @@ class Dynamics_space():
                 print("success get subscriber data ")
                 Dya.payload_set()
                 # Dya.dynamics_space_cal()
-                Dya.dynamics_space_cal_Monte_Carlo()
+                Dya.dynamics_space_cal_Monte_Carlo(self.joint_limit)
                 # Dya.static_sol_output_axis()
                 Dya.plot_space_scan()
                 self.cmd = 0

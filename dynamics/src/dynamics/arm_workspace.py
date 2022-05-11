@@ -11,13 +11,13 @@ import shapely.geometry as geometry
 
 class arm_workspace_plane:
     def __init__(self, symbolic=False, ang_arr1=None, ang_arr=None, link_lengths=None, rse=30):
-        self.fig, self.ax = plt.subplots(2,figsize=(10,10))
+        self.fig, self.ax = plt.subplots(2,figsize=(5,10))
         self.rse = rse
         self.Ang_arr = ang_arr
         self.Ang_arr_angle1 = ang_arr1
         #angular domain in radians
         self.L_arr = link_lengths
-        self.L_arr = np.array([0.335,0.335,0.045])
+        self.L_arr = np.array([0.335,0.335,0.09])
         self.X_base = 0
         self.Y_base = 0
         self.ln1, self.ln2, self.ln3, self.ln4 = self.ax[0].plot([], [], 'r-', 
@@ -176,47 +176,49 @@ class arm_workspace_plane:
         self.ln4.set_data(self.xdata4[i], self.ydata4[i])
         return self.ln1, self.ln2, self.ln3, self.ln4
 
-    def plot_Wspace_mod(self, CA,maxmin):
-        self.ln1, self.ln2, self.ln3, self.ln4 = self.ax[0].plot([], [], 'r-', 
-                        [], [], 'b-', 
-                        [], [], 'y-',  
-                        [], [], 'c-', linewidth=3, 
-                        animated=False) #animated is associated with blit
-        for i, j in maxmin:
-            q1 = CA[[i, j], 2]
-            q2 = CA[[i, j], 3]
-            q3 = CA[[i, j], 4]
-            #declaring X,Y coordinates for Joint 1 wrt base
-            A1_x_tip = 0 + (self.L_arr[0] * np.cos(q1))
-            A1_y_tip = 0 + (self.L_arr[0] * np.sin(q1))
-            # L1 = plt.plot(np.array([Y_base,A1_y_tip[0]]),np.array([X_base,A1_x_tip[0]]),'r')
-            #declaring X,Y coordinates for Joint 2 wrt base(i.e. joint 1)
-            A2_x_tip = A1_x_tip + (self.L_arr[1] * np.cos(q1 + q2))
-            A2_y_tip = A1_y_tip + (self.L_arr[1] * np.sin(q1 + q2))
-            # L2 = plt.plot(np.array([A1_y_tip,A2_y_tip]),np.array([A1_x_tip,A2_x_tip]),'g')
-            #declaring X,Y coordinates for Joint 3 wrt base(i.e. joint 2)
-            A3_x_tip = A2_x_tip + (self.L_arr[2] * np.cos(q1 + q2 + q3))
-            A3_y_tip = A2_y_tip + (self.L_arr[2] * np.sin(q1 + q2 + q3))
-            # L3 = plt.plot(np.array([A2_y_tip,A3_y_tip]),np.array([A2_x_tip,A3_x_tip]),'b')
-            #Marking the End Effector separately  
-            # E_eff = plt.plot(A3_y_tip[0],A3_x_tip[0],'.')
+    def plot_Wspace_mod(self, CA,maxmin, animation=False):
 
-            self.ydata1.append(np.array([self.X_base,A1_x_tip[0]]))
-            self.xdata1.append(np.array([self.Y_base,A1_y_tip[0]]))
-            self.ydata2.append(np.array([A1_x_tip,A2_x_tip]))
-            self.xdata2.append(np.array([A1_y_tip,A2_y_tip]))
-            self.ydata3.append(np.array([A2_x_tip,A3_x_tip]))
-            self.xdata3.append(np.array([A2_y_tip,A3_y_tip]))
-            self.ydata4.append(A3_x_tip[0])
-            self.xdata4.append(A3_y_tip[0])
-        # run the animation
-        self.ax[0].set_title("Workspace Perimeter Sweep - YZ plane")
-        self.ax[1].set_title("Workspace Perimeter Sweep - XY Plane")
-        self.ax[0].set_xlabel("Y")
-        self.ax[0].set_ylabel("Z")
-        self.ax[1].set_xlabel("X")
-        self.ax[1].set_ylabel("Y")
-        ani = FuncAnimation(self.fig, self.update, frames=len(maxmin) , interval=1, repeat=False)
+        if animation == True:
+            self.ln1, self.ln2, self.ln3, self.ln4 = self.ax[0].plot([], [], 'r-', 
+                            [], [], 'b-', 
+                            [], [], 'y-',  
+                            [], [], 'c-', linewidth=3, 
+                            animated=False) #animated is associated with blit
+            for i, j in maxmin:
+                q1 = CA[[i, j], 2]
+                q2 = CA[[i, j], 3]
+                q3 = CA[[i, j], 4]
+                #declaring X,Y coordinates for Joint 1 wrt base
+                A1_x_tip = 0 + (self.L_arr[0] * np.cos(q1))
+                A1_y_tip = 0 + (self.L_arr[0] * np.sin(q1))
+                # L1 = plt.plot(np.array([Y_base,A1_y_tip[0]]),np.array([X_base,A1_x_tip[0]]),'r')
+                #declaring X,Y coordinates for Joint 2 wrt base(i.e. joint 1)
+                A2_x_tip = A1_x_tip + (self.L_arr[1] * np.cos(q1 + q2))
+                A2_y_tip = A1_y_tip + (self.L_arr[1] * np.sin(q1 + q2))
+                # L2 = plt.plot(np.array([A1_y_tip,A2_y_tip]),np.array([A1_x_tip,A2_x_tip]),'g')
+                #declaring X,Y coordinates for Joint 3 wrt base(i.e. joint 2)
+                A3_x_tip = A2_x_tip + (self.L_arr[2] * np.cos(q1 + q2 + q3))
+                A3_y_tip = A2_y_tip + (self.L_arr[2] * np.sin(q1 + q2 + q3))
+                # L3 = plt.plot(np.array([A2_y_tip,A3_y_tip]),np.array([A2_x_tip,A3_x_tip]),'b')
+                #Marking the End Effector separately  
+                # E_eff = plt.plot(A3_y_tip[0],A3_x_tip[0],'.')
+
+                self.ydata1.append(np.array([self.X_base,A1_x_tip[0]]))
+                self.xdata1.append(np.array([self.Y_base,A1_y_tip[0]]))
+                self.ydata2.append(np.array([A1_x_tip,A2_x_tip]))
+                self.xdata2.append(np.array([A1_y_tip,A2_y_tip]))
+                self.ydata3.append(np.array([A2_x_tip,A3_x_tip]))
+                self.xdata3.append(np.array([A2_y_tip,A3_y_tip]))
+                self.ydata4.append(A3_x_tip[0])
+                self.xdata4.append(A3_y_tip[0])
+            # run the animation
+            self.ax[0].set_title("Workspace Perimeter Sweep - YZ plane")
+            self.ax[1].set_title("Workspace Perimeter Sweep - XY Plane")
+            self.ax[0].set_xlabel("Y")
+            self.ax[0].set_ylabel("Z")
+            self.ax[1].set_xlabel("X")
+            self.ax[1].set_ylabel("Y")
+            ani = FuncAnimation(self.fig, self.update, frames=len(maxmin) , interval=1, repeat=False)
         plt.show()
 
 if __name__=="__main__":
@@ -227,4 +229,4 @@ if __name__=="__main__":
     Wspace = arm_workspace_plane(ang_arr1= Ang_arr1, ang_arr=Ang_arr, link_lengths=L_arr)
     bb,aa = Wspace.xy_Wspace_mod(Wspace.L_arr, Wspace.Ang_arr_angle1, 360)
     CA,maxmin = Wspace.Wspace_mod(Wspace.L_arr, Wspace.Ang_arr, res=30)
-    Wspace.plot_Wspace_mod(CA,maxmin)
+    Wspace.plot_Wspace_mod(CA,maxmin,False)
