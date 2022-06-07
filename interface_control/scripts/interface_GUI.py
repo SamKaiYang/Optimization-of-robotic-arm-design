@@ -155,6 +155,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.btn_random_robot_motor.clicked.connect(self.random_robot_motor_buttonClicked)
         self.ui.btn_optimization_analysis.clicked.connect(self.optimization_analysis_buttonClicked)
         self.ui.btn_cjm_select.clicked.connect(self.cjm_select_buttonClicked)
+        self.ui.btn_traj_torque_plot.clicked.connect(self.traj_torque_plot_buttonClicked)
         # # Vel. HorizontalSlider
         # self.ui.horizontalSlider_vel.valueChanged.connect(self.VelSliderValue)
         # # Acc. HorizontalSlider
@@ -430,6 +431,10 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
 
     def cjm_select_buttonClicked(self):
         self.pub_cmd.publish(9)
+
+
+    def traj_torque_plot_buttonClicked(self):
+        self.pub_cmd.publish(10)
 
 if __name__=="__main__":
     rospy.init_node("interface_ui")

@@ -225,3 +225,8 @@ include_directories(
 
 # add_executable(DH src/DHTable.cpp)
 # target_link_libraries(DH ${catkin_LIBRARIES})
+# add_executable(move_group_interface_friction src/move_group_interface_friction.cpp)
+# target_link_libraries(move_group_interface_friction ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+# install(TARGETS move_group_interface_friction DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+# install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

@@ -161,8 +161,15 @@ class Dynamics_space:
 
         self.xlsx_outpath = "./xlsx/"
         self.pic_outpath = "./picture/"
+        # trajectory path generate postion velocity acceleration torque information parameter
+        self.time_array = []
+        self.tau_array = []
+        self.point_nums = []
+        self.traj_position = []
+        self.traj_velocities = []
+        self.traj_accelerations = []
 
-
+        # ros topic 
         self.pub_dyna_space_progress = rospy.Publisher(
             "/dyna_space_progress", cal_process, queue_size=10
         )
@@ -195,7 +202,7 @@ class Dynamics_space:
 
     def robot_rebuild(self):
         self.robot.__init__()
-        print("robot rebuild")
+        rospy.loginfo("robot rebuild")
 
     def cmd_callback(self, data):
         self.cmd = data.cmd
@@ -259,108 +266,54 @@ class Dynamics_space:
         self.trajectory_dynamics_calc(
             points_num, positions, velocities, accelerations, time_from_start
         )
-
         time_array_secs = np.array(time_from_start_secs)
         time_array_nsecs = np.array(time_from_start_nsecs)
         time_array = time_array_secs + time_array_nsecs * (10) ** (-9)
-        print(time_array)
-        tau_array = np.array(self.tau_j_array)
-        print(tau_array[:, 1])
+        self.time_array = time_array
+        self.tau_array = np.array(self.tau_j_array)
+        self.traj_position = np.array(positions)
+        self.traj_velocities = np.array(velocities)
+        self.traj_accelerations = np.array(accelerations)
+        rospy.loginfo("You can plot the trajectory information")
 
-        # print("positions:",positions[:, 1])
-        self.trajectory_torque_plot(time_array, tau_array)
-        # self.trajectory_positions_plot(time_array, positions)
-        # self.trajectory_velocities_plot(time_array, velocities)
-        # self.trajectory_accelerations_plot(time_array, accelerations)
-
-    # def trajectory_torque_plot(self, time_array, tau_array):
-    #     x_smooth = np.linspace(time_array.min(), time_array.max(), 300)
-
-    #     plt.ion()
-    #     fig = plt.figure()
-    #     axis = 6
-    #     for i in range(axis):
-    #         y_smooth = make_interp_spline(time_array, tau_array[:, i])(x_smooth)
-    #         plt.subplot(2, 3, i + 1)
-    #         plt.plot(x_smooth, y_smooth, "b--")
-    #         string_axis = str(i + 1)
-    #         plt.title("torque " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
-    #         plt.xlabel("sec")
-    #         plt.ylabel("N*m")
-
-    #     plt.show()
-
-    def trajectory_torque_plot(self, time_array, tau_array):
-        x_smooth = np.linspace(time_array.min(), time_array.max(), 300)
-        fig, ax = plt.subplots(6,figsize=(4,20))
-
+    def trajectory_torque_plot(self):
+        x_smooth = np.linspace(self.time_array.min(), self.time_array.max(), 300)
+        fig, ax = plt.subplots(4,6,figsize=(24,24))
         axis = 6
         for i in range(axis):
-            y_smooth = make_interp_spline(time_array, tau_array[:, i])(x_smooth)
-            ax[i].plot(x_smooth, y_smooth, "b--")
+            y_smooth = make_interp_spline(self.time_array, self.tau_array[:, i])(x_smooth)
+            ax[0,i].plot(x_smooth, y_smooth, "b--")
             string_axis = str(i + 1)
-            ax[i].set_title("torque " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
-            ax[i].set_xlabel("sec")
-            ax[i].set_xlabel("N*m")
+            ax[0,i].set_title("torque " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
+            ax[0,i].set_xlabel("sec")
+            ax[0,i].set_xlabel("N*m")
 
-        plt.show()
-        # plt.pause(0.0001)
-        # fig.canvas.draw()
-
-
-    def trajectory_positions_plot(self, time_array, positions):
-        x_smooth = np.linspace(time_array.min(), time_array.max(), 300)
-
-        plt.ion()
-        fig = plt.figure()
-        axis = 6
         for i in range(axis):
-            y_smooth = make_interp_spline(time_array, positions)(x_smooth)
-            plt.subplot(2, 3, i + 1)
-            plt.plot(x_smooth, y_smooth, "b--")
+            y_smooth = make_interp_spline(self.time_array, self.traj_position[:, i])(x_smooth)
+            ax[1,i].plot(x_smooth, y_smooth, "b--")
             string_axis = str(i + 1)
-            plt.title("positions " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
-            plt.xlabel("sec")
-            plt.ylabel("pos")
+            ax[1,i].set_title("position " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
+            ax[1,i].set_xlabel("sec")
+            ax[1,i].set_xlabel("pos")
 
-        plt.show()
-        plt.pause(0.0001)
-
-    def trajectory_velocities_plot(self, time_array, velocities):
-        x_smooth = np.linspace(time_array.min(), time_array.max(), 300)
-
-        plt.ion()
-        fig = plt.figure()
-        axis = 6
         for i in range(axis):
-            y_smooth = make_interp_spline(time_array, velocities[:, i])(x_smooth)
-            plt.subplot(2, 3, i + 1)
-            plt.plot(x_smooth, y_smooth, "b--")
+            y_smooth = make_interp_spline(self.time_array, self.traj_velocities[:, i])(x_smooth)
+            ax[2,i].plot(x_smooth, y_smooth, "b--")
             string_axis = str(i + 1)
-            plt.title("velocities " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
-            plt.xlabel("sec")
-            plt.ylabel("rad/s")
+            ax[2,i].set_title("velocity " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
+            ax[2,i].set_xlabel("sec")
+            ax[2,i].set_xlabel("rad/sec")
 
-        plt.show()
-        plt.pause(0.0001)
-
-    def trajectory_accelerations_plot(self, time_array, accelerations):
-        x_smooth = np.linspace(time_array.min(), time_array.max(), 300)
-
-        plt.ion()
-        fig = plt.figure()
-        axis = 6
         for i in range(axis):
-            y_smooth = make_interp_spline(time_array, accelerations[:, i])(x_smooth)
-            plt.subplot(2, 3, i + 1)
-            plt.plot(x_smooth, y_smooth, "b--")
+            y_smooth = make_interp_spline(self.time_array, self.traj_accelerations[:, i])(x_smooth)
+            ax[3,i].plot(x_smooth, y_smooth, "b--")
             string_axis = str(i + 1)
-            plt.title("accelerations " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
-            plt.xlabel("sec")
-            plt.ylabel("rad/s*2")
+            ax[3,i].set_title("acceleration " + string_axis, {"fontsize": 10})
+            ax[3,i].set_xlabel("sec")
+            ax[3,i].set_xlabel("rad/sec^2")
 
+        
         plt.show()
-        plt.pause(0.0001)
 
     def specified_parameter_design_callback(self, data):
         self.axis_2_length = data.axis_2_length
@@ -399,7 +352,7 @@ class Dynamics_space:
         Torque_Max = []
         # 蒙地卡羅法正運動學計算工作空間
         start = time.time()
-        print("The time used to execute this is given below")
+        rospy.loginfo("The time used to execute this is given below")
         i = 0
         # 角度轉換
         du = pi / 180
@@ -522,7 +475,7 @@ class Dynamics_space:
         file_name = self.xlsx_outpath + "/dynamics_static_torque_calc" + ".xlsx"
         excel_file.save(file_name)
 
-        print("output dynamics static torque_calc axis excel file down.")
+        rospy.loginfo("output dynamics static torque_calc axis excel file down.")
         print("================================")
 
     def Workspace_cal_Monte_Carlo(self):
@@ -645,8 +598,8 @@ class Dynamics_space:
 
         self.qn = qn
         self.tau_j = self.robot.rne(self.qn, self.vel, self.acc)
-        print("tau_j:", self.tau_j)
-        axis = 2
+        # print("tau_j:", self.tau_j)
+        # axis = 2
         self.robot.plot(self.qn)
 
         plt.savefig(path.join(self.pic_outpath, "dataname_dynamics_calc.png"))
@@ -686,9 +639,8 @@ class Dynamics_space:
         self.tau_j_array = []
         for i in range(num):
             self.tau_j = self.robot.rne(pos[i], vel[i], acc[i])
-            print("tau_j array:", self.tau_j)
             self.tau_j_array.append(self.tau_j)
-        # print("tau_j array:", self.tau_j_array)
+
     def arm_plot(self):
         """
         Through the "plot" button on the interface, draw the current posture of the arm
@@ -730,7 +682,7 @@ class Dynamics_space:
         Torque_Max = []
         # 窮舉法正運動學計算工作空間
         start = time.time()
-        print("The time used to execute this is given below")
+        rospy.loginfo("The time used to execute this is given below")
         # 角度轉換
         du = pi / 180
         # 度
@@ -875,14 +827,13 @@ class Dynamics_space:
         # 調整行高
         sheet.row_dimensions[14].height = 40
         excel_file.save(file_name)
-
-        print("output dynamics_torque_limit_calc_axis excel file down.")
+        rospy.loginfo("output dynamics_torque_limit_calc_axis excel file down.")
         print("================================")
 
     def CJM_select(self):
         # 初始化
         self.robot.__init__()
-        print("robot rebuild")
+        rospy.loginfo("robot rebuild")
         motor = mootor_data()
         res = motor.TECO_member
         print("torque dynamics static limit:", self.torque_static_limit)
@@ -1195,8 +1146,7 @@ class Dynamics_space:
     def task_set(self):
         for case in switch(self.cmd):
             if case(1):
-                print("Start Workspace Scan")
-                print("success get subscriber data ")
+                rospy.loginfo("Start Workspace Scan & success get subscriber data command")
                 Dya.payload_set()
                 # Dya.dynamics_space_cal()
                 Dya.dynamics_space_cal_Monte_Carlo(self.joint_limit)
@@ -1206,49 +1156,59 @@ class Dynamics_space:
                 break
 
             if case(2):
-                print("Start Set payload & vel & acc analysis")
+                rospy.loginfo("Start Set payload & vel & acc analysis command")
                 Dya.dynamics_calc()
                 self.cmd = 0
                 break
             # Select axis for dynamics space scan joint torque output
             if case(3):
-                print("Select axis for dynamics space scan joint torque output")
+                rospy.loginfo("Select axis for dynamics space scan joint torque output command")
                 Dya.sol_output_axis()
                 self.cmd = 0
                 break
 
             if case(4):
+                rospy.loginfo("Plot robotic arm command")
                 Dya.arm_plot()
                 self.cmd = 0
                 break
             #
             if case(5):
+                rospy.loginfo("Close plot command")
                 Dya.plot_close()
                 self.cmd = 0
                 break
 
             if case(6):
+                rospy.loginfo("Torque limit command")
                 Dya.dynamics_torque_limit()
                 self.cmd = 0
                 break
             # arm data rebuild
             if case(7):
+                rospy.loginfo("Robot rebuild command")
                 Dya.robot_rebuild()
                 self.cmd = 0
                 break
             # arm data & motor data rebuild
             if case(8):
+                rospy.loginfo("Robot motor random command")
                 Dya.robot_motor_random_build()
                 self.cmd = 0
                 break
             # CJM select
             if case(9):
+                rospy.loginfo("CJM select function command")
                 Dya.CJM_select()
+                self.cmd = 0
+                break
+            if case(10):
+                rospy.loginfo("Plot trajectory information command")
+                Dya.trajectory_torque_plot()
                 self.cmd = 0
                 break
             if case():
                 break
-
 
 if __name__ == "__main__":
     rospy.init_node("dynamics_space")
