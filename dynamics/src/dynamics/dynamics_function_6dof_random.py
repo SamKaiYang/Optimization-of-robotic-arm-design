@@ -276,6 +276,67 @@ class Dynamics_space:
         self.traj_accelerations = np.array(accelerations)
         rospy.loginfo("You can plot the trajectory information")
 
+    def trajectory_torque_excel_write(self):
+        excel_file = Workbook()
+        sheet = excel_file.active
+        sheet["A1"] = "time_array"
+        sheet["B1"] = "torque 1"
+        sheet["C1"] = "torque 2"
+        sheet["D1"] = "torque 3"
+        sheet["E1"] = "torque 4"
+        sheet["F1"] = "torque 5"
+        sheet["G1"] = "torque 6"
+        sheet["H1"] = "traj_position 1"
+        sheet["I1"] = "traj_position 2"
+        sheet["J1"] = "traj_position 3"
+        sheet["K1"] = "traj_position 4"
+        sheet["L1"] = "traj_position 5"
+        sheet["M1"] = "traj_position 6"
+        sheet["N1"] = "traj_velocities 1"
+        sheet["O1"] = "traj_velocities 2"
+        sheet["P1"] = "traj_velocities 3"
+        sheet["Q1"] = "traj_velocities 4"
+        sheet["R1"] = "traj_velocities 5"
+        sheet["S1"] = "traj_velocities 6"
+        sheet["T1"] = "traj_accelerations 1"
+        sheet["U1"] = "traj_accelerations 2"
+        sheet["V1"] = "traj_accelerations 3"
+        sheet["W1"] = "traj_accelerations 4"
+        sheet["X1"] = "traj_accelerations 5"
+        sheet["Y1"] = "traj_accelerations 6"
+        
+        for i in range(5):
+            sheet.cell(row=i + 2, column=1).value = self.time_array[i]
+            sheet.cell(row=i + 2, column=2).value = self.tau_array[i][0]
+            sheet.cell(row=i + 2, column=3).value = self.tau_array[i][1]
+            sheet.cell(row=i + 2, column=4).value = self.tau_array[i][2]
+            sheet.cell(row=i + 2, column=5).value = self.tau_array[i][3]
+            sheet.cell(row=i + 2, column=6).value = self.tau_array[i][4]
+            sheet.cell(row=i + 2, column=7).value = self.tau_array[i][5]
+            sheet.cell(row=i + 2, column=8).value = self.traj_position[i][0]
+            sheet.cell(row=i + 2, column=9).value = self.traj_position[i][1]
+            sheet.cell(row=i + 2, column=10).value = self.traj_position[i][2]
+            sheet.cell(row=i + 2, column=11).value = self.traj_position[i][3]
+            sheet.cell(row=i + 2, column=12).value = self.traj_position[i][4]
+            sheet.cell(row=i + 2, column=13).value = self.traj_position[i][5]
+            sheet.cell(row=i + 2, column=14).value = self.traj_velocities[i][0]
+            sheet.cell(row=i + 2, column=15).value = self.traj_velocities[i][1]
+            sheet.cell(row=i + 2, column=16).value = self.traj_velocities[i][2]
+            sheet.cell(row=i + 2, column=17).value = self.traj_velocities[i][3]
+            sheet.cell(row=i + 2, column=18).value = self.traj_velocities[i][4]
+            sheet.cell(row=i + 2, column=19).value = self.traj_velocities[i][5]
+            sheet.cell(row=i + 2, column=20).value = self.traj_accelerations[i][0]
+            sheet.cell(row=i + 2, column=21).value = self.traj_accelerations[i][1]
+            sheet.cell(row=i + 2, column=22).value = self.traj_accelerations[i][2]
+            sheet.cell(row=i + 2, column=23).value = self.traj_accelerations[i][3]
+            sheet.cell(row=i + 2, column=24).value = self.traj_accelerations[i][4]
+            sheet.cell(row=i + 2, column=25).value = self.traj_accelerations[i][5]
+
+        file_name = self.xlsx_outpath + "/trajectory_torque" + ".xlsx"
+        excel_file.save(file_name)
+        rospy.loginfo("trajectory torque excel write down.")
+        print("================================")
+
     def trajectory_torque_plot(self):
         x_smooth = np.linspace(self.time_array.min(), self.time_array.max(), 300)
         fig, ax = plt.subplots(4,6,figsize=(24,24))
@@ -311,8 +372,6 @@ class Dynamics_space:
             ax[3,i].set_title("acceleration " + string_axis, {"fontsize": 10})
             ax[3,i].set_xlabel("sec")
             ax[3,i].set_xlabel("rad/sec^2")
-
-        
         plt.show()
 
     def specified_parameter_design_callback(self, data):
@@ -889,12 +948,6 @@ class Dynamics_space:
         sheet["D1"] = "model number of axis 4"
         sheet["E1"] = "model number of axis 5"
         sheet["F1"] = "model number of axis 6"
-        # sheet['G1'] = 'dynamic關節型號 axis 1'
-        # sheet['H1'] = 'dynamic關節型號 axis 2'
-        # sheet['I1'] = 'dynamic關節型號 axis 3'
-        # sheet['J1'] = 'dynamic關節型號 axis 4'
-        # sheet['K1'] = 'dynamic關節型號 axis 5'
-        # sheet['L1'] = 'dynamic關節型號 axis 6'
 
         for j in range(6):
             for i in range(len(res)):
@@ -1204,6 +1257,7 @@ class Dynamics_space:
                 break
             if case(10):
                 rospy.loginfo("Plot trajectory information command")
+                Dya.trajectory_torque_excel_write()
                 Dya.trajectory_torque_plot()
                 self.cmd = 0
                 break
