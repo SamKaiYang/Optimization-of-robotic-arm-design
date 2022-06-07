@@ -305,7 +305,7 @@ class Dynamics_space:
         sheet["X1"] = "traj_accelerations 5"
         sheet["Y1"] = "traj_accelerations 6"
         
-        for i in range(5):
+        for i in range(len(self.time_array)):
             sheet.cell(row=i + 2, column=1).value = self.time_array[i]
             sheet.cell(row=i + 2, column=2).value = self.tau_array[i][0]
             sheet.cell(row=i + 2, column=3).value = self.tau_array[i][1]
@@ -336,42 +336,82 @@ class Dynamics_space:
         excel_file.save(file_name)
         rospy.loginfo("trajectory torque excel write down.")
         print("================================")
+# smooth plot the trajectory
+    # def trajectory_torque_plot(self):
+    #     x_smooth = np.linspace(self.time_array.min(), self.time_array.max(), 300)
+    #     fig, ax = plt.subplots(4,6,figsize=(24,24))
+    #     axis = 6
+    #     for i in range(axis):
+    #         y_smooth = make_interp_spline(self.time_array, self.tau_array[:, i])(x_smooth)
+    #         ax[0,i].plot(x_smooth, y_smooth, "b--")
+    #         string_axis = str(i + 1)
+    #         ax[0,i].set_title("torque " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
+    #         ax[0,i].set_xlabel("sec")
+    #         ax[0,i].set_xlabel("N*m")
+
+    #     for i in range(axis):
+    #         y_smooth = make_interp_spline(self.time_array, self.traj_position[:, i])(x_smooth)
+    #         ax[1,i].plot(x_smooth, y_smooth, "b--")
+    #         string_axis = str(i + 1)
+    #         ax[1,i].set_title("position " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
+    #         ax[1,i].set_xlabel("sec")
+    #         ax[1,i].set_xlabel("pos")
+
+    #     for i in range(axis):
+    #         y_smooth = make_interp_spline(self.time_array, self.traj_velocities[:, i])(x_smooth)
+    #         ax[2,i].plot(x_smooth, y_smooth, "b--")
+    #         string_axis = str(i + 1)
+    #         ax[2,i].set_title("velocity " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
+    #         ax[2,i].set_xlabel("sec")
+    #         ax[2,i].set_xlabel("rad/sec")
+
+    #     for i in range(axis):
+    #         y_smooth = make_interp_spline(self.time_array, self.traj_accelerations[:, i])(x_smooth)
+    #         ax[3,i].plot(x_smooth, y_smooth, "b--")
+    #         string_axis = str(i + 1)
+    #         ax[3,i].set_title("acceleration " + string_axis, {"fontsize": 10})
+    #         ax[3,i].set_xlabel("sec")
+    #         ax[3,i].set_xlabel("rad/sec^2")
+    #     fig.tight_layout()
+    #     plt.show()
 
     def trajectory_torque_plot(self):
-        x_smooth = np.linspace(self.time_array.min(), self.time_array.max(), 300)
-        fig, ax = plt.subplots(4,6,figsize=(24,24))
+        # x_smooth = np.linspace(self.time_array.min(), self.time_array.max(), 300)
+        fig, ax = plt.subplots(4,6,figsize=(20,10))
         axis = 6
         for i in range(axis):
-            y_smooth = make_interp_spline(self.time_array, self.tau_array[:, i])(x_smooth)
-            ax[0,i].plot(x_smooth, y_smooth, "b--")
+            # y_smooth = make_interp_spline(self.time_array, self.tau_array[:, i])(x_smooth)
+            ax[0,i].plot(self.time_array, self.tau_array[:, i], "b--")
             string_axis = str(i + 1)
             ax[0,i].set_title("torque " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
             ax[0,i].set_xlabel("sec")
             ax[0,i].set_xlabel("N*m")
 
         for i in range(axis):
-            y_smooth = make_interp_spline(self.time_array, self.traj_position[:, i])(x_smooth)
-            ax[1,i].plot(x_smooth, y_smooth, "b--")
+            # y_smooth = make_interp_spline(self.time_array, self.traj_position[:, i])(x_smooth)
+            ax[1,i].plot(self.time_array, self.traj_position[:, i], "b--")
             string_axis = str(i + 1)
             ax[1,i].set_title("position " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
             ax[1,i].set_xlabel("sec")
             ax[1,i].set_xlabel("pos")
 
         for i in range(axis):
-            y_smooth = make_interp_spline(self.time_array, self.traj_velocities[:, i])(x_smooth)
-            ax[2,i].plot(x_smooth, y_smooth, "b--")
+            # y_smooth = make_interp_spline(self.time_array, self.traj_velocities[:, i])(x_smooth)
+            ax[2,i].plot(self.time_array, self.traj_velocities[:, i], "b--")
             string_axis = str(i + 1)
             ax[2,i].set_title("velocity " + string_axis, {"fontsize": 10})  # 設定圖標題及其文字大小
             ax[2,i].set_xlabel("sec")
             ax[2,i].set_xlabel("rad/sec")
 
         for i in range(axis):
-            y_smooth = make_interp_spline(self.time_array, self.traj_accelerations[:, i])(x_smooth)
-            ax[3,i].plot(x_smooth, y_smooth, "b--")
+            # y_smooth = make_interp_spline(self.time_array, self.traj_accelerations[:, i])(x_smooth)
+            ax[3,i].plot(self.time_array, self.traj_accelerations[:, i], "b--")
             string_axis = str(i + 1)
             ax[3,i].set_title("acceleration " + string_axis, {"fontsize": 10})
             ax[3,i].set_xlabel("sec")
             ax[3,i].set_xlabel("rad/sec^2")
+            
+        fig.tight_layout()
         plt.show()
 
     def specified_parameter_design_callback(self, data):
