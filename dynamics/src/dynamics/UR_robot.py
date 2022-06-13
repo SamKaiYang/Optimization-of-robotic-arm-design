@@ -33,6 +33,11 @@ class UR5(DHRobot):
         deg = pi / 180
         inch = 0.0254
 
+
+        self.length_1 = 0.42500
+        self.length_2 = 0.39225
+        self.length_3 = 0.09465
+
         # robot length values (metres)
         a = [0, -0.42500, -0.39225, 0, 0, 0]
         d = [0.089459, 0, 0, 0.10915, 0.09465, 0.0823]
@@ -77,7 +82,8 @@ class UR5(DHRobot):
 
         # nominal table top picking pose
         self.addconfiguration("qn", np.array([0, 0, 0, 0, 0, 0]))
-
+    def return_configuration(self):
+        return self.length_1, self.length_2, self.length_3
 class UR10(DHRobot):
     """
     Class that models a Universal Robotics UR10 manipulator
@@ -109,6 +115,7 @@ class UR10(DHRobot):
         deg = pi / 180
         inch = 0.0254
 
+        
         # robot length values (metres)
         a = [0, -0.612, -0.5723, 0, 0, 0]
         d = [0.1273, 0, 0, 0.163941, 0.1157, 0.0922]
@@ -152,7 +159,8 @@ class UR10(DHRobot):
         self.addconfiguration("qr", np.r_[180, 0, 0, 0, 90, 0]*deg)
         # nominal table top picking pose
         self.addconfiguration("qn", np.array([0, 0, 0, 0, 0, 0]))
-
+    def return_configuration(self):
+        return self.length_1, self.length_2, self.length_3
 class UR10e(DHRobot):
     """
     Class that models a Universal Robotics UR10e manipulator
@@ -228,7 +236,8 @@ class UR10e(DHRobot):
 
         # nominal table top picking pose
         self.addconfiguration("qn", np.array([0, 0, 0, 0, 0, 0]))
-
+    def return_configuration(self):
+        return self.length_1, self.length_2, self.length_3
 
 class UR16e(DHRobot):
     """
@@ -260,6 +269,8 @@ class UR16e(DHRobot):
 
         deg = pi / 180
         inch = 0.0254
+
+        
 
         # robot length values (metres)
         a = [0, -0.4784, -0.36, 0, 0, 0]
@@ -305,6 +316,8 @@ class UR16e(DHRobot):
 
         # nominal table top picking pose
         self.addconfiguration("qn", np.array([0, 0, 0, 0, 0, 0]))
+    def return_configuration(self):
+        return self.length_1, self.length_2, self.length_3
 
 if __name__ == '__main__':    # pragma nocover
 

@@ -344,6 +344,8 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         # arm_weight = float(self.ui.lineEdit_arm_weight.text())
         payload = float(self.ui.lineEdit_payload_2.text())
         reachable_radius = float(self.ui.lineEdit_reachable_radius.text())
+        axis_2 = float(self.ui.lineEdit_2_length.text())
+        axis_3 = float(self.ui.lineEdit_3_length.text())
         joint_limits = []
         joint_limits.append(float(self.ui.lineEdit_joint1.text()))
         joint_limits.append(float(self.ui.lineEdit_joint1_.text()))
@@ -358,8 +360,8 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         joint_limits.append(float(self.ui.lineEdit_joint6.text()))
         joint_limits.append(float(self.ui.lineEdit_joint6_.text()))
         
-        self.specified_parameter_design.axis_2_length = self.axis_2
-        self.specified_parameter_design.axis_3_length = self.axis_3
+        self.specified_parameter_design.axis_2_length = axis_2*100
+        self.specified_parameter_design.axis_3_length = axis_3*100
         self.specified_parameter_design.arm_weight = 0
         self.specified_parameter_design.payload = payload
         self.specified_parameter_design.radius = reachable_radius

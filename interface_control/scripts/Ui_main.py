@@ -98,16 +98,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_19, 2, 2, 1, 1)
 
-        self.comboBox_2_length = QComboBox(self.gridLayoutWidget)
-        self.comboBox_2_length.setObjectName(u"comboBox_2_length")
-
-        self.gridLayout.addWidget(self.comboBox_2_length, 0, 1, 1, 1)
-
-        self.comboBox_3_length = QComboBox(self.gridLayoutWidget)
-        self.comboBox_3_length.setObjectName(u"comboBox_3_length")
-
-        self.gridLayout.addWidget(self.comboBox_3_length, 1, 1, 1, 1)
-
         self.comboBox_dof = QComboBox(self.gridLayoutWidget)
         self.comboBox_dof.setObjectName(u"comboBox_dof")
 
@@ -127,6 +117,16 @@ class Ui_MainWindow(object):
         self.label_22.setObjectName(u"label_22")
 
         self.gridLayout.addWidget(self.label_22, 3, 2, 1, 1)
+
+        self.lineEdit_3_length = QLineEdit(self.gridLayoutWidget)
+        self.lineEdit_3_length.setObjectName(u"lineEdit_3_length")
+
+        self.gridLayout.addWidget(self.lineEdit_3_length, 1, 1, 1, 1)
+
+        self.lineEdit_2_length = QLineEdit(self.gridLayoutWidget)
+        self.lineEdit_2_length.setObjectName(u"lineEdit_2_length")
+
+        self.gridLayout.addWidget(self.lineEdit_2_length, 0, 1, 1, 1)
 
         self.btn_dynamics_design = QPushButton(self.tab_arm)
         self.btn_dynamics_design.setObjectName(u"btn_dynamics_design")
@@ -346,6 +346,12 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addWidget(self.lineEdit_joint6_, 11, 1, 1, 1)
 
+        self.comboBox_3_length = QComboBox(self.tab_arm)
+        self.comboBox_3_length.setObjectName(u"comboBox_3_length")
+        self.comboBox_3_length.setGeometry(QRect(80, 420, 93, 26))
+        self.comboBox_2_length = QComboBox(self.tab_arm)
+        self.comboBox_2_length.setObjectName(u"comboBox_2_length")
+        self.comboBox_2_length.setGeometry(QRect(80, 390, 93, 26))
         self.tabWidget.addTab(self.tab_arm, "")
         self.tab = QWidget()
         self.tab.setObjectName(u"tab")
@@ -1039,6 +1045,8 @@ class Ui_MainWindow(object):
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"Reachable radius", None))
         self.lineEdit_reachable_radius.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label_22.setText(QCoreApplication.translate("MainWindow", u"mm", None))
+        self.lineEdit_3_length.setText(QCoreApplication.translate("MainWindow", u"0", None))
+        self.lineEdit_2_length.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.btn_dynamics_design.setText(QCoreApplication.translate("MainWindow", u"Design", None))
         self.label_46.setText(QCoreApplication.translate("MainWindow", u"degree", None))
         self.label_31.setText(QCoreApplication.translate("MainWindow", u"Joint 1+", None))

@@ -185,12 +185,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="comboBox_2_length"/>
-       </item>
-       <item row="1" column="1">
-        <widget class="QComboBox" name="comboBox_3_length"/>
-       </item>
        <item row="4" column="1">
         <widget class="QComboBox" name="comboBox_dof"/>
        </item>
@@ -212,6 +206,20 @@
         <widget class="QLabel" name="label_22">
          <property name="text">
           <string>mm</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="lineEdit_3_length">
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="lineEdit_2_length">
+         <property name="text">
+          <string>0</string>
          </property>
         </widget>
        </item>
@@ -676,6 +684,26 @@
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QComboBox" name="comboBox_3_length">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>420</y>
+        <width>93</width>
+        <height>26</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="comboBox_2_length">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>390</y>
+        <width>93</width>
+        <height>26</height>
+       </rect>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab">

@@ -85,8 +85,8 @@ class Dynamics_space:
         self.payload = 0
         self.payload_position = np.array([0, 0, 0])
         self.joint_angle = np.array([0, 0, 0, 0, 0, 0])  # degree
-        self.vel = np.array([0, 0, 0, 0, 0, 0])  # cycle / sec
-        self.acc = np.array([0, 0, 0, 0, 0, 0])  # cycle / sec2
+        self.vel = np.array([0, 0, 0, 0, 0, 0])  # rad / sec
+        self.acc = np.array([0, 0, 0, 0, 0, 0])  # rad / sec2
 
         self.payload_space = 0
         self.payload_position_space = np.array([0, 0, 0])
@@ -94,8 +94,8 @@ class Dynamics_space:
 
         self.op_payload = 0
         self.op_payload_position = np.array([0, 0, 0])
-        self.op_vel = np.array([0, 0, 0, 0, 0, 0])  # cycle / sec
-        self.op_acc = np.array([0, 0, 0, 0, 0, 0])  # cycle / sec2
+        self.op_vel = np.array([0, 0, 0, 0, 0, 0])  # rad / sec
+        self.op_acc = np.array([0, 0, 0, 0, 0, 0])  # rad / sec2
         self.op_radius = 0
 
         self.torque_dynamics_limit = np.array([0, 0, 0, 0, 0, 0])
