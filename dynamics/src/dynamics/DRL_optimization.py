@@ -195,3 +195,10 @@ class drl_optimization:
         After the parameter of action is changed, the torque value of each axis
         """
         # TODO: through optimization algorithm to find the best solution
+
+if __name__ == "__main__":
+    rospy.init_node("optimization")
+
+    drl = drl_optimization()
+    while not rospy.is_shutdown():
+        pass

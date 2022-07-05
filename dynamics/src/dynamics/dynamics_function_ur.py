@@ -81,9 +81,9 @@ class Dynamics_space:
 
         self.payload = 0
         self.payload_position = np.array([0, 0, 0])
-        self.joint_angle = np.array([0, 0, 0, 0, 0, 0])  # degree
-        self.vel = np.array([0, 0, 0, 0, 0, 0])  # rad / sec
-        self.acc = np.array([0, 0, 0, 0, 0, 0])  # rad / sec2
+        self.joint_angle = np.array([0, 0, 0, 0, 0, 0, 0])  # degree
+        self.vel = np.array([0, 0, 0, 0, 0, 0, 0])  # rad / sec
+        self.acc = np.array([0, 0, 0, 0, 0, 0, 0])  # rad / sec2
 
         self.payload_space = 0
         self.payload_position_space = np.array([0, 0, 0])
@@ -98,7 +98,7 @@ class Dynamics_space:
         self.torque_dynamics_limit = np.array([0, 0, 0, 0, 0, 0])
         self.torque_static_limit = np.array([0, 0, 0, 0, 0, 0])
 
-        self.tau_j = self.robot.rne(self.robot.qn, self.vel, self.acc)
+        self.tau_j = []
 
         self.qn = np.array([0, 0, 0, 0, 0, 0])  # degree
 
@@ -206,16 +206,16 @@ class Dynamics_space:
         rospy.loginfo("I heard command is %s", data.cmd)
 
     def dyna_callback(self, data):
-        self.joint_angle = data.joint_angle
+        self.joint_angle = data.joint_angle[0:6]
         self.payload = data.payload
         self.payload_position = data.payload_position
-        self.vel = data.vel
-        self.acc = data.acc
-        rospy.loginfo("I heard command is %s", data.joint_angle)
-        rospy.loginfo("I heard command is %s", data.payload)
-        rospy.loginfo("I heard command is %s", data.payload_position)
-        rospy.loginfo("I heard command is %s", data.vel)
-        rospy.loginfo("I heard command is %s", data.acc)
+        self.vel = data.vel[0:6]
+        self.acc = data.acc[0:6]
+        rospy.loginfo("I heard command is %s", self.joint_angle)
+        rospy.loginfo("I heard command is %s", self.payload)
+        rospy.loginfo("I heard command is %s", self.payload_position)
+        rospy.loginfo("I heard command is %s", self.vel)
+        rospy.loginfo("I heard command is %s", self.acc)
 
     def dyna_space_callback(self, data):
         self.payload_space = data.payload
@@ -689,7 +689,7 @@ class Dynamics_space:
 
         for i in range(6):
             qn[i] = self.joint_angle[i] * deg
-        # print(self.robot.gravload(qn))
+        print(self.robot.gravload(qn))
         self.robot.payload(self.payload, self.payload_position)  # set payload
 
         self.qn = qn

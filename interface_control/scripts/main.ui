@@ -113,7 +113,7 @@
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_arm">
      <attribute name="title">
@@ -427,7 +427,7 @@
         <x>290</x>
         <y>20</y>
         <width>221</width>
-        <height>380</height>
+        <height>444</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -680,6 +680,48 @@
         <widget class="QLineEdit" name="lineEdit_joint6_">
          <property name="text">
           <string>-176</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="0">
+        <widget class="QLabel" name="label_55">
+         <property name="text">
+          <string>Joint 7+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="0">
+        <widget class="QLabel" name="label_56">
+         <property name="text">
+          <string>Joint 7-</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="1">
+        <widget class="QLineEdit" name="lineEdit_joint7">
+         <property name="text">
+          <string>176</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="1">
+        <widget class="QLineEdit" name="lineEdit_joint7_">
+         <property name="text">
+          <string>-176</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="2">
+        <widget class="QLabel" name="label_57">
+         <property name="text">
+          <string>degree</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="2">
+        <widget class="QLabel" name="label_58">
+         <property name="text">
+          <string>degree</string>
          </property>
         </widget>
        </item>
@@ -1724,7 +1766,7 @@
      <widget class="QPushButton" name="btn_dynamics">
       <property name="geometry">
        <rect>
-        <x>450</x>
+        <x>470</x>
         <y>420</y>
         <width>201</width>
         <height>33</height>
@@ -2872,7 +2914,7 @@
      <widget class="QPushButton" name="btn_dyn_torque_limit">
       <property name="geometry">
        <rect>
-        <x>480</x>
+        <x>540</x>
         <y>370</y>
         <width>131</width>
         <height>33</height>
@@ -3063,6 +3105,45 @@
       </property>
       <property name="text">
        <string>Torque Limit</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_jog_6">
+      <property name="geometry">
+       <rect>
+        <x>440</x>
+        <y>70</y>
+        <width>61</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.0</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_vel_6">
+      <property name="geometry">
+       <rect>
+        <x>440</x>
+        <y>280</y>
+        <width>61</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.0</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_acc_6">
+      <property name="geometry">
+       <rect>
+        <x>440</x>
+        <y>350</y>
+        <width>61</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.0</string>
       </property>
      </widget>
     </widget>
@@ -4576,8 +4657,8 @@
      <widget class="QPushButton" name="btn_op_set">
       <property name="geometry">
        <rect>
-        <x>470</x>
-        <y>370</y>
+        <x>570</x>
+        <y>380</y>
         <width>91</width>
         <height>33</height>
        </rect>
@@ -4884,6 +4965,32 @@
       </property>
       <property name="text">
        <string>mm</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_op_acc_7">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>380</y>
+        <width>61</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.0</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_op_vel_7">
+      <property name="geometry">
+       <rect>
+        <x>430</x>
+        <y>310</y>
+        <width>61</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.0</string>
       </property>
      </widget>
     </widget>

@@ -162,7 +162,7 @@ class Ui_MainWindow(object):
         self.btn_dynamics_design.setStyleSheet(u"background-color:#da7700;color:white;border-color: black;")
         self.gridLayoutWidget_2 = QWidget(self.tab_arm)
         self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(290, 20, 221, 380))
+        self.gridLayoutWidget_2.setGeometry(QRect(290, 20, 221, 444))
         self.gridLayout_2 = QGridLayout(self.gridLayoutWidget_2)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -346,6 +346,36 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addWidget(self.lineEdit_joint6_, 11, 1, 1, 1)
 
+        self.label_55 = QLabel(self.gridLayoutWidget_2)
+        self.label_55.setObjectName(u"label_55")
+
+        self.gridLayout_2.addWidget(self.label_55, 12, 0, 1, 1)
+
+        self.label_56 = QLabel(self.gridLayoutWidget_2)
+        self.label_56.setObjectName(u"label_56")
+
+        self.gridLayout_2.addWidget(self.label_56, 13, 0, 1, 1)
+
+        self.lineEdit_joint7 = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint7.setObjectName(u"lineEdit_joint7")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint7, 12, 1, 1, 1)
+
+        self.lineEdit_joint7_ = QLineEdit(self.gridLayoutWidget_2)
+        self.lineEdit_joint7_.setObjectName(u"lineEdit_joint7_")
+
+        self.gridLayout_2.addWidget(self.lineEdit_joint7_, 13, 1, 1, 1)
+
+        self.label_57 = QLabel(self.gridLayoutWidget_2)
+        self.label_57.setObjectName(u"label_57")
+
+        self.gridLayout_2.addWidget(self.label_57, 12, 2, 1, 1)
+
+        self.label_58 = QLabel(self.gridLayoutWidget_2)
+        self.label_58.setObjectName(u"label_58")
+
+        self.gridLayout_2.addWidget(self.label_58, 13, 2, 1, 1)
+
         self.comboBox_3_length = QComboBox(self.tab_arm)
         self.comboBox_3_length.setObjectName(u"comboBox_3_length")
         self.comboBox_3_length.setGeometry(QRect(80, 420, 93, 26))
@@ -491,7 +521,7 @@ class Ui_MainWindow(object):
         self.tab_mission.setObjectName(u"tab_mission")
         self.btn_dynamics = QPushButton(self.tab_mission)
         self.btn_dynamics.setObjectName(u"btn_dynamics")
-        self.btn_dynamics.setGeometry(QRect(450, 420, 201, 33))
+        self.btn_dynamics.setGeometry(QRect(470, 420, 201, 33))
         palette7 = QPalette()
         palette7.setBrush(QPalette.Active, QPalette.WindowText, brush)
         palette7.setBrush(QPalette.Active, QPalette.Button, brush2)
@@ -677,7 +707,7 @@ class Ui_MainWindow(object):
         self.btn_arm_plot_close.setStyleSheet(u"background-color:#00d21a;color:white;border-color: black;")
         self.btn_dyn_torque_limit = QPushButton(self.tab_mission)
         self.btn_dyn_torque_limit.setObjectName(u"btn_dyn_torque_limit")
-        self.btn_dyn_torque_limit.setGeometry(QRect(480, 370, 131, 33))
+        self.btn_dyn_torque_limit.setGeometry(QRect(540, 370, 131, 33))
         palette11 = QPalette()
         palette11.setBrush(QPalette.Active, QPalette.WindowText, brush)
         palette11.setBrush(QPalette.Active, QPalette.Button, brush3)
@@ -700,6 +730,15 @@ class Ui_MainWindow(object):
         self.btn_dyn_torque_limit.setPalette(palette11)
         self.btn_dyn_torque_limit.setFont(font2)
         self.btn_dyn_torque_limit.setStyleSheet(u"background-color:#00d21a;color:white;border-color: black;")
+        self.lineEdit_jog_6 = QLineEdit(self.tab_mission)
+        self.lineEdit_jog_6.setObjectName(u"lineEdit_jog_6")
+        self.lineEdit_jog_6.setGeometry(QRect(440, 70, 61, 26))
+        self.lineEdit_vel_6 = QLineEdit(self.tab_mission)
+        self.lineEdit_vel_6.setObjectName(u"lineEdit_vel_6")
+        self.lineEdit_vel_6.setGeometry(QRect(440, 280, 61, 26))
+        self.lineEdit_acc_6 = QLineEdit(self.tab_mission)
+        self.lineEdit_acc_6.setObjectName(u"lineEdit_acc_6")
+        self.lineEdit_acc_6.setGeometry(QRect(440, 350, 61, 26))
         self.tabWidget.addTab(self.tab_mission, "")
         self.tab_state = QWidget()
         self.tab_state.setObjectName(u"tab_state")
@@ -933,7 +972,7 @@ class Ui_MainWindow(object):
         self.lineEdit_op_vel_6.setGeometry(QRect(360, 310, 61, 26))
         self.btn_op_set = QPushButton(self.tab_other)
         self.btn_op_set.setObjectName(u"btn_op_set")
-        self.btn_op_set.setGeometry(QRect(470, 370, 91, 33))
+        self.btn_op_set.setGeometry(QRect(570, 380, 91, 33))
         palette18 = QPalette()
         palette18.setBrush(QPalette.Active, QPalette.WindowText, brush)
         palette18.setBrush(QPalette.Active, QPalette.Button, brush3)
@@ -983,6 +1022,12 @@ class Ui_MainWindow(object):
         self.label_30 = QLabel(self.tab_other)
         self.label_30.setObjectName(u"label_30")
         self.label_30.setGeometry(QRect(340, 410, 20, 71))
+        self.lineEdit_op_acc_7 = QLineEdit(self.tab_other)
+        self.lineEdit_op_acc_7.setObjectName(u"lineEdit_op_acc_7")
+        self.lineEdit_op_acc_7.setGeometry(QRect(430, 380, 61, 26))
+        self.lineEdit_op_vel_7 = QLineEdit(self.tab_other)
+        self.lineEdit_op_vel_7.setObjectName(u"lineEdit_op_vel_7")
+        self.lineEdit_op_vel_7.setGeometry(QRect(430, 310, 61, 26))
         self.tabWidget.addTab(self.tab_other, "")
         self.tab_2 = QWidget()
         self.tab_2.setObjectName(u"tab_2")
@@ -1023,7 +1068,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1084,6 +1129,12 @@ class Ui_MainWindow(object):
         self.label_34.setText(QCoreApplication.translate("MainWindow", u"Joint 2+", None))
         self.label_47.setText(QCoreApplication.translate("MainWindow", u"Joint 3+", None))
         self.lineEdit_joint6_.setText(QCoreApplication.translate("MainWindow", u"-176", None))
+        self.label_55.setText(QCoreApplication.translate("MainWindow", u"Joint 7+", None))
+        self.label_56.setText(QCoreApplication.translate("MainWindow", u"Joint 7-", None))
+        self.lineEdit_joint7.setText(QCoreApplication.translate("MainWindow", u"176", None))
+        self.lineEdit_joint7_.setText(QCoreApplication.translate("MainWindow", u"-176", None))
+        self.label_57.setText(QCoreApplication.translate("MainWindow", u"degree", None))
+        self.label_58.setText(QCoreApplication.translate("MainWindow", u"degree", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_arm), QCoreApplication.translate("MainWindow", u"Arm Design", None))
         self.btn_dynamics_real_torq.setText(QCoreApplication.translate("MainWindow", u"Run", None))
         self.label_20.setText(QCoreApplication.translate("MainWindow", u"Read Real Arm Torque", None))
@@ -1126,6 +1177,9 @@ class Ui_MainWindow(object):
         self.btn_arm_plot.setText(QCoreApplication.translate("MainWindow", u"Plot", None))
         self.btn_arm_plot_close.setText(QCoreApplication.translate("MainWindow", u"Close", None))
         self.btn_dyn_torque_limit.setText(QCoreApplication.translate("MainWindow", u"Torque Limit", None))
+        self.lineEdit_jog_6.setText(QCoreApplication.translate("MainWindow", u"0.0", None))
+        self.lineEdit_vel_6.setText(QCoreApplication.translate("MainWindow", u"0.0", None))
+        self.lineEdit_acc_6.setText(QCoreApplication.translate("MainWindow", u"0.0", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_mission), QCoreApplication.translate("MainWindow", u"Dynamics", None))
         self.btn_dyn_space.setText(QCoreApplication.translate("MainWindow", u"Dynamics Space", None))
         self.btn_dyn_axis_set.setText(QCoreApplication.translate("MainWindow", u"Set", None))
@@ -1168,6 +1222,8 @@ class Ui_MainWindow(object):
         self.label_29.setText(QCoreApplication.translate("MainWindow", u"Reachable radius", None))
         self.lineEdit_op_reachable_radius.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label_30.setText(QCoreApplication.translate("MainWindow", u"mm", None))
+        self.lineEdit_op_acc_7.setText(QCoreApplication.translate("MainWindow", u"0.0", None))
+        self.lineEdit_op_vel_7.setText(QCoreApplication.translate("MainWindow", u"0.0", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_other), QCoreApplication.translate("MainWindow", u"Other", None))
         self.btn_cjm_select.setText(QCoreApplication.translate("MainWindow", u"CJM Select ", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"CJM", None))

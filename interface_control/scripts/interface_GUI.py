@@ -129,9 +129,9 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.payload_position = [0.0,0.0,0.0]
         self.payload_space = 0.0
         self.payload_position_space = [0.0,0.0,0.0]
-        self.joint_velocity = [0.0,0.0,0.0,0.0,0.0,0.0]
-        self.joint_acceleration = [0.0,0.0,0.0,0.0,0.0,0.0]
-        self.joint_angle = [0.0,0.0,0.0,0.0,0.0,0.0]
+        self.joint_velocity = [0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+        self.joint_acceleration = [0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+        self.joint_angle = [0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 
         # arm design parameters
         self.axis_2 = 20
@@ -282,6 +282,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         vel_3 = float(self.ui.lineEdit_vel_3.text())
         vel_4 = float(self.ui.lineEdit_vel_4.text())
         vel_5 = float(self.ui.lineEdit_vel_5.text())
+        vel_6 = float(self.ui.lineEdit_vel_6.text())
         self.joint_velocity = [vel_0, vel_1, vel_2, vel_3, vel_4, vel_5]
         self.dyna_data.vel = self.joint_velocity
 
@@ -291,7 +292,8 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         acc_3 = float(self.ui.lineEdit_acc_3.text())
         acc_4 = float(self.ui.lineEdit_acc_4.text())
         acc_5 = float(self.ui.lineEdit_acc_5.text())
-        self.joint_acceleration = [acc_0, acc_1, acc_2, acc_3, acc_4, acc_5]
+        acc_6 = float(self.ui.lineEdit_acc_6.text())
+        self.joint_acceleration = [acc_0, acc_1, acc_2, acc_3, acc_4, acc_5, acc_6]
         self.dyna_data.acc = self.joint_acceleration
 
         jog_0 = float(self.ui.lineEdit_jog_0.text())
@@ -300,7 +302,8 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         jog_3 = float(self.ui.lineEdit_jog_3.text())
         jog_4 = float(self.ui.lineEdit_jog_4.text())
         jog_5 = float(self.ui.lineEdit_jog_5.text())
-        self.joint_angle = [jog_0, jog_1, jog_2, jog_3, jog_4, jog_5]
+        jog_6 = float(self.ui.lineEdit_jog_6.text())
+        self.joint_angle = [jog_0, jog_1, jog_2, jog_3, jog_4, jog_5, jog_6]
         self.dyna_data.joint_angle = self.joint_angle
 
         self.pub_dyna_data.publish(self.dyna_data)
@@ -359,7 +362,9 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         joint_limits.append(float(self.ui.lineEdit_joint5_.text()))
         joint_limits.append(float(self.ui.lineEdit_joint6.text()))
         joint_limits.append(float(self.ui.lineEdit_joint6_.text()))
-        
+        joint_limits.append(float(self.ui.lineEdit_joint7.text()))
+        joint_limits.append(float(self.ui.lineEdit_joint7_.text()))
+
         self.specified_parameter_design.axis_2_length = axis_2*100
         self.specified_parameter_design.axis_3_length = axis_3*100
         self.specified_parameter_design.arm_weight = 0
@@ -401,7 +406,8 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         vel_3 = float(self.ui.lineEdit_op_vel_4.text())
         vel_4 = float(self.ui.lineEdit_op_vel_5.text())
         vel_5 = float(self.ui.lineEdit_op_vel_6.text())
-        joint_velocity = [vel_0, vel_1, vel_2, vel_3, vel_4, vel_5]
+        vel_6 = float(self.ui.lineEdit_op_vel_7.text())
+        joint_velocity = [vel_0, vel_1, vel_2, vel_3, vel_4, vel_5, vel_6]
 
         
 
@@ -411,7 +417,8 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         acc_3 = float(self.ui.lineEdit_op_acc_4.text())
         acc_4 = float(self.ui.lineEdit_op_acc_5.text())
         acc_5 = float(self.ui.lineEdit_op_acc_6.text())
-        joint_acceleration = [acc_0, acc_1, acc_2, acc_3, acc_4, acc_5]
+        acc_6 = float(self.ui.lineEdit_op_acc_7.text())
+        joint_acceleration = [acc_0, acc_1, acc_2, acc_3, acc_4, acc_5, acc_6]
 
         reachable_radius = float(self.ui.lineEdit_op_reachable_radius.text())
 

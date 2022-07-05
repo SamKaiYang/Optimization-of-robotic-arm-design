@@ -211,16 +211,16 @@ class Dynamics_space:
         rospy.loginfo("I heard command is %s", data.cmd)
 
     def dyna_callback(self, data):
-        self.joint_angle = data.joint_angle
+        self.joint_angle = data.joint_angle[0:7]
         self.payload = data.payload
         self.payload_position = data.payload_position
-        self.vel = data.vel
-        self.acc = data.acc
-        rospy.loginfo("I heard command is %s", data.joint_angle)
-        rospy.loginfo("I heard command is %s", data.payload)
-        rospy.loginfo("I heard command is %s", data.payload_position)
-        rospy.loginfo("I heard command is %s", data.vel)
-        rospy.loginfo("I heard command is %s", data.acc)
+        self.vel = data.vel[0:7]
+        self.acc = data.acc[0:7]
+        rospy.loginfo("I heard command is %s", self.joint_angle)
+        rospy.loginfo("I heard command is %s", self.payload)
+        rospy.loginfo("I heard command is %s", self.payload_position)
+        rospy.loginfo("I heard command is %s", self.vel)
+        rospy.loginfo("I heard command is %s", self.acc)
 
     def dyna_space_callback(self, data):
         self.payload_space = data.payload
@@ -689,7 +689,7 @@ class Dynamics_space:
 
         Input: payload, current position, current velocity, current acceleration
         """
-        qn = [0, 0, 0, 0, 0, 0]
+        qn = [0, 0, 0, 0, 0, 0, 0]
         deg = pi / 180
 
         for i in range(6):
@@ -725,6 +725,7 @@ class Dynamics_space:
                 self.tau_j[3],
                 self.tau_j[4],
                 self.tau_j[5],
+                self.tau_j[6],
             ]
         )
         file_name = self.xlsx_outpath + "/dynamics_calc" + ".xlsx"
