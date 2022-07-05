@@ -49,7 +49,7 @@ class single_arm(DHRobot):
 
         deg = pi / 180
         inch = 0.0254
-
+        print(deg) # push test
         # robot length values (metres)
         a = [0, 0, -0.003, 0.003, 0, 0, 0] #m # single arm
         # a = [0, -robot.joints[3].origin.xyz[1], -robot.joints[4].origin.xyz[1], 0, 0, 0]
