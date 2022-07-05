@@ -36,9 +36,9 @@ class single_arm(DHRobot):
     """  # noqa
 
     def __init__(self, symbolic=False):
-        path = os.path.dirname(os.path.realpath(__file__))+"/single_arm.urdf"
-        print(path)
-        robot = URDF.from_xml_file(path)
+        # path = os.path.dirname(os.path.realpath(__file__))+"/single_arm.urdf"
+        # print(path)
+        # robot = URDF.from_xml_file(path)
         if symbolic:
             import spatialmath.base.symbolic as sym
             zero = sym.zero()
@@ -51,58 +51,62 @@ class single_arm(DHRobot):
         inch = 0.0254
 
         # robot length values (metres)
-        # a = [0, -0.314, -0.284, 0, 0, 0] #m # teco
-        a = [0, -robot.joints[3].origin.xyz[1], -robot.joints[4].origin.xyz[1], 0, 0, 0]
+        a = [0, 0, -0.003, 0.003, 0, 0, 0] #m # single arm
+        # a = [0, -robot.joints[3].origin.xyz[1], -robot.joints[4].origin.xyz[1], 0, 0, 0]
         # a = [0, -j3.y, -j4.y, 0, 0, 0]
-        # d = [0.1301, 0, 0, 0.1145, 0.090, 0.048] #m # teco 
-        d = [robot.joints[1].origin.xyz[2],
-            0,
-            0,
-            robot.joints[2].origin.xyz[1]-robot.joints[4].origin.xyz[2], 
-            robot.joints[5].origin.xyz[2],
-            robot.joints[6].origin.xyz[2]
-        ]
+        d = [0.2525, 0, 0.29, 0, 0.27, 0, 0.24] #m # single arm 
+        # d = [robot.joints[1].origin.xyz[2],
+        #     0,
+        #     0,
+        #     robot.joints[2].origin.xyz[1]-robot.joints[4].origin.xyz[2], 
+        #     robot.joints[5].origin.xyz[2],
+        #     robot.joints[6].origin.xyz[2]
+        # ]
         # d = [j1.z, 0, 0, j2.y-j4.z , j5.z, j6.z] #m
-        alpha = [pi/2, zero, zero, pi/2, -pi/2, zero]
+        alpha = [pi/2, pi/2, -pi/2, pi/2, -pi/2, pi/2, zero]
+        theta = [zero, pi, zero, zero, zero, zero, zero]
 
         
         # mass data, no inertia available
-        # mass = [3.7000, 8.3930, 2.33, 1.2190, 1.2190, 0.1897]
-        mass = [robot.links[2].inertial.mass, 
-                robot.links[3].inertial.mass,
-                robot.links[4].inertial.mass,
-                robot.links[5].inertial.mass,
-                robot.links[6].inertial.mass,
-                robot.links[7].inertial.mass
-            ]
-        
-        G= [-80,-80,-80,-50,-50,-50]   # gear ratio
-
-        # center_of_mass = [
-        #         [-1.55579201081481E-05, 0.00265005484815443, -0.00640979059142413],
-        #         [4.90637956589368E-11, 0.205571973027702, -0.003359898058563426],
-        #         [-9.75479428030767E-05, 0.271025707847572, 0.111573843205116],
-        #         [-0.000181761828397664, 0.00219045749084071, -0.000800397394362884],
-        #         [-0.000192919655058627, -0.00232492307126431, 0.00352418959262345],
-        #         [-4.4856E-13 ,0 ,0.025]
+        mass = [0.386131223153925, 0.479430893999342, 0.568306813792926, 0.457613402476782, 0.448277275798768, 0.205818407044008, 0.3927]
+        # mass = [robot.links[2].inertial.mass, 
+        #         robot.links[3].inertial.mass,
+        #         robot.links[4].inertial.mass,
+        #         robot.links[5].inertial.mass,
+        #         robot.links[6].inertial.mass,
+        #         robot.links[7].inertial.mass
         #     ]
+        
+        G= [-80,-80,-80,-50,-50,-50, -50]   # gear ratio
 
         center_of_mass = [
-                robot.links[2].inertial.origin.xyz,
-                robot.links[3].inertial.origin.xyz,
-                robot.links[4].inertial.origin.xyz,
-                robot.links[5].inertial.origin.xyz,
-                robot.links[6].inertial.origin.xyz,
-                robot.links[7].inertial.origin.xyz
+                # [0.000156250860732315 0.000202963757501797 -0.0546720420122521],
+                [-3.64540734812575E-06, 0.00119778550610652, -0.000421399675048756],
+                [0.000683310419598862, -8.00535195483731E-05, 0.117541995924546],
+                [-0.0220564838621471, 0.101455973505417, -8.62457453022769E-05],
+                [0.0297389855299131, 0.0361651889050357, 0.108377256276242],
+                [-0.000172095429412281, 0.102690028206534, -6.66794215013755E-05],
+                [1.14707347786958E-08, 0.0359051244401507, 0.076720238383497],
+                [-4.4856E-13, 0, 0.025]
             ]
+
+        # center_of_mass = [
+        #         robot.links[2].inertial.origin.xyz,
+        #         robot.links[3].inertial.origin.xyz,
+        #         robot.links[4].inertial.origin.xyz,
+        #         robot.links[5].inertial.origin.xyz,
+        #         robot.links[6].inertial.origin.xyz,
+        #         robot.links[7].inertial.origin.xyz
+        #     ]
 
         links = []
 
-        for j in range(6):
+        for j in range(7):
             link = RevoluteDH(
                 d=d[j],
-                a=a[j],
                 alpha=alpha[j],
+                # theta=theta[j],
+                a=a[j],
                 m=mass[j],
                 r=center_of_mass[j],
                 G=G[j]
@@ -118,12 +122,13 @@ class single_arm(DHRobot):
         )
     
         # zero angles
-        self.addconfiguration("qz", np.array([0, 0, 0, 0, 0, 0]))
+        # theta = [zero, pi, zero, zero, zero, zero, zero]
+        self.addconfiguration("qz", np.array([0, 90, 0, 0, 0, 0, 0]))
         # horizontal along the x-axis
-        self.addconfiguration("qr", np.r_[180, 0, 0, 0, 90, 0]*deg)
+        self.addconfiguration("qr", np.r_[0, 0, 0, 0, 0, 0, 0]*deg)
 
         # nominal table top picking pose
-        self.addconfiguration("qn", np.array([0, 0, 0, 0, 0, 0]))
+        self.addconfiguration("qn", np.array([0, 0, 0, 0, 0, 0, 0]))
 if __name__ == '__main__':    # pragma nocover
 
     robot = single_arm(symbolic=False)
