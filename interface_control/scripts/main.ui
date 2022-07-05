@@ -113,7 +113,7 @@
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_arm">
      <attribute name="title">
@@ -1961,12 +1961,12 @@
        <rect>
         <x>20</x>
         <y>240</y>
-        <width>151</width>
+        <width>221</width>
         <height>17</height>
        </rect>
       </property>
       <property name="text">
-       <string>Angular velocity</string>
+       <string>Angular velocity(rad/s)</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_3">
@@ -1974,12 +1974,12 @@
        <rect>
         <x>20</x>
         <y>320</y>
-        <width>191</width>
+        <width>281</width>
         <height>17</height>
        </rect>
       </property>
       <property name="text">
-       <string>Angular acceleration</string>
+       <string>Angular acceleration(rad/s^2)</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_vel_1">
@@ -2456,12 +2456,12 @@
        <rect>
         <x>20</x>
         <y>30</y>
-        <width>151</width>
+        <width>191</width>
         <height>17</height>
        </rect>
       </property>
       <property name="text">
-       <string>Joint Angle</string>
+       <string>Joint Angle (degree)</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_jog_0">
@@ -4461,12 +4461,12 @@
        <rect>
         <x>10</x>
         <y>350</y>
-        <width>191</width>
+        <width>261</width>
         <height>17</height>
        </rect>
       </property>
       <property name="text">
-       <string>Angular acceleration</string>
+       <string>Angular acceleration(rad/s^2)</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_vel_2">
@@ -4787,12 +4787,12 @@
        <rect>
         <x>10</x>
         <y>270</y>
-        <width>151</width>
+        <width>211</width>
         <height>17</height>
        </rect>
       </property>
       <property name="text">
-       <string>Angular velocity</string>
+       <string>Angular velocity(rad/s)</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_vel_4">
