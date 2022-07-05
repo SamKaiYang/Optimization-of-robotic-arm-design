@@ -47,8 +47,10 @@ np.set_printoptions(
 import pandas as pd
 
 from arm_workspace import arm_workspace_plane
+# from robot_urdf import RandomRobot
 from motor_module import mootor_data
-from single_arm import single_arm
+from random_robot import RandomRobot
+
 
 class switch(object):
     def __init__(self, value):
@@ -59,30 +61,32 @@ class switch(object):
         """Return the match method once, then stop"""
         yield self.match
         raise StopIteration
-    
+
     def match(self, *args):
         """Indicate whether or not to enter a case suite"""
         if self.fall or not args:
             return True
-        elif self.value in args: # changed for v1.5, see below
+        elif self.value in args:  # changed for v1.5, see below
             self.fall = True
             return True
         else:
             return False
 
+
 class Dynamics_space:
     def __init__(self):
         self.cmd = 0
-        self.robot = single_arm()
-        self.general_dof = 7
+        self.robot = RandomRobot()
+        
         self.robot.gravload(self.robot.qn)
         self.robot.inertia(self.robot.qn)
-        self.torque = np.array([np.zeros(shape=7)])
+        self.torque = np.array([np.zeros(shape=6)])
+
         self.payload = 0
         self.payload_position = np.array([0, 0, 0])
-        self.joint_angle = np.array([np.zeros(shape=7)])  # degree
-        self.vel = np.array([np.zeros(shape=7)]) # rad / sec
-        self.acc = np.array([np.zeros(shape=7)])  # rad / sec2
+        self.joint_angle = np.array([0, 0, 0, 0, 0, 0, 0])  # degree
+        self.vel = np.array([0, 0, 0, 0, 0, 0, 0])  # rad / sec
+        self.acc = np.array([0, 0, 0, 0, 0, 0, 0])  # rad / sec2
 
         self.payload_space = 0
         self.payload_position_space = np.array([0, 0, 0])
@@ -90,48 +94,45 @@ class Dynamics_space:
 
         self.op_payload = 0
         self.op_payload_position = np.array([0, 0, 0])
-        self.op_vel = np.array([np.zeros(shape=7)]) # rad / sec
-        self.op_acc = np.array([np.zeros(shape=7)]) # rad / sec2
+        self.op_vel = np.array([0, 0, 0, 0, 0, 0])  # rad / sec
+        self.op_acc = np.array([0, 0, 0, 0, 0, 0])  # rad / sec2
         self.op_radius = 0
 
-        self.torque_dynamics_limit = np.array([np.zeros(shape=7)])
-        self.torque_static_limit = np.array([np.zeros(shape=7)])
+        self.torque_dynamics_limit = np.array([0, 0, 0, 0, 0, 0])
+        self.torque_static_limit = np.array([0, 0, 0, 0, 0, 0])
 
-        self.tau_j = np.array([np.zeros(shape=7)])
-        self.qn = np.array([np.zeros(shape=7)])  # degree
+        self.tau_j = []
+
+        self.qn = np.array([0, 0, 0, 0, 0, 0])  # degree
 
         self.joint_limit = [
-            -180,
-            180,
-            -180,
-            180,
-            -180,
-            180,
-            -180,
-            180,
-            -180,
-            180,
-            -180,
-            180,
-            -180,
-            180,
+            -100,
+            100,
+            -100,
+            100,
+            -100,
+            100,
+            -100,
+            100,
+            -100,
+            100,
+            -100,
+            100,
         ]
         ## 數值法 求取工作空間
         # 關節角限位
-        self.q1_s = -180
-        self.q1_end = 180
-        self.q2_s = -180
-        self.q2_end = 180
-        self.q3_s = -180
-        self.q3_end = 180
-        self.q4_s = -180
-        self.q4_end = 180
-        self.q5_s = -180
-        self.q5_end = 180
-        self.q6_s = -180
-        self.q6_end = 180
-        self.q7_s = -180
-        self.q7_end = 180
+        self.q1_s = -160
+        self.q1_end = 160
+        self.q2_s = -160
+        self.q2_end = 160
+        self.q3_s = -160
+        self.q3_end = 160
+        self.q4_s = -160
+        self.q4_end = 160
+        self.q5_s = -160
+        self.q5_end = 160
+        self.q6_s = -160
+        self.q6_end = 160
         # 計算參數
         self.step = 20  # 計算步距 % 解析度   # original = 20
         # t=0:1:(q5_end-q5_s)/step # 產生時間向量
@@ -141,9 +142,8 @@ class Dynamics_space:
         step4 = (self.q4_end - self.q4_s) / self.step
         step5 = (self.q5_end - self.q5_s) / self.step
         step6 = (self.q6_end - self.q6_s) / self.step
-        step7 = (self.q7_end - self.q7_s) / self.step
-        self.step_num = int(step1 * step2 * step3 * step4 * step5 * step6)
-        self.T_cell = step1 * step2 * step3 * step4 * step5 * step6
+        self.step_num = int(step1 * step2 * step3 * step4 * step5)
+        self.T_cell = step1 * step2 * step3 * step4 * step5
         self.T = np.zeros((3, 1))
         self.T_x = np.zeros((1, self.step_num))
         self.T_y = np.zeros((1, self.step_num))
@@ -155,7 +155,7 @@ class Dynamics_space:
         M12 = np.zeros((N, N))
         for i in range(N):
             for j in range(N):
-                M = self.robot.inertia(np.r_[0, Q2[i, j], Q3[i, j], 0, 0, 0, 0])
+                M = self.robot.inertia(np.r_[0, Q2[i, j], Q3[i, j], 0, 0, 0])
                 M11[i, j] = M[0, 0]
                 M12[i, j] = M[0, 1]
 
@@ -191,14 +191,6 @@ class Dynamics_space:
             specified_parameter_design,
             self.specified_parameter_design_callback,
         )
-        # callback:Enter the parameters of the algorithm to be optimized on the interface
-        self.sub_optimal_design = rospy.Subscriber(
-            "/optimal_design", optimal_design, self.optimal_design_callback
-        )
-        # callback:Randomly generated shaft length due to optimization algorithm
-        self.sub_optimal_random = rospy.Subscriber(
-            "/optimal_random", optimal_random, self.optimal_random_callback
-        )
 
     def robot_rebuild(self):
         self.robot.__init__()
@@ -209,11 +201,11 @@ class Dynamics_space:
         rospy.loginfo("I heard command is %s", data.cmd)
 
     def dyna_callback(self, data):
-        self.joint_angle = data.joint_angle[0:7]
+        self.joint_angle = data.joint_angle[0:6]
         self.payload = data.payload
         self.payload_position = data.payload_position
-        self.vel = data.vel[0:7]
-        self.acc = data.acc[0:7]
+        self.vel = data.vel[0:6]
+        self.acc = data.acc[0:6]
         rospy.loginfo("I heard command is %s", self.joint_angle)
         rospy.loginfo("I heard command is %s", self.payload)
         rospy.loginfo("I heard command is %s", self.payload_position)
@@ -286,28 +278,24 @@ class Dynamics_space:
         sheet["E1"] = "torque 4"
         sheet["F1"] = "torque 5"
         sheet["G1"] = "torque 6"
-        sheet["H1"] = "torque 7"
-        sheet["I1"] = "traj_position 1"
-        sheet["J1"] = "traj_position 2"
-        sheet["K1"] = "traj_position 3"
-        sheet["L1"] = "traj_position 4"
-        sheet["M1"] = "traj_position 5"
-        sheet["N1"] = "traj_position 6"
-        sheet["O1"] = "traj_position 7"
-        sheet["P1"] = "traj_velocities 1"
-        sheet["Q1"] = "traj_velocities 2"
-        sheet["R1"] = "traj_velocities 3"
-        sheet["S1"] = "traj_velocities 4"
-        sheet["T1"] = "traj_velocities 5"
-        sheet["U1"] = "traj_velocities 6"
-        sheet["V1"] = "traj_velocities 7"
-        sheet["W1"] = "traj_accelerations 1"
-        sheet["X1"] = "traj_accelerations 2"
-        sheet["Y1"] = "traj_accelerations 3"
-        sheet["Z1"] = "traj_accelerations 4"
-        sheet["X2"] = "traj_accelerations 5"
-        sheet["Y2"] = "traj_accelerations 6"
-        sheet["Z2"] = "traj_accelerations 7"
+        sheet["H1"] = "traj_position 1"
+        sheet["I1"] = "traj_position 2"
+        sheet["J1"] = "traj_position 3"
+        sheet["K1"] = "traj_position 4"
+        sheet["L1"] = "traj_position 5"
+        sheet["M1"] = "traj_position 6"
+        sheet["N1"] = "traj_velocities 1"
+        sheet["O1"] = "traj_velocities 2"
+        sheet["P1"] = "traj_velocities 3"
+        sheet["Q1"] = "traj_velocities 4"
+        sheet["R1"] = "traj_velocities 5"
+        sheet["S1"] = "traj_velocities 6"
+        sheet["T1"] = "traj_accelerations 1"
+        sheet["U1"] = "traj_accelerations 2"
+        sheet["V1"] = "traj_accelerations 3"
+        sheet["W1"] = "traj_accelerations 4"
+        sheet["X1"] = "traj_accelerations 5"
+        sheet["Y1"] = "traj_accelerations 6"
         
         for i in range(len(self.time_array)):
             sheet.cell(row=i + 2, column=1).value = self.time_array[i]
@@ -381,8 +369,8 @@ class Dynamics_space:
 
     def trajectory_torque_plot(self):
         # x_smooth = np.linspace(self.time_array.min(), self.time_array.max(), 300)
-        fig, ax = plt.subplots(4,7,figsize=(20,10))
-        axis = 7
+        fig, ax = plt.subplots(4,6,figsize=(20,10))
+        axis = 6
         for i in range(axis):
             # y_smooth = make_interp_spline(self.time_array, self.tau_array[:, i])(x_smooth)
             ax[0,i].plot(self.time_array, self.tau_array[:, i], "b--")
@@ -596,18 +584,18 @@ class Dynamics_space:
         # self.ax = plt.subplot(111, projection='3d')
         # self.ax_2d = plt.subplot(111)
 
-        self.q1_s = -180
-        self.q1_end = 180
-        self.q2_s = -180
-        self.q2_end = 180
-        self.q3_s = -180
-        self.q3_end = 180
-        self.q4_s = -180
-        self.q4_end = 180
-        self.q5_s = -180
-        self.q5_end = 180
-        self.q6_s = -180
-        self.q6_end = 180
+        self.q1_s = -160
+        self.q1_end = 160
+        self.q2_s = -160
+        self.q2_end = 160
+        self.q3_s = -160
+        self.q3_end = 160
+        self.q4_s = -160
+        self.q4_end = 160
+        self.q5_s = -160
+        self.q5_end = 160
+        self.q6_s = -160
+        self.q6_end = 160
         N = 20000
         theta1 = self.q1_end + (self.q1_end - self.q1_s) * np.random.rand(N, 1)
         theta2 = self.q2_end + (self.q2_end - self.q2_s) * np.random.rand(N, 1)
@@ -691,7 +679,7 @@ class Dynamics_space:
 
         Input: payload, current position, current velocity, current acceleration
         """
-        qn = [0, 0, 0, 0, 0, 0, 0]
+        qn = [0, 0, 0, 0, 0, 0]
         deg = pi / 180
 
         for i in range(6):
@@ -727,7 +715,6 @@ class Dynamics_space:
                 self.tau_j[3],
                 self.tau_j[4],
                 self.tau_j[5],
-                self.tau_j[6],
             ]
         )
         file_name = self.xlsx_outpath + "/dynamics_calc" + ".xlsx"
@@ -749,10 +736,10 @@ class Dynamics_space:
         """
         Through the "plot" button on the interface, draw the current posture of the arm
         """
-        qn = [0, 0, 0, 0, 0, 0, 0]
+        qn = [0, 0, 0, 0, 0, 0]
         deg = pi / 180
 
-        for i in range(7):
+        for i in range(6):
             qn[i] = self.joint_angle[i] * deg
 
         self.qn = qn
@@ -1002,6 +989,13 @@ class Dynamics_space:
                     static_sol_module.append(i)
                     # show_static.append("static")
                     break
+                # over size can load
+                elif max(res.rated_torque) <= self.torque_static_limit[j]:
+                    print("軸數:", j + 1)
+                    print("關節型號: fail") #
+                    static_sol_module.append("fail")
+                    # show_static.append("static")
+                    break
 
         show_static = ["static analysis result"]
         sheet.append(show_static)
@@ -1019,6 +1013,14 @@ class Dynamics_space:
                     dynamic_sol_module.append(i)
                     # show_dynamic.append("dynamic")
                     break
+                # over size can load
+                elif max(res.rated_torque) <= self.torque_dynamics_limit[j]:
+                    print("軸數:", j + 1)
+                    print("關節型號: fail") #
+                    dynamic_sol_module.append("fail")
+                    # show_static.append("static")
+                    break
+                
         show_dynamic = ["dynamic analysis result"]
         sheet.append(show_dynamic)
         sheet.merge_cells("A5:F5")
@@ -1128,118 +1130,6 @@ class Dynamics_space:
                 axis=0,
             )
         )
-
-        res = motor.TECO_member.append(other=motor.Kollmorgen_member, ignore_index=True)
-        print(res)
-
-        res = motor.TECO_member.append(
-            [motor.Kollmorgen_member, motor.UR_member, motor.TM_member],
-            ignore_index=True,
-        )
-        print(res)
-
-        self.robot.plot(self.qn)
-
-    def optimal_design_callback(self, data):
-        # print(data.data)
-        self.op_payload = data.payload
-        self.op_payload_position = data.payload_position
-        self.op_vel = data.vel
-        self.op_acc = data.acc
-        self.op_radius = data.radius
-
-        rospy.loginfo("I heard op_payload is %s", self.op_payload)
-        rospy.loginfo("I heard op_payload_position is %s", self.op_payload_position)
-        rospy.loginfo("I heard op_vel is %s", self.op_vel)
-        rospy.loginfo("I heard op_acc is %s", self.op_acc)
-        rospy.loginfo("I heard op_radius is %s", self.op_radius)
-
-        # print(self.optimal_design_flag)
-
-    def optimal_random_callback(self, data):
-        self.op_axis_2_length = data.axis_2_length
-        self.op_axis_3_length = data.axis_3_length
-
-        rospy.loginfo("I heard op_axis_2_length is %s", self.op_axis_2_length)
-        rospy.loginfo("I heard op_axis_3_length is %s", self.op_axis_3_length)
-
-    # TODO: optimization_algorithm: use Random forest
-    def optimization_algorithm(self):
-        # input data: random axis2,3 length, robot workspace, robot payload, robot joint velocity, robot joint acceleration, motor data
-        """
-        Agent :
-            robot payload set
-            robot velocity
-            robot acceleration
-
-        Action :
-            axis 2 length increase
-            axis 2 length reduce
-            axis 3 length increase
-            axis 3 length reduce
-            Change the motor configuration of each axis
-
-        Rewards :
-            torque
-            motor cost
-            robot workspace
-            robot weight
-
-        Status :
-            After the parameter of action is changed, the torque value of each axis
-        """
-
-        """ transfer the data to the dataframe
-        agent:
-            self.op_payload
-            self.op_payload_position
-            self.op_vel
-            self.op_acc
-            self.op_radius
-        """
-        # TODO: axis2,3 length change
-        """ receive the data from the topic
-        action:
-            axis 2 length increase
-            axis 2 length reduce
-            axis 3 length increase
-            axis 3 length reduce
-            Change the motor configuration of each axis
-        """
-        # TODO: rebuild robot
-        self.robot_motor_random_build()
-        # update dynamics torque calculation parameters
-        self.payload = self.op_payload
-        self.payload_position = self.op_payload_position
-        self.vel = self.op_vel
-        self.acc = self.op_acc
-        # calculate the robotic arm workspace
-        self.Workspace_cal_Monte_Carlo()
-        # Compare ideal radius with the workspace radius
-        print("T_x:", self.T_x[0, :].max() - self.T_x[0, :].min())
-        print("T_y:", self.T_y[0, :].max() - self.T_y[0, :].min())
-        print("T_z:", self.T_z[0, :].max() - self.T_z[0, :].min())
-        radius_max = self.T_x[0, :].max() - self.T_x[0, :].min()
-        radius_reward = self.op_radius - radius_max
-        # TODO: before reward
-        # output data: robot torque, robot module, motor select
-        # TODO: use dynamics to calculate torque
-        self.dynamics_torque_limit()
-        """ transfer the data to the topic
-        rewards:
-            torque : Use torque reduction
-            motor cost
-            robot workspace
-            robot weight
-        """
-        # Use torque reduction, motor score (the higher the cost, the lower the score),
-        # Motor score (the higher the cost, the lower the score)
-        # Scope of work (the larger the scope of work, the higher the score)
-        """ transfer the data to the topic
-        state:
-        After the parameter of action is changed, the torque value of each axis
-        """
-        # TODO: through optimization algorithm to find the best solution
 
     def task_set(self):
         for case in switch(self.cmd):

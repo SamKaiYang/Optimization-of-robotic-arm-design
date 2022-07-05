@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import numpy as np
 from roboticstoolbox import DHRobot, RevoluteDH
+import matplotlib.pyplot as plt
 from spatialmath import SE3
 from urdf_parser_py.urdf import URDF
 import os
@@ -50,10 +51,10 @@ class single_arm(DHRobot):
         deg = pi / 180
         inch = 0.0254
         # robot length values (metres)
-        a = [0, 0, -0.003, 0.003, 0, 0, 0] #m # single arm
+        a = [0, 0, -0.03, 0.03, 0, 0, 0] #m # single arm
         # a = [0, -robot.joints[3].origin.xyz[1], -robot.joints[4].origin.xyz[1], 0, 0, 0]
         # a = [0, -j3.y, -j4.y, 0, 0, 0]
-        d = [0.2525, 0, 0.29, 0, 0.27, 0, 0.24] #m # single arm 
+        d = [0.2463, 0, 0.29, 0, 0.27, 0, 0.24] #m # single arm 
         # d = [robot.joints[1].origin.xyz[2],
         #     0,
         #     0,
@@ -62,7 +63,7 @@ class single_arm(DHRobot):
         #     robot.joints[6].origin.xyz[2]
         # ]
         # d = [j1.z, 0, 0, j2.y-j4.z , j5.z, j6.z] #m
-        alpha = [pi/2, pi/2, -pi/2, pi/2, -pi/2, pi/2, zero]
+        alpha = [pi/2, pi/2, -pi/2, -pi/2, -pi/2, pi/2, zero]
         theta = [zero, pi, zero, zero, zero, zero, zero]
 
         
@@ -122,7 +123,7 @@ class single_arm(DHRobot):
     
         # zero angles
         # theta = [zero, pi, zero, zero, zero, zero, zero]
-        self.addconfiguration("qz", np.array([0, 90, 0, 0, 0, 0, 0]))
+        self.addconfiguration("qz", np.array([0, 0, 0, 0, 0, 0, 0]))
         # horizontal along the x-axis
         self.addconfiguration("qr", np.r_[0, 0, 0, 0, 0, 0, 0]*deg)
 
@@ -133,3 +134,9 @@ if __name__ == '__main__':    # pragma nocover
     robot = single_arm(symbolic=False)
     print(robot)
     print(robot.dynamics())
+    # TODO: fixed DH table
+    from math import pi
+    deg = pi / 180
+    qz = np.array([90.0, 90.0, 180.0, 180.0, 0.0, 0.0, 0.0])*deg
+    robot.plot(qz, dt = 10)
+    

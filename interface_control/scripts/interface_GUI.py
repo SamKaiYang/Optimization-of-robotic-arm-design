@@ -283,7 +283,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         vel_4 = float(self.ui.lineEdit_vel_4.text())
         vel_5 = float(self.ui.lineEdit_vel_5.text())
         vel_6 = float(self.ui.lineEdit_vel_6.text())
-        self.joint_velocity = [vel_0, vel_1, vel_2, vel_3, vel_4, vel_5]
+        self.joint_velocity = [vel_0, vel_1, vel_2, vel_3, vel_4, vel_5, vel_6]
         self.dyna_data.vel = self.joint_velocity
 
         acc_0 = float(self.ui.lineEdit_acc_0.text())
