@@ -73,7 +73,7 @@ class switch(object):
             return False
 
 
-class Dynamics_space:
+class Dynamics_random:
     def __init__(self):
         self.cmd = 0
         self.robot = RandomRobot()
@@ -1200,8 +1200,8 @@ class Dynamics_space:
                 break
 
 if __name__ == "__main__":
-    rospy.init_node("dynamics_space")
+    rospy.init_node("dynamics_random")
 
-    Dya = Dynamics_space()
+    Dya = Dynamics_random()
     while not rospy.is_shutdown():
         Dya.task_set()

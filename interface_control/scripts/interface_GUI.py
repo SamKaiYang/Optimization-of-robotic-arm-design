@@ -190,13 +190,18 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_teco):
         self.ui.comboBox_dof.setCurrentIndex(5)
         self.display_dof()
         
-        # ComboBox op dof select 
+        # ComboBox structure dof select 
         choices = ['1','2', '3', '4', '5','6','7']
         self.ui.comboBox_dof_select.addItems(choices)
         self.ui.comboBox_dof_select.currentIndexChanged.connect(self.display_dof_select)
         self.ui.comboBox_dof_select.setCurrentIndex(5)
         self.display_dof_select()
-        
+        # ComboBox structure name
+        choices = ['random','TECO','UR','TM','Single Arm','SCARA','3DOF']
+        self.ui.comboBox_structure_select.addItems(choices)
+        self.ui.comboBox_structure_select.currentIndexChanged.connect(self.display_structure_select)
+        self.ui.comboBox_structure_select.setCurrentIndex(0)
+        self.display_structure_select()
 
         # self.progressBar_dynamics_space = QtWidgets.QProgressBar(self.ui.graphicsView_2)
     def dyna_cal_process_callback(self,data):
@@ -303,6 +308,31 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_teco):
         elif self.ui.comboBox_dof_select.currentText() == "7":
             self.dof_select = 7
             self.ui.comboBox_dof_select.setCurrentIndex(6)
+    
+    def display_structure_select(self):
+        # ['random','TECO','UR','TM','Single Arm','SCARA','3DOF']
+        if self.ui.comboBox_structure_select.currentText() == "random":
+            self.structure_name = 'random'
+            self.ui.comboBox_structure_select.setCurrentIndex(0)
+        elif self.ui.comboBox_structure_select.currentText() == "TECO":
+            self.structure_name = 'TECO'
+            self.ui.comboBox_structure_select.setCurrentIndex(1)
+        elif self.ui.comboBox_structure_select.currentText() == "UR":
+            self.structure_name = 'UR'
+            self.ui.comboBox_structure_select.setCurrentIndex(2)
+        elif self.ui.comboBox_structure_select.currentText() == "TM":
+            self.structure_name = 'TM'
+            self.ui.comboBox_structure_select.setCurrentIndex(3)
+        elif self.ui.comboBox_structure_select.currentText() == "Single Arm":
+            self.structure_name = 'Single Arm'
+            self.ui.comboBox_structure_select.setCurrentIndex(4)
+        elif self.ui.comboBox_structure_select.currentText() == "SCARA":
+            self.structure_name = 'SCARA'
+            self.ui.comboBox_structure_select.setCurrentIndex(5)
+        elif self.ui.comboBox_structure_select.currentText() == "3DOF":
+            self.structure_name = '3DOF'
+            self.ui.comboBox_structure_select.setCurrentIndex(6)
+
     
     def dyna_set_buttonClicked(self):
         self.payload = float(self.ui.lineEdit_payload.text())

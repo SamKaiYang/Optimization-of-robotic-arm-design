@@ -54,10 +54,13 @@ from UR_robot import UR5, UR10, UR10e, UR16e
 from TM_robot import TM5_700, TM5_900, TM12, TM14
 from single_arm import single_arm
 
+
+from dynamics_function_6dof_random import Dynamics_random
 from dynamics_function_teco import Dynamics_teco
 from dynamics_function_single_arm import Dynamics_single_arm
 from dynamics_function_tm import Dynamics_tm
 from dynamics_function_ur import Dynamics_ur
+
 class switch(object):
     def __init__(self, value):
         self.value = value
@@ -83,6 +86,7 @@ class General_arm:
         self.test = 0
         self.op_dof = 0
         self.DoF_select = 0
+        self.Structure_select = " "
         # callback:Enter the parameters of the algorithm to be optimized on the interface
         self.sub_optimal_design = rospy.Subscriber(
             "/optimal_design", optimal_design, self.optimal_design_callback
@@ -175,20 +179,42 @@ if __name__ == "__main__":
         elif general_arm.DoF_select == 3:
             pass
         elif general_arm.DoF_select == 4:
-            pass
+            if general_arm.Structure_select == "SCARA":
+                pass
+            else:
+                pass
         elif general_arm.DoF_select == 5:
             pass
         elif general_arm.DoF_select == 6:
-            robot = Dynamics_ur()
-            while general_arm.DoF_select == 6:
-                robot.task_set()
-            print("666666 break")
-            #  TODO: 再分鏈構型選擇
-            # ur, teco, tm
+            if general_arm.Structure_select == "TECO":
+                robot = Dynamics_teco()
+                while general_arm.Structure_select == "TECO":
+                    robot.task_set()
+            elif general_arm.Structure_select == "UR":
+                robot = Dynamics_ur()
+                while general_arm.Structure_select == "UR":
+                    robot.task_set()
+            elif general_arm.Structure_select == "TM":
+                robot = Dynamics_tm()
+                while general_arm.Structure_select == "TM":
+                    robot.task_set()
+            elif general_arm.Structure_select == "random":
+                robot = Dynamics_random()
+                while general_arm.Structure_select == "random":
+                    robot.task_set()
+            else:
+                pass
+            
+            # print("66666 break") 
+            
         elif general_arm.DoF_select == 7:
-            robot = Dynamics_single_arm()
-            while general_arm.DoF_select == 7:
-                robot.task_set()
-            print("77777 break") 
-            # TODO: 再分鏈構型選擇
-            # single, panda
+            if  general_arm.Structure_select == "Single Arm":
+                robot = Dynamics_single_arm()
+                while general_arm.Structure_select == "Single Arm":
+                    robot.task_set()
+            elif general_arm.Structure_select == "Panda":
+                pass
+            else:
+                pass
+            # print("77777 break") 
+
