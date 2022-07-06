@@ -48,36 +48,14 @@ pip3 install -r requirements.txt
 
 # 範例程式
 ==================
-## 運行動力學分析(靜態),求取torque 
-```bash
-rosrun dynamics dynamics_teco.py
-```
 ## 運行手臂軌跡規劃,求取各軸角度,速度,加速度
 ```bash
 rosrun trajectory_generation trajectory_generation_teco.py 
 ```
-## 運行動力學手臂全工作空間分析(靜態),求取最大torque 
-```bash
-rosrun dynamics dynamics_teco_space_ex.py
-```
-
 # 顯示與操作介面
 ```bash
-rosrun interface_control interface_GUI.py
-rosrun dynamics dynamics_function_teco.py 
-
-#or 
-roslaunch dynamics dynamics_teco.launch
+roslaunch dynamics dynamics_general_robot.launch 
 ```
-
-```bash
-rosrun interface_control interface_GUI.py
-rosrun dynamics dynamics_function_random.py 
-
-#or 
-roslaunch dynamics dynamics_random.launch
-```
-
 # 執行moveit OMPL demo
 ```bash
 roslaunch teco_config demo.launch
@@ -97,7 +75,9 @@ roslaunch teco_config demo_pliz.launch
 ```
 
 
->>2022/01/04 更新
-1. 新增工作空間分析
-2. 新增軌跡規劃求取各軸角度,速度,加速度
+>>2022/07/06 更新
+1. 匯入UR, TM, TECO, Single Arm(7DoF), Random(teco)構型
 
+>>未完成項目
+1. 深度強化學習DDPG, 學習最佳構型生成
+2. 使用模組化關節(Dynamixal or TECO) 實現多種構型生成
