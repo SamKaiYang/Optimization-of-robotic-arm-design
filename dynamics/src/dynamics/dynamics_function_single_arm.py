@@ -381,8 +381,8 @@ class Dynamics_space:
 
     def trajectory_torque_plot(self):
         # x_smooth = np.linspace(self.time_array.min(), self.time_array.max(), 300)
-        fig, ax = plt.subplots(4,7,figsize=(20,10))
-        axis = 7
+        fig, ax = plt.subplots(4,7,figsize=(20,10)) # 7dof
+        axis = 7 # 7dof
         for i in range(axis):
             # y_smooth = make_interp_spline(self.time_array, self.tau_array[:, i])(x_smooth)
             ax[0,i].plot(self.time_array, self.tau_array[:, i], "b--")
@@ -441,12 +441,12 @@ class Dynamics_space:
         """
         Through the "dynamics space" page in the interface to calculate the dynamics of the robot
         """
-        qd = np.r_[0, 1, 0, 0, 0, 0]
+        qd = np.r_[0, 1, 0, 0, 0, 0, 0] #7dof
         # print("qd:",qd)
         self.robot.coriolis(self.robot.qn, qd) @ qd
-        self.robot.rne(self.robot.qn, np.zeros((6,)), np.zeros((6,)))
+        self.robot.rne(self.robot.qn, np.zeros((7,)), np.zeros((7,))) #7dof
 
-        torque = np.array([np.zeros(shape=6)])
+        torque = np.array([np.zeros(shape=7)]) #7dof
         # axis_angle = np.array([np.zeros(shape=6)])
         axis_angle = []
         append_torque_limit_list = []
@@ -479,6 +479,8 @@ class Dynamics_space:
         self.q5_end = joint_limit[9]
         self.q6_s = joint_limit[10]
         self.q6_end = joint_limit[11]
+        self.q7_s = joint_limit[12] #7dof
+        self.q7_end = joint_limit[13] #7dof
 
         self.robot.payload(
             self.payload_space, self.payload_position_space
@@ -490,6 +492,7 @@ class Dynamics_space:
         theta4 = self.q4_end + (self.q4_end - self.q4_s) * np.random.rand(N, 1)
         theta5 = self.q5_end + (self.q5_end - self.q5_s) * np.random.rand(N, 1)
         theta6 = self.q6_end + (self.q6_end - self.q6_s) * np.random.rand(N, 1)
+        theta7 = self.q7_end + (self.q7_end - self.q7_s) * np.random.rand(N, 1) #7dof
 
         for i in range(N):
             percent = (i + 1) / N * 100
@@ -501,14 +504,15 @@ class Dynamics_space:
             q4 = theta4[i, 0]
             q5 = theta5[i, 0]
             q6 = theta6[i, 0]
-            axis_angle.append([q1, q2, q3, q4, q5, q6])
+            q7 = theta7[i, 0] #7dof
+            axis_angle.append([q1, q2, q3, q4, q5, q6, q7]) #7dof
             self.T = self.robot.fkine(
-                [q1 * du, q2 * du, q3 * du, q4 * du, q5 * du, q6 * du]
+                [q1 * du, q2 * du, q3 * du, q4 * du, q5 * du, q6 * du, q7 * du] #7dof
             )
             load = np.array(
                 [
                     self.robot.gravload(
-                        [q1 * du, q2 * du, q3 * du, q4 * du, q5 * du, q6 * du]
+                        [q1 * du, q2 * du, q3 * du, q4 * du, q5 * du, q6 * du, q7 * du] #7dof
                     )
                 ]
             )
@@ -521,7 +525,7 @@ class Dynamics_space:
         end = time.time()
         print("繪製工作空間運行時間：%f sec" % (end - start))
 
-        for i in range(6):
+        for i in range(7): #7dof
             axis = i
             excel_file = Workbook()
             sheet = excel_file.active
@@ -531,12 +535,14 @@ class Dynamics_space:
             sheet["D1"] = "torque 4"
             sheet["E1"] = "torque 5"
             sheet["F1"] = "torque 6"
-            sheet["G1"] = "angle 1"
-            sheet["H1"] = "angle 2"
-            sheet["I1"] = "angle 3"
-            sheet["J1"] = "angle 4"
-            sheet["K1"] = "angle 5"
-            sheet["L1"] = "angle 6"
+            sheet["G1"] = "torque 7" #7dof
+            sheet["H1"] = "angle 1"
+            sheet["I1"] = "angle 2"
+            sheet["J1"] = "angle 3"
+            sheet["K1"] = "angle 4"
+            sheet["L1"] = "angle 5"
+            sheet["M1"] = "angle 6"
+            sheet["N1"] = "angle 7" #7dof
             print("================================")
             print("軸%d torque正最大值時, 各軸torque, 末端位置, 各軸角度" % (axis + 1))
             print("axis_max_torque:", torque[np.argmax(torque[:, axis])])
@@ -571,6 +577,7 @@ class Dynamics_space:
                 "Torque 4 max",
                 "Torque 5 max",
                 "Torque 6 max",
+                "Torque 7 max",#7dof
             ]
         )
         sheet.append(Torque_Max)
@@ -608,6 +615,8 @@ class Dynamics_space:
         self.q5_end = 180
         self.q6_s = -180
         self.q6_end = 180
+        self.q7_s = -180 #7dof
+        self.q7_end = 180 #7dof
         N = 20000
         theta1 = self.q1_end + (self.q1_end - self.q1_s) * np.random.rand(N, 1)
         theta2 = self.q2_end + (self.q2_end - self.q2_s) * np.random.rand(N, 1)
@@ -615,6 +624,7 @@ class Dynamics_space:
         theta4 = self.q4_end + (self.q4_end - self.q4_s) * np.random.rand(N, 1)
         theta5 = self.q5_end + (self.q5_end - self.q5_s) * np.random.rand(N, 1)
         theta6 = self.q6_end + (self.q6_end - self.q6_s) * np.random.rand(N, 1)
+        theta7 = self.q7_end + (self.q7_end - self.q7_s) * np.random.rand(N, 1) #7dof
 
         for i in range(N):
             percent = (i + 1) / N * 100
@@ -624,8 +634,9 @@ class Dynamics_space:
             q4 = theta4[i, 0]
             q5 = theta5[i, 0]
             q6 = theta6[i, 0]
+            q7 = theta7[i, 0] #7dof
             self.T = self.robot.fkine(
-                [q1 * du, q2 * du, q3 * du, q4 * du, q5 * du, q6 * du]
+                [q1 * du, q2 * du, q3 * du, q4 * du, q5 * du, q6 * du, q7 * du] #7dof
             )
             self.T_x[0, i] = self.T.t[0]
             self.T_y[0, i] = self.T.t[1]
@@ -691,10 +702,10 @@ class Dynamics_space:
 
         Input: payload, current position, current velocity, current acceleration
         """
-        qn = [0, 0, 0, 0, 0, 0, 0]
+        qn = [0, 0, 0, 0, 0, 0, 0] #7dof
         deg = pi / 180
 
-        for i in range(6):
+        for i in range(7): #7dof
             qn[i] = self.joint_angle[i] * deg
         # print(self.robot.gravload(qn))
         self.robot.payload(self.payload, self.payload_position)  # set payload
@@ -703,7 +714,7 @@ class Dynamics_space:
         self.tau_j = self.robot.rne(self.qn, self.vel, self.acc)
         print("tau_j:", self.tau_j)
         # axis = 2
-        self.robot.plot(self.qn)
+        self.robot.plot(self.qn, dt = 10)
 
         plt.savefig(path.join(self.pic_outpath, "dataname_dynamics_calc.png"))
         plt.close()
@@ -719,6 +730,7 @@ class Dynamics_space:
         sheet["D1"] = "axis 4"
         sheet["E1"] = "axis 5"
         sheet["F1"] = "axis 6"
+        sheet["G1"] = "axis 7" #7dof
         sheet.append(
             [
                 self.tau_j[0],
@@ -727,7 +739,7 @@ class Dynamics_space:
                 self.tau_j[3],
                 self.tau_j[4],
                 self.tau_j[5],
-                self.tau_j[6],
+                self.tau_j[6], #7dof
             ]
         )
         file_name = self.xlsx_outpath + "/dynamics_calc" + ".xlsx"
@@ -749,10 +761,10 @@ class Dynamics_space:
         """
         Through the "plot" button on the interface, draw the current posture of the arm
         """
-        qn = [0, 0, 0, 0, 0, 0, 0]
+        qn = [90, -90, 0, 0, 0, 0, 90]
         deg = pi / 180
 
-        for i in range(7):
+        for i in range(7): #7dof
             qn[i] = self.joint_angle[i] * deg
 
         self.qn = qn
@@ -760,10 +772,9 @@ class Dynamics_space:
         # self.robot.plot(self.qn,dt=0, block = False, loop=False)
         print("arm_plot:", self.qn)
         self.robot.plot(
-            self.qn, backend="pyplot", block=False, vellipse=False, fellipse=False
+            self.qn, dt = 10
         )
-        # self.robot.plot(self.qt.q, backend=self.args.backend, block=False, movie="trajectory_generation.gif", vellipse=False, fellipse=False)
-        plt.show()
+        
 
     def plot_close(self):
         """
@@ -777,7 +788,7 @@ class Dynamics_space:
 
         each axis when the arm of each axis is the longest and the acceleration is the highest
         """
-        torque = np.array([np.zeros(shape=6)])
+        torque = np.array([np.zeros(shape=7)]) # 7dof
         # axis_angle = np.array([np.zeros(shape=6)])
         axis_angle = []
         append_torque_limit_list = []
@@ -793,7 +804,7 @@ class Dynamics_space:
         radian = 180 / pi
         # 弧度
         self.robot.payload(self.payload, self.payload_position)  # set payload
-        torque = np.array([np.zeros(shape=6)])
+        torque = np.array([np.zeros(shape=7)]) # 7dof
         q_list = [0, 90, -90, 180, -180]
         T_cell = (
             len(q_list)
@@ -802,6 +813,7 @@ class Dynamics_space:
             * len(q_list)
             * len(q_list)
             * len(q_list)
+            * len(q_list) # 7dof
         )
 
         T = np.zeros((3, 1))
@@ -822,32 +834,35 @@ class Dynamics_space:
                             q5 = q_list[m]
                             for n in range(len(q_list)):
                                 q6 = q_list[n]
-                                axis_angle.append([q1, q2, q3, q4, q5, q6])
-                                # T = self.robot.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, q6*du])
-                                load = np.array(
-                                    [
-                                        self.robot.rne(
-                                            [
-                                                q1 * du,
-                                                q2 * du,
-                                                q3 * du,
-                                                q4 * du,
-                                                q5 * du,
-                                                q6 * du,
-                                            ],
-                                            self.vel,
-                                            self.acc,
-                                        )
-                                    ]
-                                )
-                                torque = np.append(torque, load, axis=0)
+                                for n in range(len(q_list)): # 7dof
+                                    q7 = q_list[n] #7dof
+                                    axis_angle.append([q1, q2, q3, q4, q5, q6, q7]) # 7dof
+                                    # T = self.robot.fkine([q1*du, q2*du, q3*du, q4*du, q5*du, q6*du])
+                                    load = np.array(
+                                        [
+                                            self.robot.rne(
+                                                [
+                                                    q1 * du,
+                                                    q2 * du,
+                                                    q3 * du,
+                                                    q4 * du,
+                                                    q5 * du,
+                                                    q6 * du,
+                                                    q7 * du, # 7dof
+                                                ],
+                                                self.vel,
+                                                self.acc,
+                                            )
+                                        ]
+                                    )
+                                    torque = np.append(torque, load, axis=0)
                                 # T_x[i] = T.t[0]
                                 # T_y[i] = T.t[1]
                                 # T_z[i] = T.t[2]
         end = time.time()
         # print("繪製工作空間運行時間：%f sec" % (end - start))
 
-        for i in range(6):
+        for i in range(7): # 7dof
             axis = i
             excel_file = Workbook()
             sheet = excel_file.active
@@ -857,12 +872,14 @@ class Dynamics_space:
             sheet["D1"] = "torque 4"
             sheet["E1"] = "torque 5"
             sheet["F1"] = "torque 6"
-            sheet["G1"] = "angle 1"
-            sheet["H1"] = "angle 2"
-            sheet["I1"] = "angle 3"
-            sheet["J1"] = "angle 4"
-            sheet["K1"] = "angle 5"
-            sheet["L1"] = "angle 6"
+            sheet["G1"] = "torque 7"# 7dof
+            sheet["H1"] = "angle 1"
+            sheet["I1"] = "angle 2"
+            sheet["J1"] = "angle 3"
+            sheet["K1"] = "angle 4"
+            sheet["L1"] = "angle 5"
+            sheet["M1"] = "angle 6"
+            sheet["N1"] = "angle 7"# 7dof
             print("================================")
             print("軸%d torque正最大值時, 各軸torque, 末端位置, 各軸角度" % (axis + 1))
             print("axis_max_torque:", torque[np.argmax(torque[:, axis])])
@@ -897,6 +914,7 @@ class Dynamics_space:
                 "Torque 4 max",
                 "Torque 5 max",
                 "Torque 6 max",
+                "Torque 7 max",
             ]
         )
         sheet.append(Torque_Max)
@@ -967,6 +985,7 @@ class Dynamics_space:
             "velocity of axis 4",
             "velocity of axis 5",
             "velocity of axis 6",
+            "velocity of axis 7", #7dof
         ]
         dynamic_data_acc_input_head = [
             "acceralation of axis 1",
@@ -975,6 +994,7 @@ class Dynamics_space:
             "acceralation of axis 4",
             "acceralation of axis 5",
             "acceralation of axis 6",
+            "acceralation of axis 7", #7dof
         ]
         dynamic_data_input = []
         alignment = Alignment(
@@ -993,8 +1013,9 @@ class Dynamics_space:
         sheet["D1"] = "model number of axis 4"
         sheet["E1"] = "model number of axis 5"
         sheet["F1"] = "model number of axis 6"
+        sheet["G1"] = "model number of axis 7" #7dof
 
-        for j in range(6):
+        for j in range(7): #7dof
             for i in range(len(res)):
                 if res.rated_torque[i] > self.torque_static_limit[j]:
                     print("軸數:", j + 1)
@@ -1011,7 +1032,7 @@ class Dynamics_space:
         sheet.append(static_sol_module)
         sheet.append([])
 
-        for j in range(6):
+        for j in range(7): #7dof
             for i in range(len(res)):
                 if res.rated_torque[i] > self.torque_dynamics_limit[j]:
                     print("軸數:", j + 1)
@@ -1054,13 +1075,13 @@ class Dynamics_space:
 
         sheet.append(dynamic_data_vel_input_head)
         dynamic_data_input = []
-        for i in range(6):
+        for i in range(7): # 7dof
             dynamic_data_input.append(self.vel[i])
         sheet.append(dynamic_data_input)
 
         sheet.append(dynamic_data_acc_input_head)
         dynamic_data_input = []
-        for i in range(6):
+        for i in range(7): # 7dof
             dynamic_data_input.append(self.acc[i])
         sheet.append(dynamic_data_input)
 
@@ -1102,14 +1123,14 @@ class Dynamics_space:
 
         excel_file.save(file_name)
 
-    def excited_trajectory(
-        self, q_list, q_list_2, q_list_3, q_list_4, q_list_5, q_list_6
-    ):
-        # 窮舉法正運動學計算工作空間
-        start = time.time()
-        print("The time used to execute this is given below")
-        # 角度轉換
-        du = pi / 180
+    # def excited_trajectory(
+    #     self, q_list, q_list_2, q_list_3, q_list_4, q_list_5, q_list_6
+    # ):
+    #     # 窮舉法正運動學計算工作空間
+    #     start = time.time()
+    #     print("The time used to execute this is given below")
+    #     # 角度轉換
+    #     du = pi / 180
 
     def robot_motor_random_build(self):
         self.robot.__init__()
@@ -1246,10 +1267,8 @@ class Dynamics_space:
             if case(1):
                 rospy.loginfo("Start Workspace Scan & success get subscriber data command")
                 Dya.payload_set()
-                # Dya.dynamics_space_cal()
                 Dya.dynamics_space_cal_Monte_Carlo(self.joint_limit)
-                # Dya.static_sol_output_axis()
-                Dya.plot_space_scan()
+                # Dya.plot_space_scan()
                 self.cmd = 0
                 break
 
@@ -1261,7 +1280,7 @@ class Dynamics_space:
             # Select axis for dynamics space scan joint torque output
             if case(3):
                 rospy.loginfo("Select axis for dynamics space scan joint torque output command")
-                Dya.sol_output_axis()
+                # Dya.sol_output_axis()
                 self.cmd = 0
                 break
 

@@ -63,8 +63,8 @@ class single_arm(DHRobot):
         #     robot.joints[6].origin.xyz[2]
         # ]
         # d = [j1.z, 0, 0, j2.y-j4.z , j5.z, j6.z] #m
-        alpha = [pi/2, pi/2, -pi/2, -pi/2, -pi/2, pi/2, zero]
-        theta = [zero, pi, zero, zero, zero, zero, zero]
+        alpha = [-pi/2, -pi/2, pi/2, -pi/2, pi/2, -pi/2, zero]
+        theta = [zero, zero, zero, zero, zero, zero, zero]
 
         
         # mass data, no inertia available
@@ -123,20 +123,20 @@ class single_arm(DHRobot):
     
         # zero angles
         # theta = [zero, pi, zero, zero, zero, zero, zero]
-        self.addconfiguration("qz", np.array([0, 0, 0, 0, 0, 0, 0]))
+        self.addconfiguration("qz", np.array([90, -90, 0, 0, 0, 0, 90])*deg)
         # horizontal along the x-axis
-        self.addconfiguration("qr", np.r_[0, 0, 0, 0, 0, 0, 0]*deg)
+        # self.addconfiguration("qr", np.r_[0, 0, 0, 0, 0, 0, 0]*deg)
 
         # nominal table top picking pose
-        self.addconfiguration("qn", np.array([0, 0, 0, 0, 0, 0, 0]))
+        self.addconfiguration("qn", np.array([90, -90, 0, 0, 0, 0, 90])*deg)
 if __name__ == '__main__':    # pragma nocover
 
     robot = single_arm(symbolic=False)
     print(robot)
     print(robot.dynamics())
-    # TODO: fixed DH table
-    from math import pi
-    deg = pi / 180
-    qz = np.array([90.0, 90.0, 180.0, 180.0, 0.0, 0.0, 0.0])*deg
-    robot.plot(qz, dt = 10)
+    # # TODO: fixed DH table
+    # from math import pi
+    # deg = pi / 180
+    # qz = np.array([90, -90, 0, 45, 0, 45, 90])*deg
+    # robot.plot(qz, dt = 10)
     
