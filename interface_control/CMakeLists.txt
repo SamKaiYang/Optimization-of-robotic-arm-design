@@ -52,6 +52,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  arm_structure.msg
   cal_cmd.msg
   cal_result.msg
   cal_process.msg

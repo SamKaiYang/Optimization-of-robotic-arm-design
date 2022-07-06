@@ -3,7 +3,7 @@
 import rospy
 import numpy as np
 
-from dynamics.dynamics_function_teco import Dynamics_space
+from dynamics.dynamics_function_teco import Dynamics_teco
 
 from PySide2 import QtWidgets, QtGui
 from PySide2.QtCore import *
@@ -14,7 +14,9 @@ from PySide2extn.RoundProgressBar import roundProgressBar #IMPORT THE EXTENSION 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from Ui_main import Ui_MainWindow
-from interface_control.msg import cal_cmd, dyna_data, dyna_space_data, specified_parameter_design, cal_process, cal_result, communicate_matlab, optimal_design
+from interface_control.msg import (arm_structure, cal_cmd, dyna_data, dyna_space_data,
+                                specified_parameter_design, cal_process, cal_result, 
+                                communicate_matlab, optimal_design)
 from std_msgs.msg import String
 import sys
 import importlib
@@ -87,7 +89,7 @@ class MyFigureCanvas(FigureCanvas):
         self.axes.set_xlim(xlim)
         self.axes.set_ylim(ylim)
 
-class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
+class MainWindow(QtWidgets.QMainWindow,Dynamics_teco):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.ui = Ui_MainWindow()
@@ -112,7 +114,8 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.pub_optimal_design = rospy.Publisher("/optimal_design",optimal_design, queue_size=10)
         # suscribe dynamics calculate process 
         self.sub_dyna_space_progress = rospy.Subscriber("/dyna_space_progress",cal_process, self.dyna_cal_process_callback)
-
+        # publish select dof and structure 
+        self.pub_arm_structure = rospy.Publisher("/arn_structure", arm_structure, queue_size=10)
 
         self.cal_cmd = cal_cmd()
         self.dyna_data = dyna_data()
@@ -120,7 +123,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.specified_parameter_design = specified_parameter_design()
         self.communicate_matlab = String()
         self.optimal_design = optimal_design()
-
+        self.arm_structure = arm_structure()
         
         self.rpb = self.ui.widget
         self.rpb.rpb_setValue(0)
@@ -138,6 +141,10 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.axis_3 = 20
         self.dof = 6
         self.dyna_space_progress = 0
+        
+        # op design
+        self.dof_select = 6
+        self.structure_name = "test"
 
         self.ui.btn_dynamics.clicked.connect(self.dyna_buttonClicked)
         self.ui.btn_dyn_space.clicked.connect(self.dyna_space_buttonClicked)
@@ -156,6 +163,7 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.btn_optimization_analysis.clicked.connect(self.optimization_analysis_buttonClicked)
         self.ui.btn_cjm_select.clicked.connect(self.cjm_select_buttonClicked)
         self.ui.btn_traj_torque_plot.clicked.connect(self.traj_torque_plot_buttonClicked)
+        self.ui.btn_structure_select.clicked.connect(self.structure_set_buttonClicked)
         # # Vel. HorizontalSlider
         # self.ui.horizontalSlider_vel.valueChanged.connect(self.VelSliderValue)
         # # Acc. HorizontalSlider
@@ -181,6 +189,14 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         self.ui.comboBox_dof.currentIndexChanged.connect(self.display_dof)
         self.ui.comboBox_dof.setCurrentIndex(5)
         self.display_dof()
+        
+        # ComboBox op dof select 
+        choices = ['1','2', '3', '4', '5','6','7']
+        self.ui.comboBox_dof_select.addItems(choices)
+        self.ui.comboBox_dof_select.currentIndexChanged.connect(self.display_dof_select)
+        self.ui.comboBox_dof_select.setCurrentIndex(5)
+        self.display_dof_select()
+        
 
         # self.progressBar_dynamics_space = QtWidgets.QProgressBar(self.ui.graphicsView_2)
     def dyna_cal_process_callback(self,data):
@@ -265,7 +281,29 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
             self.dof = 7
             self.ui.comboBox_dof.setCurrentIndex(6)
 
-
+    def display_dof_select(self):
+        if self.ui.comboBox_dof_select.currentText() == "1":
+            self.dof_select = 1
+            self.ui.comboBox_dof_select.setCurrentIndex(0)
+        elif self.ui.comboBox_dof_select.currentText() == "2":
+            self.dof_select = 2
+            self.ui.comboBox_dof_select.setCurrentIndex(1)
+        elif self.ui.comboBox_dof_select.currentText() == "3":
+            self.dof_select = 3
+            self.ui.comboBox_dof_select.setCurrentIndex(2)
+        elif self.ui.comboBox_dof_select.currentText() == "4":
+            self.dof_select = 4
+            self.ui.comboBox_dof_select.setCurrentIndex(3)
+        elif self.ui.comboBox_dof_select.currentText() == "5":
+            self.dof_select = 5
+            self.ui.comboBox_dof_select.setCurrentIndex(4)
+        elif self.ui.comboBox_dof_select.currentText() == "6":
+            self.dof_select = 6
+            self.ui.comboBox_dof_select.setCurrentIndex(5)
+        elif self.ui.comboBox_dof_select.currentText() == "7":
+            self.dof_select = 7
+            self.ui.comboBox_dof_select.setCurrentIndex(6)
+    
     def dyna_set_buttonClicked(self):
         self.payload = float(self.ui.lineEdit_payload.text())
         self.dyna_data.payload = self.payload
@@ -431,6 +469,8 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
         # self.optimization_data.payload = payload
         self.optimal_design.payload = payload
         self.optimal_design.payload_position = payload_position
+        self.optimal_design.dof = self.dof_select
+        # self.optimal_design.structure = self.structure
         self.optimal_design.vel = joint_velocity
         self.optimal_design.acc = joint_acceleration
         self.optimal_design.radius = reachable_radius
@@ -444,6 +484,14 @@ class MainWindow(QtWidgets.QMainWindow,Dynamics_space):
 
     def traj_torque_plot_buttonClicked(self):
         self.pub_cmd.publish(10)
+        
+    def structure_set_buttonClicked(self):
+        self.arm_structure.structure_name = self.structure_name
+        self.arm_structure.DoF = self.dof_select
+        self.pub_arm_structure.publish(self.arm_structure)
+        
+        
+        # self.pub
 
 if __name__=="__main__":
     rospy.init_node("interface_ui")

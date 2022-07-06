@@ -113,7 +113,7 @@
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab_arm">
      <attribute name="title">
@@ -4654,11 +4654,11 @@
        <string>0.0</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="btn_op_set">
+     <widget class="QPushButton" name="btn_structure_select">
       <property name="geometry">
        <rect>
         <x>570</x>
-        <y>380</y>
+        <y>90</y>
         <width>91</width>
         <height>33</height>
        </rect>
@@ -4991,6 +4991,52 @@
       </property>
       <property name="text">
        <string>0.0</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="comboBox_dof_select">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>60</y>
+        <width>93</width>
+        <height>26</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_dof">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>60</y>
+        <width>31</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>DoF</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="comboBox_structure_select">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>100</y>
+        <width>93</width>
+        <height>26</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_dof_2">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>100</y>
+        <width>91</width>
+        <height>26</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Structure</string>
       </property>
      </widget>
     </widget>

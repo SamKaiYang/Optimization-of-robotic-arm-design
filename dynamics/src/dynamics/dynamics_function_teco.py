@@ -47,7 +47,7 @@ class switch(object):
             return False
 
 
-class Dynamics_space():
+class Dynamics_teco():
     def __init__(self):
         # self.pub_armstatus = rospy.Publisher("/reply_external_comm",peripheralCmd,queue_size=10)
         self.sub_taskcmd = rospy.Subscriber("/cal_command",cal_cmd, self.cmd_callback)
@@ -432,32 +432,32 @@ class Dynamics_space():
             if case(1):
                 print("Start Workspace Scan")
                 print("success get subscriber data ")
-                Dya.payload_set()
-                Dya.dynamics_cal()
-                Dya.sol_output_axis()
-                Dya.plot_space_scan()
+                self.payload_set()
+                self.dynamics_cal()
+                self.sol_output_axis()
+                self.plot_space_scan()
                 self.cmd = 0
                 break
 
             if case(2):
                 print("Start Set payload & vel & acc analysis")
-                Dya.dynamics_calc()
+                self.dynamics_calc()
                 self.cmd = 0
                 break
             # Select axis for dynamics space scan joint torque output
             if case(3):
                 print("Select axis for dynamics space scan joint torque output")
-                Dya.sol_output_axis()
+                self.sol_output_axis()
                 self.cmd = 0
                 break
             
             if case(4):
-                Dya.arm_plot()
+                self.arm_plot()
                 self.cmd = 0
                 break
             #
             if case(5):
-                Dya.plot_close()
+                self.plot_close()
                 self.cmd = 0
                 break
 
@@ -466,8 +466,8 @@ class Dynamics_space():
 
 
 if __name__=="__main__":
-    rospy.init_node("dynamics_space")
+    rospy.init_node("dynamics_teco")
     
-    Dya = Dynamics_space()
+    Dya = Dynamics_teco()
     while not rospy.is_shutdown():
         Dya.task_set()

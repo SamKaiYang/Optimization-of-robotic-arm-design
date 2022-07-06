@@ -97,12 +97,15 @@ class drl_optimization:
 
     def optimal_design_callback(self, data):
         # print(data.data)
+        self.op_dof = data.dof
         self.op_payload = data.payload
         self.op_payload_position = data.payload_position
         self.op_vel = data.vel
         self.op_acc = data.acc
         self.op_radius = data.radius
+        
 
+        rospy.loginfo("I heard op_dof is %s", self.op_dof)
         rospy.loginfo("I heard op_payload is %s", self.op_payload)
         rospy.loginfo("I heard op_payload_position is %s", self.op_payload_position)
         rospy.loginfo("I heard op_vel is %s", self.op_vel)
