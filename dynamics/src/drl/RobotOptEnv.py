@@ -57,6 +57,11 @@ class RobotOptEnv(gym.Env):
             x = x + 1
             y = y
         self.state = np.array([x, y])
+        
+        # self.state 觀測 torque, motor cost, workspace, weight
+        # torque state
+        # torque = self.dynamics_torque_limit()
+        
         self.counts += 1
         
         # if down 完成任务 
@@ -85,6 +90,13 @@ class RobotOptEnv(gym.Env):
         # self.state = np.ceil(np.random.rand(2)*2*self.L)-self.L # 動力學 推導torque
         self.counts = 0
         return self.state
+    # pendulum reset reference
+    # def reset(self):
+    #     high = np.array([np.pi, 1])
+    #     self.state = self.np_random.uniform(low=-high, high=high)
+    #     self.last_u = None
+    #     return self._get_obs()
+    
     
     # 視覺化呈現，它只會回應出呼叫那一刻的畫面給你，要它持續出現，需要寫個迴圈
     def render(self, mode='human'):
