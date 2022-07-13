@@ -3,7 +3,7 @@
 import rospy
 import numpy as np
 
-from dynamics.dynamics_function_teco import Dynamics_teco
+# from dynamics.dynamics_function_teco import Dynamics_teco
 
 from PySide2 import QtWidgets, QtGui
 from PySide2.QtCore import *
@@ -89,7 +89,7 @@ class MyFigureCanvas(FigureCanvas):
         self.axes.set_xlim(xlim)
         self.axes.set_ylim(ylim)
 
-class MainWindow(QtWidgets.QMainWindow,Dynamics_teco):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.ui = Ui_MainWindow()

@@ -51,7 +51,6 @@ from arm_workspace import arm_workspace_plane
 from motor_module import mootor_data
 from random_robot import RandomRobot
 
-
 class switch(object):
     def __init__(self, value):
         self.value = value

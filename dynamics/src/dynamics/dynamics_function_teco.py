@@ -24,6 +24,8 @@ from os import path
 from scipy.interpolate import make_interp_spline # draw smooth 
 np.set_printoptions(linewidth=100, formatter={'float': lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"})
 
+from TECO_ARM1_robot import TECOARM1
+
 
 
 class switch(object):
@@ -56,7 +58,7 @@ class Dynamics_teco():
         self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path", DisplayTrajectory, self.planned_path_callback)
         # self.sub_planned_path = rospy.Subscriber("/move_group/display_planned_path",moveit_msgs.msg.JointTrajectory,self.planned_path_callback)
         self.cmd = 0
-        self.teco = rtb.models.DH.TECOARM1()
+        self.teco = TECOARM1()
         # self.teco.plot(self.teco.qn, block=False)
         self.teco.gravload(self.teco.qn)
         self.teco.inertia(self.teco.qn)
