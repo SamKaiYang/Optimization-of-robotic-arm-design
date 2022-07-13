@@ -248,7 +248,7 @@ for i_episode in range(400):
             dqn.learn()
             if done:
                 print('Ep: ', i_episode,
-                      '| Ep_r: ', round(ep_r, 2))
+                        '| Ep_r: ', round(ep_r, 2))
 
         if done:
             break
