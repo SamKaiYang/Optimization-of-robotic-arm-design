@@ -1135,65 +1135,65 @@ class Dynamics_random:
         for case in switch(self.cmd):
             if case(1):
                 rospy.loginfo("Start Workspace Scan & success get subscriber data command")
-                Dya.payload_set()
+                self.payload_set()
                 # Dya.dynamics_space_cal()
-                Dya.dynamics_space_cal_Monte_Carlo(self.joint_limit)
+                self.dynamics_space_cal_Monte_Carlo(self.joint_limit)
                 # Dya.static_sol_output_axis()
-                Dya.plot_space_scan()
+                self.plot_space_scan()
                 self.cmd = 0
                 break
 
             if case(2):
                 rospy.loginfo("Start Set payload & vel & acc analysis command")
-                Dya.dynamics_calc()
+                self.dynamics_calc()
                 self.cmd = 0
                 break
             # Select axis for dynamics space scan joint torque output
             if case(3):
                 rospy.loginfo("Select axis for dynamics space scan joint torque output command")
-                Dya.sol_output_axis()
+                self.sol_output_axis()
                 self.cmd = 0
                 break
 
             if case(4):
                 rospy.loginfo("Plot robotic arm command")
-                Dya.arm_plot()
+                self.arm_plot()
                 self.cmd = 0
                 break
             #
             if case(5):
                 rospy.loginfo("Close plot command")
-                Dya.plot_close()
+                self.plot_close()
                 self.cmd = 0
                 break
 
             if case(6):
                 rospy.loginfo("Torque limit command")
-                Dya.dynamics_torque_limit()
+                self.dynamics_torque_limit()
                 self.cmd = 0
                 break
             # arm data rebuild
             if case(7):
                 rospy.loginfo("Robot rebuild command")
-                Dya.robot_rebuild()
+                self.robot_rebuild()
                 self.cmd = 0
                 break
             # arm data & motor data rebuild
             if case(8):
                 rospy.loginfo("Robot motor random command")
-                Dya.robot_motor_random_build()
+                self.robot_motor_random_build()
                 self.cmd = 0
                 break
             # CJM select
             if case(9):
                 rospy.loginfo("CJM select function command")
-                Dya.CJM_select()
+                self.CJM_select()
                 self.cmd = 0
                 break
             if case(10):
                 rospy.loginfo("Plot trajectory information command")
-                Dya.trajectory_torque_excel_write()
-                Dya.trajectory_torque_plot()
+                self.trajectory_torque_excel_write()
+                self.trajectory_torque_plot()
                 self.cmd = 0
                 break
             if case():
