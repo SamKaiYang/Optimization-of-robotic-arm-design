@@ -259,6 +259,67 @@ class stl_conv_urdf():
         self.read_check_urdf()
         self.data_write_urdf()
 
+    # for 6 dof generated information on the interface specified length 2 , 3 axis
+    def specified_generate_write_urdf(self,L2, L3):
+        your_mesh = mesh.Mesh.from_file(path.dirname(path.realpath(__file__)) + "/meshes/" +'random_3_25.0.STL')
+        volume_1, cog_1, inertia_1 = your_mesh.get_mass_properties()
+        your_mesh = mesh.Mesh.from_file(path.dirname(path.realpath(__file__)) + "/meshes/" +'random_3_30.0.STL')
+        volume_2, cog_2, inertia_2 = your_mesh.get_mass_properties()
+        vol = volume_2 - volume_1
+        cog = cog_2 - cog_1
+        inertia = inertia_2 - inertia_1
+
+        # ===================================
+        self.axis_2_length = 35.0
+        self.axis_3_length = 35.0
+        self.robot_stl_axis_2 = mesh.Mesh.from_file(path.dirname(path.realpath(__file__))+"/meshes/" + self.robot_name + "_2_"+ str(self.axis_2_length) + ".STL")
+        self.robot_stl_axis_3 = mesh.Mesh.from_file(path.dirname(path.realpath(__file__))+"/meshes/" + self.robot_name + "_3_"+ str(self.axis_3_length) + ".STL")
+        self.mesh_2_name = self.robot_name + "_2_"+ str(self.axis_2_length) + ".STL"
+        self.mesh_3_name = self.robot_name + "_3_"+ str(self.axis_3_length) + ".STL"
+
+        self.L2_volume, self.L2_cog, self.L2_inertia = self.robot_stl_axis_2.get_mass_properties()
+        # random axis 2 length
+        specified_axis_2_length = L2
+        print("random_axis_2_length                    = {0}".format(specified_axis_2_length))
+        diff_axis_2_length = specified_axis_2_length - self.axis_2_length
+        self.axis_2_length = specified_axis_2_length
+        self.op_axis_2_length = specified_axis_2_length
+        self.L2_volume = self.L2_volume + vol*(diff_axis_2_length/5)
+        self.L2_cog = self.L2_cog + cog*(diff_axis_2_length/5)
+        self.L2_inertia = self.L2_inertia + inertia*(diff_axis_2_length/5)
+
+        self.L2_volume = self.L2_volume*1000
+        self.L2_inertia = self.L2_inertia*1000
+        print("============================================================")
+        print("Volume                                  = {0}".format(self.L2_volume))
+        print("Position of the center of gravity (COG) = {0}".format(self.L2_cog))
+        print("Inertia matrix at expressed at the COG  = {0}".format(self.L2_inertia[0,:]))
+        print("                                          {0}".format(self.L2_inertia[1,:]))
+        print("                                          {0}".format(self.L2_inertia[2,:]))
+
+        self.L3_volume, self.L3_cog, self.L3_inertia = self.robot_stl_axis_3.get_mass_properties()
+        # random axis 3 length
+        specified_axis_3_length = L3
+        print("random_axis_3_length                    = {0}".format(specified_axis_3_length))
+        diff_axis_3_length = specified_axis_3_length - self.axis_3_length
+        self.axis_3_length = specified_axis_3_length
+        self.op_axis_3_length = specified_axis_3_length
+        self.L3_volume = self.L3_volume + vol*(diff_axis_3_length/5)
+        self.L3_cog = self.L3_cog + cog*(diff_axis_3_length/5)
+        self.L3_inertia = self.L3_inertia + inertia*(diff_axis_3_length/5)
+
+        self.L3_volume = self.L3_volume*1000
+        self.L3_inertia = self.L3_inertia*1000
+        print("============================================================")
+        print("Volume                                  = {0}".format(self.L3_volume))
+        print("Position of the center of gravity (COG) = {0}".format(self.L3_cog))
+        print("Inertia matrix at expressed at the COG  = {0}".format(self.L3_inertia[0,:]))
+        print("                                          {0}".format(self.L3_inertia[1,:]))
+        print("                                          {0}".format(self.L3_inertia[2,:]))
+        print("============================================================")
+        # ===================================
+        self.read_check_urdf()
+        self.data_write_urdf()
 
     # Randomly generated information on the interface
     def random_generate_write_urdf(self):

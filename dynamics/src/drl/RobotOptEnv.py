@@ -1,102 +1,142 @@
 #!/usr/bin/env python3
 # coding: utf-8
-"""
-Created on 20220713
-
-@author: Yang Yi He
-"""
-
 import gym
 from gym import spaces
 import numpy as np
+from math import pi
 
 from dynamics.arm_workspace import arm_workspace_plane
 # from robot_urdf import RandomRobot
 from dynamics.motor_module import mootor_data
 from dynamics.random_robot import RandomRobot
+from dynamics.stl_conv_6dof_urdf import stl_conv_urdf
 
 # TODO: 整合機器人重製生成 與 動力學計算
+# TODO: 初版 只考慮 6 dof 機器人的關節長度變化, 觀察各軸馬達極限之輸出最大torque值
 class RobotOptEnv(gym.Env):
+    """
+    ### Description
+    This environment corresponds to the version of the cart-pole problem described by Barto, Sutton, and Anderson in
+    ["Neuronlike Adaptive Elements That Can Solve Difficult Learning Control Problem"](https://ieeexplore.ieee.org/document/6313077).
+    A pole is attached by an un-actuated joint to a cart, which moves along a frictionless track.
+    The pendulum is placed upright on the cart and the goal is to balance the pole by applying forces
+     in the left and right direction on the cart.
+    ### Action Space
+    The action is a `ndarray` with shape `(1,)` which can take values `{0, 1}` indicating the direction
+     of the fixed force the cart is pushed with.
+    | Num | Action                 |
+    |-----|------------------------|
+    | 0   | length add 1 cm  |
+    | 1   | length del 1 cm |
+    **Note**: The velocity that is reduced or increased by the applied force is not fixed and it depends on the angle
+     the pole is pointing. The center of gravity of the pole varies the amount of energy needed to move the cart underneath it
+    ### Observation Space
+    The observation is a `ndarray` with shape `(4,)` with the values corresponding to the following positions and velocities:
+    | Num | Observation           | Min                 | Max               |
+    |-----|-----------------------|---------------------|-------------------|
+    | 0   | Cart Position         | -4.8                | 4.8               |
+    | 1   | Cart Velocity         | -Inf                | Inf               |
+    | 2   | Pole Angle            | ~ -0.418 rad (-24°) | ~ 0.418 rad (24°) |
+    | 3   | Pole Angular Velocity | -Inf                | Inf               |
+    **Note:** While the ranges above denote the possible values for observation space of each element,
+        it is not reflective of the allowed values of the state space in an unterminated episode. Particularly:
+    -  The cart x-position (index 0) can be take values between `(-4.8, 4.8)`, but the episode terminates
+       if the cart leaves the `(-2.4, 2.4)` range.
+    -  The pole angle can be observed between  `(-.418, .418)` radians (or **±24°**), but the episode terminates
+       if the pole angle is not in the range `(-.2095, .2095)` (or **±12°**)
+    ### Rewards
+    Since the goal is to keep the pole upright for as long as possible, a reward of `+1` for every step taken,
+    including the termination step, is allotted. The threshold for rewards is 475 for v1.
+    ### Starting State
+    All observations are assigned a uniformly random value in `(-0.05, 0.05)`
+    ### Episode End
+    The episode ends if any one of the following occurs:
+    1. Termination: Pole Angle is greater than ±12°
+    2. Termination: Cart Position is greater than ±2.4 (center of the cart reaches the edge of the display)
+    3. Truncation: Episode length is greater than 500 (200 for v0)
+    """
+
     metadata = {
         'render.modes': ['human', 'rgb_array'],
         'video.frames_per_second': 2
     }
     def __init__(self):
         self.robot = RandomRobot()
-        self.xth = 0
-        self.target_x = 0
-        self.target_y = 0
-        self.L = 10
-        self.actionL = 0
-        self.actionH = 50
-        # self.action_space = spaces.Box(np.array([self.actionL, self.actionL]), np.array([self.actionH, self.actionH])) # 0, 1, 2，3，4: 不动，上下左右
-        # TODO: continuous action space for length change
-        self.action_space = spaces.Box(
-                low=self.actionL, high=self.actionH, shape=(1,), dtype=np.float32)
+        self.robot_urdf = stl_conv_urdf("random","test")
+        self.payload = 0.0
+        self.payload_position = np.array([0, 0, 0])
+        self.vel = np.array([0, 0, 0, 0, 0, 0])
+        self.acc = np.array([0, 0, 0, 0, 0, 0])
+        self.std_L2 = 35 # 預設標準值 第二軸 35
+        self.std_L3 = 35 # 預設標準值 第三軸 35
+        self.high_torque = 300
+        high = np.array([self.high_torque], dtype=np.float32)
+        # TODO: action space for length change
+        self.action_space = spaces.Discrete(5) # 0, 1: 不动，長度增加，長度減少
         # TODO: observation space for torque, motor cost, workspace, weight
-        self.observation_space = spaces.Box(np.array([np.float32(-self.L), np.float32(-self.L)]), np.array([np.float32(self.L), np.float32(self.L)]))
+        self.observation_space = spaces.Box(low=-high, high=high, dtype=np.float32)
         self.state = None
     
     def step(self, action):
-        # assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
-        # action axis length change && motor module change
-        x, y = self.state
-        if action <= 0 and action < 1:
-            x = x
-            y = y
-        if action <= 1 and action <2:
-            x = x
-            y = y + 1
-        if action <= 2 and action <3:
-            x = x
-            y = y - 1
-        if action <= 3 and action <4:
-            x = x - 1
-            y = y
-        if action <= 4 and action <5:
-            x = x + 1
-            y = y
-        self.state = np.array([x, y])
-        
-        # self.state 觀測 torque, motor cost, workspace, weight
-        # torque state
-        # torque = self.dynamics_torque_limit()
-        
+        assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
+        state_torque = self.state 
+        if action == 0: # 不改變
+            state_torque = state_torque
+        if action == 1: # 加長 第二軸
+            self.std_L2 += 1
+            self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
+            self.robot.__init__() # 重製機器人
+            torque = self.dynamics_torque_limit()
+            state_torque = torque
+        if action == 2: # 縮短 第二軸
+            self.std_L2 -= 1
+            self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
+            self.robot.__init__() # 重製機器人
+            torque = self.dynamics_torque_limit()
+            state_torque = torque
+        if action == 3: # 加長 第三軸
+            self.std_L3 += 1
+            self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
+            self.robot.__init__() # 重製機器人
+            torque = self.dynamics_torque_limit()
+            state_torque = torque
+        if action == 4: # 縮短 第三軸
+            self.std_L3 -= 1
+            self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
+            self.robot.__init__() # 重製機器人
+            torque = self.dynamics_torque_limit()
+            state_torque = torque
+
+        self.state = state_torque # 1*6 array
         self.counts += 1
         
+        # TODO: 設定 reward
         # if down 完成任务 
+        # 終止條件: 超出個軸馬達torque 範圍 or 累計部署大於200 
         done = (np.abs(x)+np.abs(y) <= 1) or (np.abs(x)+np.abs(y) >= 2*self.L+1)
         done = bool(done)
         
+
         # 走一步修正, 但還未最佳化完成
         if not done:
             reward = -0.1
         # down 完成後, 定義所計算出的torque值, 分數加多少
         else:
             if np.abs(x)+np.abs(y) <= 1:
-                reward = 10
+                reward = 2
             # 即torque, 超過最大torque 
             else:
-                reward = -50
-            
+                reward = -2
         return self.state, reward, done, {}
-    
+
+    # reset环境状态 
     def reset(self):
+        self.robot_urdf.generate_write_urdf() # 啟用標準的L2,L3長度urdf
         self.robot.__init__() # 重製機器人
-        # self.state 觀測 torque, motor cost, workspace, weight
-        # torque state
         torque = self.dynamics_torque_limit()
-        
-        # self.state = np.ceil(np.random.rand(2)*2*self.L)-self.L # 動力學 推導torque
+        self.state = torque
         self.counts = 0
-        return self.state
-    # pendulum reset reference
-    # def reset(self):
-    #     high = np.array([np.pi, 1])
-    #     self.state = self.np_random.uniform(low=-high, high=high)
-    #     self.last_u = None
-    #     return self._get_obs()
-    
+        return self.state    
     
     # 視覺化呈現，它只會回應出呼叫那一刻的畫面給你，要它持續出現，需要寫個迴圈
     def render(self, mode='human'):
@@ -121,7 +161,7 @@ class RobotOptEnv(gym.Env):
         # 角度轉換
         du = pi / 180
         # 度
-        radian = 180 / pi
+        # radian = 180 / pi
         # 弧度
         self.robot.payload(self.payload, self.payload_position)  # set payload
         torque = np.array([np.zeros(shape=6)])
@@ -134,10 +174,10 @@ class RobotOptEnv(gym.Env):
             * len(q_list)
             * len(q_list)
         )
-        T = np.zeros((3, 1))
-        T_x = np.zeros(T_cell)
-        T_y = np.zeros(T_cell)
-        T_z = np.zeros(T_cell)
+        # T = np.zeros((3, 1))
+        # T_x = np.zeros(T_cell)
+        # T_y = np.zeros(T_cell)
+        # T_z = np.zeros(T_cell)
 
         for i in range(len(q_list)):
             q1 = q_list[i]
@@ -165,7 +205,7 @@ class RobotOptEnv(gym.Env):
                                                 q6 * du,
                                             ],
                                             self.vel,
-                                            self.acc,
+                                            self.acc
                                         )
                                     ]
                                 )
@@ -185,12 +225,16 @@ class RobotOptEnv(gym.Env):
             Torque_Max.append(abs(torque[toque_max_index][i]))
             self.torque_dynamics_limit = Torque_Max
 
+
+        print("torque_dynamics_limit: ", self.torque_dynamics_limit)
         return self.torque_dynamics_limit
 
 if __name__ == '__main__':
     env = RobotOptEnv()
-    # env.reset()
-    # env.step(env.action_space.sample())
-    # print(env.state)
-    # env.step(env.action_space.sample())
-    # print(env.state)
+    
+    env.dynamics_torque_limit()
+    env.reset()
+    env.step(env.action_space.sample())
+    print(env.state)
+    env.step(env.action_space.sample())
+    print(env.state)

@@ -38,13 +38,12 @@ from plotly.offline import download_plotlyjs, iplot, plot
 from scipy.interpolate import make_interp_spline  # draw smooth
 from spatialmath import *
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+from dqn import DQN
 
 np.set_printoptions(
     linewidth=100,
     formatter={"float": lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"},
 )
-
-import pandas as pd
 
 from dynamics.arm_workspace import arm_workspace_plane
 # from robot_urdf import RandomRobot
@@ -63,14 +62,36 @@ import gym
 import torch
 
 from env import NormalizedActions,OUNoise
-from ddpg import DDPG
+# from ddpg import DDPG
 from common.utils import save_results,make_dir
 from common.utils import plot_rewards
 
 import matplotlib.pyplot as plt
 from RobotOptEnv import RobotOptEnv
 
+
 curr_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")  # 获取当前时间
+algo_name = "DQN"  # 算法名称
+# env_name = 'CartPole-v1'  # 环境名称
+
+class MLP(nn.Module):
+    def __init__(self, n_states,n_actions,hidden_dim=128):
+        """ 初始化q网络，为全连接网络
+            n_states: 输入的特征数即环境的状态维度
+            n_actions: 输出的动作维度
+        """
+        super(MLP, self).__init__()
+        self.fc1 = nn.Linear(n_states, hidden_dim) # 输入层
+        self.fc2 = nn.Linear(hidden_dim,hidden_dim) # 隐藏层
+        self.fc3 = nn.Linear(hidden_dim, n_actions) # 输出层
+        
+    def forward(self, x):
+        # 各层对应的激活函数
+        x = F.relu(self.fc1(x)) 
+        x = F.relu(self.fc2(x))
+        return self.fc3(x)
+        
+
 
 class drl_optimization:
     def __init__(self):
@@ -115,78 +136,74 @@ class drl_optimization:
         # self.robot.plot(self.qn)
 
     def env_agent_config(self, cfg, seed=1):
-        # original
-        # env = NormalizedActions(gym.make(cfg.env_name)) # 装饰action噪声
-        # add create new env
-        env = NormalizedActions(RobotOptEnv()) # 傳輸目標設計參數
-        # env = Car2DEnv()
-        env.seed(seed) # 随机种子
-        n_states = env.observation_space.shape[0]
-        n_actions = env.action_space.shape[0]
-        agent = DDPG(n_states,n_actions,cfg)
-        return env,agent
+        ''' 创建环境和智能体
+        '''
+        env = gym.make(RobotOptEnv())  # 创建环境
+        env.seed(seed)  # 设置随机种子
+        n_states = env.observation_space.shape[0]  # 状态维度
+        n_actions = env.action_space.n  # 动作维度
+        model = MLP(n_states,n_actions)
+        agent = DQN(n_actions,model,cfg)  # 创建智能体
+        return env, agent
     
+    # dqn train
     def train(self, cfg, env, agent):
-        print('开始训练！')
-        print(f'环境：{cfg.env_name}，算法：{cfg.algo_name}，设备：{cfg.device}')
-        ou_noise = OUNoise(env.action_space)  # 动作噪声
+        ''' 训练
+        '''
+        print('开始训练!')
+        print(f'环境：{cfg.env_name}, 算法：{cfg.algo_name}, 设备：{cfg.device}')
         rewards = [] # 记录所有回合的奖励
         ma_rewards = []  # 记录所有回合的滑动平均奖励
         for i_ep in range(cfg.train_eps):
-            state = env.reset()
-            ou_noise.reset()
-            done = False
-            ep_reward = 0
-            i_step = 0
-            while not done:
-                # env.render()
-                i_step += 1
-                action = agent.choose_action(state)
-                # print(action)
-                action = ou_noise.get_action(action, i_step) 
-                next_state, reward, done, _ = env.step(action)
-                ep_reward += reward
-                agent.memory.push(state, action, reward, next_state, done)
-                agent.update()
-                state = next_state
-                
-            if (i_ep+1)%10 == 0:
-                print('回合：{}/{}，奖励：{:.2f}'.format(i_ep+1, cfg.train_eps, ep_reward))
+            ep_reward = 0 # 记录一回合内的奖励
+            state = env.reset() # 重置环境，返回初始状态
+            while True:
+                action = agent.choose_action(state) # 选择动作
+                next_state, reward, done, _ = env.step(action) # 更新环境，返回transition
+                agent.memory.push(state, action, reward, next_state, done) # 保存transition
+                state = next_state # 更新下一个状态
+                agent.update() # 更新智能体
+                ep_reward += reward # 累加奖励
+                if done:
+                    break
+            if (i_ep+1) % cfg.target_update == 0: # 智能体目标网络更新
+                agent.target_net.load_state_dict(agent.policy_net.state_dict())
             rewards.append(ep_reward)
             if ma_rewards:
                 ma_rewards.append(0.9*ma_rewards[-1]+0.1*ep_reward)
             else:
                 ma_rewards.append(ep_reward)
+            if (i_ep+1)%10 == 0: 
+                print('回合：{}/{}, 奖励：{}'.format(i_ep+1, cfg.train_eps, ep_reward))
         print('完成训练！')
         return rewards, ma_rewards
 
-    def test(self, cfg, env, agent):
-        print('开始测试！')
+    def test(self, cfg,env,agent):
+        print('开始测试!')
         print(f'环境：{cfg.env_name}, 算法：{cfg.algo_name}, 设备：{cfg.device}')
+        # 由于测试不需要使用epsilon-greedy策略，所以相应的值设置为0
+        cfg.epsilon_start = 0.0 # e-greedy策略中初始epsilon
+        cfg.epsilon_end = 0.0 # e-greedy策略中的终止epsilon
         rewards = [] # 记录所有回合的奖励
         ma_rewards = []  # 记录所有回合的滑动平均奖励
         for i_ep in range(cfg.test_eps):
-            state = env.reset() 
-            done = False
-            ep_reward = 0
-            i_step = 0
-            while not done:
-                env.render()
-                i_step += 1
-                action = agent.choose_action(state)
-                next_state, reward, done, _ = env.step(action)
-                ep_reward += reward
-                state = next_state
-                # print(action)
-            print('回合：{}/{}, 奖励：{}'.format(i_ep+1, cfg.train_eps, ep_reward))
+            ep_reward = 0 # 记录一回合内的奖励
+            state = env.reset() # 重置环境，返回初始状态
+            while True:
+                action = agent.choose_action(state) # 选择动作
+                next_state, reward, done, _ = env.step(action) # 更新环境，返回transition
+                state = next_state # 更新下一个状态
+                ep_reward += reward # 累加奖励
+                if done:
+                    break
             rewards.append(ep_reward)
             if ma_rewards:
-                ma_rewards.append(0.9*ma_rewards[-1]+0.1*ep_reward)
+                ma_rewards.append(ma_rewards[-1]*0.9+ep_reward*0.1)
             else:
                 ma_rewards.append(ep_reward)
             print(f"回合：{i_ep+1}/{cfg.test_eps}，奖励：{ep_reward:.1f}")
         print('完成测试！')
-        return rewards, ma_rewards
+        return rewards,ma_rewards
 
 
     def optimal_design_callback(self, data):
@@ -278,68 +295,66 @@ class drl_optimization:
         # TODO: through optimization algorithm to find the best solution
 
 
-class Config:
-    '''超参数
+class DQNConfig:
+    ''' 算法相关参数设置
     '''
 
     def __init__(self):
-        ################################## 环境超参数 ###################################
-        self.algo_name = 'DDPG'  # 算法名称
-        self.env_name = 'Pendulum-v0'  # 环境名称，gym新版本（约0.21.0之后）中Pendulum-v0改为Pendulum-v1
+        self.algo_name = algo_name  # 算法名称
+        self.env_name = env_name  # 环境名称
         self.device = torch.device(
-            "cuda" if torch.cuda.is_available() else "cpu")  # 检测GPUgjgjlkhfsf风刀霜的撒发十
-        self.seed = 10 # 随机种子，置0则不设置随机种子
-        self.train_eps = 300 # 训练的回合数
-        self.test_eps = 20 # 测试的回合数
-        ################################################################################
-        
-        ################################## 算法超参数 ###################################
-        self.gamma = 0.99 # 折扣因子
-        self.critic_lr = 1e-3 # 评论家网络的学习率
-        self.actor_lr = 1e-4 # 演员网络的学习率
-        self.memory_capacity = 8000 # 经验回放的容量
-        self.batch_size = 128 # mini-batch SGD中的批量大小
-        self.target_update = 2 # 目标网络的更新频率
-        self.hidden_dim = 256 # 网络隐藏层维度
-        self.soft_tau = 1e-2 # 软更新参数
-        ################################################################################
-        
-        ################################# 保存结果相关参数 ################################
+            "cuda" if torch.cuda.is_available() else "cpu")  # 检测GPU
+        self.train_eps = 300  # 训练的回合数
+        self.test_eps = 20  # 测试的回合数
+        # 超参数
+        self.gamma = 0.99  # 强化学习中的折扣因子
+        self.epsilon_start = 0.99  # e-greedy策略中初始epsilon
+        self.epsilon_end = 0.005  # e-greedy策略中的终止epsilon
+        self.epsilon_decay = 500  # e-greedy策略中epsilon的衰减率
+        self.lr = 0.0001  # 学习率
+        self.memory_capacity = 100000  # 经验回放的容量
+        self.batch_size = 128  # mini-batch SGD中的批量大小
+        self.target_update = 4  # 目标网络的更新频率
+        self.hidden_dim = 512  # 网络隐藏层
+class PlotConfig:
+    ''' 绘图相关参数设置
+    '''
+
+    def __init__(self) -> None:
+        self.algo_name = algo_name  # 算法名称
+        self.env_name = env_name  # 环境名称
+        self.device = torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu")  # 检测GPU
         self.result_path = curr_path + "/outputs/" + self.env_name + \
             '/' + curr_time + '/results/'  # 保存结果的路径
         self.model_path = curr_path + "/outputs/" + self.env_name + \
             '/' + curr_time + '/models/'  # 保存模型的路径
-        self.save = True # 是否保存图片
-        ################################################################################
-        # self.result_path = curr_path + "/outputs/" + self.env_name + \
-        #     '/' + '20220712-085524' + '/results/'  # 保存结果的路径
-        # self.model_path = curr_path + "/outputs/" + self.env_name + \
-        #     '/' + '20220712-085524' + '/models/'  # 保存模型的路径
-        # self.save = True # 是否保存图片
-        
-
+        self.save = True  # 是否保存图片
 
 
 if __name__ == "__main__":
     rospy.init_node("optimization")
     a = 0
     drl = drl_optimization()
+    cfg = DQNConfig()
+    plot_cfg = PlotConfig()
     while not rospy.is_shutdown():
         if a == 1:
-            cfg = Config()
             # 训练
-            env,agent = drl.env_agent_config(cfg,seed=1)
+            env, agent = drl.env_agent_config(cfg, seed=1)
             rewards, ma_rewards = drl.train(cfg, env, agent)
-            make_dir(cfg.result_path, cfg.model_path)
-            agent.save(path=cfg.model_path)
-            save_results(rewards, ma_rewards, tag='train', path=cfg.result_path)
-            plot_rewards(rewards, ma_rewards, cfg, tag="train")  # 画出结果
+            make_dir(plot_cfg.result_path, plot_cfg.model_path)  # 创建保存结果和模型路径的文件夹
+            agent.save(path=plot_cfg.model_path)  # 保存模型
+            save_results(rewards, ma_rewards, tag='train',
+                        path=plot_cfg.result_path)  # 保存结果
+            plot_rewards(rewards, ma_rewards, plot_cfg, tag="train")  # 画出结果
             # 测试
-            env,agent = drl.env_agent_config(cfg,seed=10)
-            agent.load(path=cfg.model_path)
-            rewards,ma_rewards = drl.test(cfg,env,agent)
-            save_results(rewards,ma_rewards,tag = 'test',path = cfg.result_path)
-            plot_rewards(rewards, ma_rewards, cfg, tag="test")  # 画出结果
+            env, agent = drl.env_agent_config(cfg, seed=10)
+            agent.load(path=plot_cfg.model_path)  # 导入模型
+            rewards, ma_rewards = drl.test(cfg, env, agent)
+            save_results(rewards, ma_rewards, tag='test',
+                        path=plot_cfg.result_path)  # 保存结果
+            plot_rewards(rewards, ma_rewards, plot_cfg, tag="test")  # 画出结果
             break
         else:
             pass
