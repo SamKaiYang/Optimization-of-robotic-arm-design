@@ -5,6 +5,9 @@ from gym import spaces
 import numpy as np
 from math import pi
 
+from sympy import false
+# from torch import R
+
 from dynamics.arm_workspace import arm_workspace_plane
 # from robot_urdf import RandomRobot
 from dynamics.motor_module import mootor_data
@@ -70,6 +73,8 @@ class RobotOptEnv(gym.Env):
         self.std_L2 = 35 # 預設標準值 第二軸 35
         self.std_L3 = 35 # 預設標準值 第三軸 35
         self.high_torque = 300
+        self.low_torque = 16
+        self.done = np.array([false, false, false, false, false, false])
         high = np.array([self.high_torque], dtype=np.float32)
         # TODO: action space for length change
         self.action_space = spaces.Discrete(5) # 0, 1: 不动，長度增加，長度減少
@@ -112,26 +117,32 @@ class RobotOptEnv(gym.Env):
         
         # TODO: 設定 reward
         # if down 完成任务 
-        # 終止條件: 超出個軸馬達torque 範圍 or 累計部署大於200 
-        done = (np.abs(x)+np.abs(y) <= 1) or (np.abs(x)+np.abs(y) >= 2*self.L+1)
-        done = bool(done)
-        
+        # 終止條件: 趨近於各軸馬達最小torque 範圍 or 超出各軸馬達最大torque 範圍 
+        for i in range(6):
+            if np.abs(state_torque[i]) < self.low_torque or np.abs(state_torque[i]) > self.high_torque:
+                self.done[i] = True # 已經完成任務
+            else:
+                self.done[i] = False
 
+        # TODO: 陣列搜索
+        done = True in self.done
         # 走一步修正, 但還未最佳化完成
         if not done:
-            reward = -0.1
+            reward = -1
         # down 完成後, 定義所計算出的torque值, 分數加多少
         else:
-            if np.abs(x)+np.abs(y) <= 1:
-                reward = 2
-            # 即torque, 超過最大torque 
-            else:
-                reward = -2
+            for i in range(6):
+                if np.abs(state_torque[i]) <= self.low_torque:
+                    reward = 10
+                # 即torque, 超過最大torque 
+                else:
+                    reward = -10
+                reward += reward
         return self.state, reward, done, {}
 
     # reset环境状态 
     def reset(self):
-        self.robot_urdf.generate_write_urdf() # 啟用標準的L2,L3長度urdf
+        self.robot_urdf.opt_generate_write_urdf() # 啟用標準的L2,L3長度urdf
         self.robot.__init__() # 重製機器人
         torque = self.dynamics_torque_limit()
         self.state = torque
@@ -226,13 +237,13 @@ class RobotOptEnv(gym.Env):
             self.torque_dynamics_limit = Torque_Max
 
 
-        print("torque_dynamics_limit: ", self.torque_dynamics_limit)
+        # print("torque_dynamics_limit: ", self.torque_dynamics_limit)
         return self.torque_dynamics_limit
 
 if __name__ == '__main__':
     env = RobotOptEnv()
     
-    env.dynamics_torque_limit()
+    # env.dynamics_torque_limit()
     env.reset()
     env.step(env.action_space.sample())
     print(env.state)

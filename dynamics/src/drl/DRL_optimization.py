@@ -51,28 +51,30 @@ from dynamics.motor_module import mootor_data
 from dynamics.random_robot import RandomRobot
 
 # DRL_optimization api
-import sys,os
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
-curr_path = os.path.dirname(os.path.abspath(__file__)) # 当前文件所在绝对路径
-parent_path = os.path.dirname(curr_path) # 父路径
-sys.path.append(parent_path) # 添加路径到系统路径sys.path
+import sys
+import os
+import torch.nn as nn
+import torch.nn.functional as F
+curr_path = os.path.dirname(os.path.abspath(__file__))  # 当前文件所在绝对路径
+parent_path = os.path.dirname(curr_path)  # 父路径
+sys.path.append(parent_path)  # 添加路径到系统路径
 
-import datetime
 import gym
 import torch
-
-from env import NormalizedActions,OUNoise
-# from ddpg import DDPG
-from common.utils import save_results,make_dir
+import datetime
+import numpy as np
+from common.utils import save_results_1, make_dir
 from common.utils import plot_rewards
+from dqn import DQN
 
 import matplotlib.pyplot as plt
 from RobotOptEnv import RobotOptEnv
+import tensorboardX
 
 
 curr_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")  # 获取当前时间
 algo_name = "DQN"  # 算法名称
-# env_name = 'CartPole-v1'  # 环境名称
+env_name = 'RobotOptEnv'  # 环境名称
 
 class MLP(nn.Module):
     def __init__(self, n_states,n_actions,hidden_dim=128):
@@ -97,6 +99,7 @@ class drl_optimization:
     def __init__(self):
         self.test = 0
         self.robot = RandomRobot()
+        self.env = RobotOptEnv()
         # callback:Enter the parameters of the algorithm to be optimized on the interface
         self.sub_optimal_design = rospy.Subscriber(
             "/optimal_design", optimal_design, self.optimal_design_callback
@@ -138,7 +141,8 @@ class drl_optimization:
     def env_agent_config(self, cfg, seed=1):
         ''' 创建环境和智能体
         '''
-        env = gym.make(RobotOptEnv())  # 创建环境
+        # env = gym.make(self.env)  # 创建环境
+        env = self.env  # 创建环境
         env.seed(seed)  # 设置随机种子
         n_states = env.observation_space.shape[0]  # 状态维度
         n_actions = env.action_space.n  # 动作维度
@@ -158,6 +162,7 @@ class drl_optimization:
             ep_reward = 0 # 记录一回合内的奖励
             state = env.reset() # 重置环境，返回初始状态
             while True:
+                
                 action = agent.choose_action(state) # 选择动作
                 next_state, reward, done, _ = env.step(action) # 更新环境，返回transition
                 agent.memory.push(state, action, reward, next_state, done) # 保存transition
@@ -217,12 +222,12 @@ class drl_optimization:
         self.op_radius = data.radius
         
 
-        rospy.loginfo("I heard op_dof is %s", self.op_dof)
-        rospy.loginfo("I heard op_payload is %s", self.op_payload)
-        rospy.loginfo("I heard op_payload_position is %s", self.op_payload_position)
-        rospy.loginfo("I heard op_vel is %s", self.op_vel)
-        rospy.loginfo("I heard op_acc is %s", self.op_acc)
-        rospy.loginfo("I heard op_radius is %s", self.op_radius)
+        # rospy.loginfo("I heard op_dof is %s", self.op_dof)
+        # rospy.loginfo("I heard op_payload is %s", self.op_payload)
+        # rospy.loginfo("I heard op_payload_position is %s", self.op_payload_position)
+        # rospy.loginfo("I heard op_vel is %s", self.op_vel)
+        # rospy.loginfo("I heard op_acc is %s", self.op_acc)
+        # rospy.loginfo("I heard op_radius is %s", self.op_radius)
 
 
     # TODO: optimization_algorithm: use Random forest
@@ -334,7 +339,7 @@ class PlotConfig:
 
 if __name__ == "__main__":
     rospy.init_node("optimization")
-    a = 0
+    a = 1
     drl = drl_optimization()
     cfg = DQNConfig()
     plot_cfg = PlotConfig()
@@ -345,14 +350,14 @@ if __name__ == "__main__":
             rewards, ma_rewards = drl.train(cfg, env, agent)
             make_dir(plot_cfg.result_path, plot_cfg.model_path)  # 创建保存结果和模型路径的文件夹
             agent.save(path=plot_cfg.model_path)  # 保存模型
-            save_results(rewards, ma_rewards, tag='train',
+            save_results_1(rewards, ma_rewards, tag='train',
                         path=plot_cfg.result_path)  # 保存结果
             plot_rewards(rewards, ma_rewards, plot_cfg, tag="train")  # 画出结果
             # 测试
             env, agent = drl.env_agent_config(cfg, seed=10)
             agent.load(path=plot_cfg.model_path)  # 导入模型
             rewards, ma_rewards = drl.test(cfg, env, agent)
-            save_results(rewards, ma_rewards, tag='test',
+            save_results_1(rewards, ma_rewards, tag='test',
                         path=plot_cfg.result_path)  # 保存结果
             plot_rewards(rewards, ma_rewards, plot_cfg, tag="test")  # 画出结果
             break
