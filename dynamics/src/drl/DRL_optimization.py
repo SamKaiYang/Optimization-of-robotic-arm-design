@@ -71,6 +71,9 @@ import matplotlib.pyplot as plt
 from RobotOptEnv import RobotOptEnv
 import tensorboardX
 
+file_path = curr_path + "/outputs/" 
+tb = tensorboardX.SummaryWriter(file_path + "/trained-model/"+datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
+
 
 curr_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")  # 获取当前时间
 algo_name = "DQN"  # 算法名称
@@ -193,7 +196,11 @@ class drl_optimization:
                 ma_rewards.append(ep_reward)
             if (i_ep+1)%10 == 0: 
                 print('回合：{}/{}, 獎勵：{}'.format(i_ep+1, cfg.train_eps, ep_reward))
+                tb.add_scalar("/train/reward", ep_reward, i_ep+1)
         print('完成训练！')
+        # export scalar data to JSON for external processing
+        tb.export_scalars_to_json("./all_scalars.json")
+        tb.close()
         return rewards, ma_rewards
 
     def test(self, cfg,env,agent):
