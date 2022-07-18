@@ -13,7 +13,7 @@ import os
 curr_path = os.path.dirname(os.path.abspath(__file__))  # 当前文件所在绝对路径
 parent_path = os.path.dirname(curr_path)  # 父路径
 sys.path.append(parent_path)  # 添加路径到系统路径
-
+import rospy
 import gym
 import torch
 import datetime
@@ -90,7 +90,9 @@ def env_agent_config(cfg, seed=1):
     env = gym.make(cfg.env_name)  # 创建环境
     env.seed(seed)  # 设置随机种子
     n_states = env.observation_space.shape[0]  # 状态维度
+    rospy.loginfo("n_states: {}".format(n_states))
     n_actions = env.action_space.n  # 动作维度
+    rospy.loginfo("n_actions: {}".format(n_actions))
     model = MLP(n_states,n_actions)
     agent = DQN(n_actions,model,cfg)  # 创建智能体
     return env, agent
@@ -106,12 +108,19 @@ def train(cfg, env, agent):
         ep_reward = 0 # 记录一回合内的奖励
         state = env.reset() # 重置环境，返回初始状态
         while True:
+            rospy.loginfo("state: {}".format(state))
             action = agent.choose_action(state) # 选择动作
+            rospy.loginfo("action: {}".format(action))
             next_state, reward, done, _ = env.step(action) # 更新环境，返回transition
+            rospy.loginfo("next_state: {}".format(next_state))
+            rospy.loginfo("reward: {}".format(reward))
+            rospy.loginfo("done: {}".format(done))
+
             agent.memory.push(state, action, reward, next_state, done) # 保存transition
             state = next_state # 更新下一个状态
             agent.update() # 更新智能体
             ep_reward += reward # 累加奖励
+            rospy.loginfo("ep_reward: {}".format(ep_reward))
             if done:
                 break
         if (i_ep+1) % cfg.target_update == 0: # 智能体目标网络更新
@@ -153,6 +162,7 @@ def test(cfg,env,agent):
     print('完成测试！')
     return rewards,ma_rewards
 if __name__ == "__main__":
+    rospy.init_node("dqn_task1")
     cfg = DQNConfig()
     plot_cfg = PlotConfig()
     # 训练

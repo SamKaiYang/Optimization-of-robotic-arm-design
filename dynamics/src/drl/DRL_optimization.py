@@ -63,7 +63,7 @@ import gym
 import torch
 import datetime
 import numpy as np
-from common.utils import save_results_1, make_dir
+from common.utils import save_results, make_dir
 from common.utils import plot_rewards
 from dqn import DQN
 
@@ -145,30 +145,43 @@ class drl_optimization:
         env = self.env  # 创建环境
         env.seed(seed)  # 设置随机种子
         n_states = env.observation_space.shape[0]  # 状态维度
+        rospy.loginfo("n_states: {}".format(n_states))
         n_actions = env.action_space.n  # 动作维度
+        rospy.loginfo("n_actions: {}".format(n_actions))
         model = MLP(n_states,n_actions)
         agent = DQN(n_actions,model,cfg)  # 创建智能体
         return env, agent
     
     # dqn train
     def train(self, cfg, env, agent):
-        ''' 训练
+        ''' 訓練
         '''
-        print('开始训练!')
-        print(f'环境：{cfg.env_name}, 算法：{cfg.algo_name}, 设备：{cfg.device}')
+        print('開始訓練!')
+        print(f'環境：{cfg.env_name}, 算法：{cfg.algo_name},設備：{cfg.device}')
         rewards = [] # 记录所有回合的奖励
         ma_rewards = []  # 记录所有回合的滑动平均奖励
         for i_ep in range(cfg.train_eps):
+            if rospy.is_shutdown():
+                break
             ep_reward = 0 # 记录一回合内的奖励
             state = env.reset() # 重置环境，返回初始状态
-            while True:
-                
+            # rospy.loginfo("state: {}".format(state))
+            # while True:
+            rospy.loginfo("next train eps: {}".format(i_ep))
+            while not rospy.is_shutdown():
+                rospy.loginfo("=============================")
                 action = agent.choose_action(state) # 选择动作
+                rospy.loginfo("action: {}".format(action))
                 next_state, reward, done, _ = env.step(action) # 更新环境，返回transition
+                rospy.loginfo("next_state: {}".format(next_state))
+                rospy.loginfo("reward: {}".format(reward))
+                rospy.loginfo("done: {}".format(done))
+
                 agent.memory.push(state, action, reward, next_state, done) # 保存transition
                 state = next_state # 更新下一个状态
                 agent.update() # 更新智能体
                 ep_reward += reward # 累加奖励
+                rospy.loginfo("ep_reward: {}".format(ep_reward))
                 if done:
                     break
             if (i_ep+1) % cfg.target_update == 0: # 智能体目标网络更新
@@ -179,22 +192,25 @@ class drl_optimization:
             else:
                 ma_rewards.append(ep_reward)
             if (i_ep+1)%10 == 0: 
-                print('回合：{}/{}, 奖励：{}'.format(i_ep+1, cfg.train_eps, ep_reward))
+                print('回合：{}/{}, 獎勵：{}'.format(i_ep+1, cfg.train_eps, ep_reward))
         print('完成训练！')
         return rewards, ma_rewards
 
     def test(self, cfg,env,agent):
-        print('开始测试!')
-        print(f'环境：{cfg.env_name}, 算法：{cfg.algo_name}, 设备：{cfg.device}')
+        print('開始測試!')
+        print(f'環境：{cfg.env_name}, 算法：{cfg.algo_name}, 設備：{cfg.device}')
         # 由于测试不需要使用epsilon-greedy策略，所以相应的值设置为0
         cfg.epsilon_start = 0.0 # e-greedy策略中初始epsilon
         cfg.epsilon_end = 0.0 # e-greedy策略中的终止epsilon
         rewards = [] # 记录所有回合的奖励
         ma_rewards = []  # 记录所有回合的滑动平均奖励
         for i_ep in range(cfg.test_eps):
+            if rospy.is_shutdown():
+                break
             ep_reward = 0 # 记录一回合内的奖励
             state = env.reset() # 重置环境，返回初始状态
-            while True:
+            # while True:
+            while not rospy.is_shutdown():
                 action = agent.choose_action(state) # 选择动作
                 next_state, reward, done, _ = env.step(action) # 更新环境，返回transition
                 state = next_state # 更新下一个状态
@@ -206,8 +222,8 @@ class drl_optimization:
                 ma_rewards.append(ma_rewards[-1]*0.9+ep_reward*0.1)
             else:
                 ma_rewards.append(ep_reward)
-            print(f"回合：{i_ep+1}/{cfg.test_eps}，奖励：{ep_reward:.1f}")
-        print('完成测试！')
+            print(f"回合：{i_ep+1}/{cfg.test_eps}，獎勵：{ep_reward:.1f}")
+        print('完成測試！')
         return rewards,ma_rewards
 
 
@@ -350,14 +366,14 @@ if __name__ == "__main__":
             rewards, ma_rewards = drl.train(cfg, env, agent)
             make_dir(plot_cfg.result_path, plot_cfg.model_path)  # 创建保存结果和模型路径的文件夹
             agent.save(path=plot_cfg.model_path)  # 保存模型
-            save_results_1(rewards, ma_rewards, tag='train',
+            save_results(rewards, ma_rewards, tag='train',
                         path=plot_cfg.result_path)  # 保存结果
             plot_rewards(rewards, ma_rewards, plot_cfg, tag="train")  # 画出结果
             # 测试
             env, agent = drl.env_agent_config(cfg, seed=10)
             agent.load(path=plot_cfg.model_path)  # 导入模型
             rewards, ma_rewards = drl.test(cfg, env, agent)
-            save_results_1(rewards, ma_rewards, tag='test',
+            save_results(rewards, ma_rewards, tag='test',
                         path=plot_cfg.result_path)  # 保存结果
             plot_rewards(rewards, ma_rewards, plot_cfg, tag="test")  # 画出结果
             break

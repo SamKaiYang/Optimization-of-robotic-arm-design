@@ -13,7 +13,7 @@ from dynamics.arm_workspace import arm_workspace_plane
 from dynamics.motor_module import mootor_data
 from dynamics.random_robot import RandomRobot
 from dynamics.stl_conv_6dof_urdf import stl_conv_urdf
-
+import rospy
 # TODO: 整合機器人重製生成 與 動力學計算
 # TODO: 初版 只考慮 6 dof 機器人的關節長度變化, 觀察各軸馬達極限之輸出最大torque值
 class RobotOptEnv(gym.Env):
@@ -66,20 +66,23 @@ class RobotOptEnv(gym.Env):
     def __init__(self):
         self.robot = RandomRobot()
         self.robot_urdf = stl_conv_urdf("random","test")
-        self.payload = 0.0
-        self.payload_position = np.array([0, 0, 0])
-        self.vel = np.array([0, 0, 0, 0, 0, 0])
-        self.acc = np.array([0, 0, 0, 0, 0, 0])
-        self.std_L2 = 35 # 預設標準值 第二軸 35
-        self.std_L3 = 35 # 預設標準值 第三軸 35
-        self.high_torque = 300
-        self.low_torque = 16
+        self.payload = 5.0
+        self.payload_position = np.array([0, 0, 0.04])
+        self.vel = np.array([2.356194, 2.356194, 2.356194, 2.356194, 2.356194, 2.356194])
+        self.acc = np.array([2.356194, 2.356194, 2.356194, 2.356194, 2.356194, 2.356194])
+        self.std_L2 = 35 # 預設標準值 第二軸 35 cm
+        self.std_L3 = 35 # 預設標準值 第三軸 35 cm
+        self.high_torque = 120.0 # 預設標準值 馬達極限 120.0 N max
+        self.low_torque = 70.0 # 預設標準值 馬達極限 60.0 N rated
         self.done = np.array([false, false, false, false, false, false])
         high = np.array([self.high_torque], dtype=np.float32)
         # TODO: action space for length change
         self.action_space = spaces.Discrete(5) # 0, 1: 不动，長度增加，長度減少
         # TODO: observation space for torque, motor cost, workspace, weight
-        self.observation_space = spaces.Box(low=-high, high=high, dtype=np.float32)
+        # self.observation_space = spaces.Box(low=-high, high=high, dtype=np.float32)
+        self.observation_space = spaces.Box(np.array([self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque]), 
+                                            np.array([self.high_torque,self.high_torque,self.high_torque,self.high_torque,self.high_torque,self.high_torque]), 
+                                            dtype=np.float32)
         self.state = None
     
     def step(self, action):
@@ -125,19 +128,26 @@ class RobotOptEnv(gym.Env):
                 self.done[i] = False
 
         # TODO: 陣列搜索
-        done = True in self.done
+        # 如果所有軸已經完成任務，則結束
+        false_done = False in self.done 
+        # result = np.where(self.done == True)
         # 走一步修正, 但還未最佳化完成
-        if not done:
-            reward = -1
+        if false_done:
+            reward = -1.0
         # down 完成後, 定義所計算出的torque值, 分數加多少
         else:
+            reward = 0
+            rospy.loginfo("fffffffffffffffffuuuuuuuuuuuuuuuuuuuuuuuucccccccccccccccccccccckkkkkkkkkkkkkkkkkkkkk")
             for i in range(6):
+                # 趨近於各軸馬達 rated torque 範圍
                 if np.abs(state_torque[i]) <= self.low_torque:
-                    reward = 10
+                    reward += 10.0
                 # 即torque, 超過最大torque 
+                elif np.abs(state_torque[i]) > self.high_torque:
+                    reward += -30.0
                 else:
-                    reward = -10
-                reward += reward
+                    reward += 0.0
+        done = not false_done # 取bool 反向值
         return self.state, reward, done, {}
 
     # reset环境状态 
