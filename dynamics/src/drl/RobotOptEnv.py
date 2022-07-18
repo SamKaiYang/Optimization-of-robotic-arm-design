@@ -137,7 +137,7 @@ class RobotOptEnv(gym.Env):
         # down 完成後, 定義所計算出的torque值, 分數加多少
         else:
             reward = 0
-            rospy.loginfo("fffffffffffffffffuuuuuuuuuuuuuuuuuuuuuuuucccccccccccccccccccccckkkkkkkkkkkkkkkkkkkkk")
+            # rospy.loginfo("fffffffffffffffffuuuuuuuuuuuuuuuuuuuuuuuucccccccccccccccccccccckkkkkkkkkkkkkkkkkkkkk")
             for i in range(6):
                 # 趨近於各軸馬達 rated torque 範圍
                 if np.abs(state_torque[i]) <= self.low_torque:

@@ -167,21 +167,21 @@ class drl_optimization:
             state = env.reset() # 重置环境，返回初始状态
             # rospy.loginfo("state: {}".format(state))
             # while True:
-            rospy.loginfo("next train eps: {}".format(i_ep))
+            # rospy.loginfo("next train eps: {}".format(i_ep))
             while not rospy.is_shutdown():
-                rospy.loginfo("=============================")
+                # rospy.loginfo("=============================")
                 action = agent.choose_action(state) # 选择动作
-                rospy.loginfo("action: {}".format(action))
+                # rospy.loginfo("action: {}".format(action))
                 next_state, reward, done, _ = env.step(action) # 更新环境，返回transition
-                rospy.loginfo("next_state: {}".format(next_state))
-                rospy.loginfo("reward: {}".format(reward))
-                rospy.loginfo("done: {}".format(done))
+                # rospy.loginfo("next_state: {}".format(next_state))
+                # rospy.loginfo("reward: {}".format(reward))
+                # rospy.loginfo("done: {}".format(done))
 
                 agent.memory.push(state, action, reward, next_state, done) # 保存transition
                 state = next_state # 更新下一个状态
                 agent.update() # 更新智能体
                 ep_reward += reward # 累加奖励
-                rospy.loginfo("ep_reward: {}".format(ep_reward))
+                # rospy.loginfo("ep_reward: {}".format(ep_reward))
                 if done:
                     break
             if (i_ep+1) % cfg.target_update == 0: # 智能体目标网络更新
@@ -357,25 +357,26 @@ if __name__ == "__main__":
     rospy.init_node("optimization")
     a = 1
     drl = drl_optimization()
-    cfg = DQNConfig()
+    train_cfg = DQNConfig()
+    test_cfg = DQNConfig()
     plot_cfg = PlotConfig()
     while not rospy.is_shutdown():
         if a == 1:
             # 训练
-            env, agent = drl.env_agent_config(cfg, seed=1)
-            rewards, ma_rewards = drl.train(cfg, env, agent)
+            train_env, train_agent = drl.env_agent_config(train_cfg, seed=1)
+            train_rewards, train_ma_rewards = drl.train(train_cfg, train_env, train_agent)
             make_dir(plot_cfg.result_path, plot_cfg.model_path)  # 创建保存结果和模型路径的文件夹
-            agent.save(path=plot_cfg.model_path)  # 保存模型
-            save_results(rewards, ma_rewards, tag='train',
+            train_agent.save(path=plot_cfg.model_path)  # 保存模型
+            save_results(train_rewards, train_ma_rewards, tag='train',
                         path=plot_cfg.result_path)  # 保存结果
-            plot_rewards(rewards, ma_rewards, plot_cfg, tag="train")  # 画出结果
+            plot_rewards(train_rewards, train_ma_rewards, plot_cfg, tag="train")  # 画出结果
             # 测试
-            env, agent = drl.env_agent_config(cfg, seed=10)
-            agent.load(path=plot_cfg.model_path)  # 导入模型
-            rewards, ma_rewards = drl.test(cfg, env, agent)
-            save_results(rewards, ma_rewards, tag='test',
+            test_env, test_agent = drl.env_agent_config(test_cfg, seed=10)
+            test_agent.load(path=plot_cfg.model_path)  # 导入模型
+            test_rewards, test_ma_rewards = drl.test(test_cfg, test_env, test_agent)
+            save_results(test_rewards, test_ma_rewards, tag='test',
                         path=plot_cfg.result_path)  # 保存结果
-            plot_rewards(rewards, ma_rewards, plot_cfg, tag="test")  # 画出结果
+            plot_rewards(test_rewards, test_ma_rewards, plot_cfg, tag="test")  # 画出结果
             break
         else:
             pass
