@@ -100,7 +100,7 @@ class MLP(nn.Module):
 
 class drl_optimization:
     def __init__(self):
-        self.test = 0
+        # self.test = 0
         self.robot = RandomRobot()
         self.env = RobotOptEnv()
         # callback:Enter the parameters of the algorithm to be optimized on the interface
@@ -184,7 +184,7 @@ class drl_optimization:
                 state = next_state # 更新下一个状态
                 agent.update() # 更新智能体
                 ep_reward += reward # 累加奖励
-                # rospy.loginfo("ep_reward: {}".format(ep_reward))
+                rospy.loginfo("ep_reward: {}".format(ep_reward))
                 if done:
                     break
             if (i_ep+1) % cfg.target_update == 0: # 智能体目标网络更新
@@ -194,13 +194,13 @@ class drl_optimization:
                 ma_rewards.append(0.9*ma_rewards[-1]+0.1*ep_reward)
             else:
                 ma_rewards.append(ep_reward)
-            if (i_ep+1)%5 == 0: 
-                print('回合：{}/{}, 獎勵：{}'.format(i_ep+1, cfg.train_eps, ep_reward))
-                tb.add_scalar("/trained-model/log/", ep_reward, i_ep+1)
+            # if (i_ep+1)%5 == 0: 
+            print('回合：{}/{}, 獎勵：{}'.format(i_ep+1, cfg.train_eps, ep_reward))
+            tb.add_scalar("/trained-model/log/", ep_reward, i_ep+1)
         print('完成训练！')
         # export scalar data to JSON for external processing
-        tb.export_scalars_to_json("./all_scalars.json")
-        tb.close()
+        # tb.export_scalars_to_json("./all_scalars.json")
+        # tb.close()
         return rewards, ma_rewards
 
     def test(self, cfg,env,agent):
@@ -222,6 +222,7 @@ class drl_optimization:
                 next_state, reward, done, _ = env.step(action) # 更新环境，返回transition
                 state = next_state # 更新下一个状态
                 ep_reward += reward # 累加奖励
+                
                 if done:
                     break
             rewards.append(ep_reward)
@@ -230,6 +231,7 @@ class drl_optimization:
             else:
                 ma_rewards.append(ep_reward)
             print(f"回合：{i_ep+1}/{cfg.test_eps}，獎勵：{ep_reward:.1f}")
+            tb.add_scalar("/tested-model/log/", ep_reward, i_ep+1)
         print('完成測試！')
         return rewards,ma_rewards
 
@@ -364,23 +366,22 @@ if __name__ == "__main__":
     rospy.init_node("optimization")
     a = 1
     drl = drl_optimization()
-    train_cfg = DQNConfig()
-    test_cfg = DQNConfig()
+    cfg = DQNConfig()
     plot_cfg = PlotConfig()
     while not rospy.is_shutdown():
         if a == 1:
             # 训练
-            train_env, train_agent = drl.env_agent_config(train_cfg, seed=1)
-            train_rewards, train_ma_rewards = drl.train(train_cfg, train_env, train_agent)
+            train_env, train_agent = drl.env_agent_config(cfg, seed=1)
+            train_rewards, train_ma_rewards = drl.train(cfg, train_env, train_agent)
             make_dir(plot_cfg.result_path, plot_cfg.model_path)  # 创建保存结果和模型路径的文件夹
             train_agent.save(path=plot_cfg.model_path)  # 保存模型
             save_results(train_rewards, train_ma_rewards, tag='train',
                         path=plot_cfg.result_path)  # 保存结果
             plot_rewards(train_rewards, train_ma_rewards, plot_cfg, tag="train")  # 画出结果
             # 测试
-            test_env, test_agent = drl.env_agent_config(test_cfg, seed=10)
+            test_env, test_agent = drl.env_agent_config(cfg, seed=10)
             test_agent.load(path=plot_cfg.model_path)  # 导入模型
-            test_rewards, test_ma_rewards = drl.test(test_cfg, test_env, test_agent)
+            test_rewards, test_ma_rewards = drl.test(cfg, test_env, test_agent)
             save_results(test_rewards, test_ma_rewards, tag='test',
                         path=plot_cfg.result_path)  # 保存结果
             plot_rewards(test_rewards, test_ma_rewards, plot_cfg, tag="test")  # 画出结果
