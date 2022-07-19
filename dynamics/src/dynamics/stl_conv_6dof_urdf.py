@@ -309,6 +309,7 @@ class stl_conv_urdf():
         self.data_write_urdf()
     # for 6 dof generated information on the interface specified length 2 , 3 axis
     def specified_generate_write_urdf(self,L2, L3):
+        # 比較求取等差間距
         your_mesh = mesh.Mesh.from_file(path.dirname(path.realpath(__file__)) + "/meshes/" +'random_3_25.0.STL')
         volume_1, cog_1, inertia_1 = your_mesh.get_mass_properties()
         your_mesh = mesh.Mesh.from_file(path.dirname(path.realpath(__file__)) + "/meshes/" +'random_3_30.0.STL')
@@ -324,7 +325,7 @@ class stl_conv_urdf():
         self.mesh_2_name = self.robot_name + "_2_"+ str(self.axis_2_length) + ".STL"
         self.mesh_3_name = self.robot_name + "_3_"+ str(self.axis_3_length) + ".STL"
         self.L2_volume, self.L2_cog, self.L2_inertia = self.robot_stl_axis_2.get_mass_properties()
-        # random axis 2 length
+        # specified axis 2 length
         specified_axis_2_length = L2
         diff_axis_2_length = specified_axis_2_length - self.axis_2_length
         self.axis_2_length = specified_axis_2_length
@@ -335,7 +336,7 @@ class stl_conv_urdf():
         self.L2_volume = self.L2_volume*1000
         self.L2_inertia = self.L2_inertia*1000
         self.L3_volume, self.L3_cog, self.L3_inertia = self.robot_stl_axis_3.get_mass_properties()
-        # random axis 3 length
+        # specified axis 3 length
         specified_axis_3_length = L3
         diff_axis_3_length = specified_axis_3_length - self.axis_3_length
         self.axis_3_length = specified_axis_3_length

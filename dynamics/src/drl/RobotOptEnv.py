@@ -79,19 +79,20 @@ class RobotOptEnv(gym.Env):
         self.low_cost = 600 # 預設標準值 加總機器人馬達費用 0.0 [s1:100 m1:200 s2:150 m2:300]
         self.high_cost = 1800 # 預設標準值 加總機器人馬達費用 0.0 [s1:100 m1:200 s2:150 m2:300]
         # 使用者設定參數 & 觀察參數
-        self.reach_distance = 0 # 使用者設定可達半徑最小值
+        self.reach_distance = 0.6 # 使用者設定可達半徑最小值
         self.max_weight = 0 # 使用者設定最大整體手臂重量 單位kg
         
         self.done = np.array([false, false, false, false, false, false])
-        high = np.array([self.high_torque], dtype=np.float32)
+        # high = np.array([self.high_torque], dtype=np.float32)
 
         self.action_space = spaces.Discrete(5) # 0, 1: 不动，長度增加，長度減少
         # TODO: 增加馬達模組選型action
         # TODO: observation space for torque, motor cost, workspace, weight
         # self.observation_space = spaces.Box(low=-high, high=high, dtype=np.float32)
-        self.observation_space = spaces.Box(np.array([self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque]), 
-                                            np.array([self.high_torque,self.high_torque,self.high_torque,self.high_torque,self.high_torque,self.high_torque]), 
+        self.observation_space = spaces.Box(np.array([self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque, self.reach_distance]), 
+                                            np.array([self.high_torque,self.high_torque,self.high_torque,self.high_torque,self.high_torque,self.high_torque, float('inf')]), 
                                             dtype=np.float32)
+        # TODO: 修正 state 為 1*7 的 numpy array, 因新增可達半徑判斷
         self.state = None
     
     def step(self, action):
@@ -124,15 +125,19 @@ class RobotOptEnv(gym.Env):
             self.robot.__init__() # 重製機器人
             torque = self.dynamics_torque_limit()
             self.state = torque
-
+        L1,L2,L3 = self.robot.return_configuration()
+        L_sum = L1+L2+L3
+        rospy.loginfo("configuration: %s, %s, %s, %s", L1, L2, L3, L_sum)
         # self.state = state_torque # 1*6 array
         self.counts += 1
+        rospy.loginfo("L2: %d, L3: %d", self.std_L2, self.std_L3)
+        rospy.loginfo("counts: {}".format(self.counts))
         # TODO: 設定 reward
         # if down 完成任务 
         # 終止條件: 趨近於各軸馬達最小torque 範圍 or 超出各軸馬達最大torque 範圍 
         torque_reward_close = 0.0
         for i in range(6):
-            if np.abs(self.state[i]) < self.low_torque or np.abs(self.state[i]) > self.high_torque:
+            if np.abs(self.state[i]) < self.low_torque or np.abs(self.state[i]) > self.high_torque or L_sum < self.reach_distance:
                 self.done[i] = True # 已經完成任務
             else:
                 if np.abs(pre_state[i]) > np.abs(self.state[i]):
@@ -153,24 +158,28 @@ class RobotOptEnv(gym.Env):
             # The episode truncates at 30 time steps.
             if self.counts == 30:
                 false_done = False
+
             # TOOD: 如果torque值比上一個狀態還要小，則reward增加
 
         # down 完成後, 定義所計算出的torque值, 分數加多少
         else:
-            reward = 0.0
-            for i in range(6):
-                # 趨近於各軸馬達 rated torque 範圍
-                if np.abs(self.state[i]) <= self.low_torque:
-                    reward += 5.0
-                    if np.abs(pre_state[i]) > np.abs(self.state[i]):
-                        reward = reward + 2.0
+            if L_sum < self.reach_distance:
+                reward = -20.0
+            else:
+                reward = 0.0
+                for i in range(6):
+                    # 趨近於各軸馬達 rated torque 範圍
+                    if np.abs(self.state[i]) <= self.low_torque:
+                        reward += 5.0
+                        if np.abs(pre_state[i]) > np.abs(self.state[i]):
+                            reward = reward + 2.0
+                        else:
+                            reward = reward - 1.0
+                    # 即torque, 超過最大torque 
+                    elif np.abs(self.state[i]) > self.high_torque:
+                        reward += -5.0
                     else:
-                        reward = reward - 1.0
-                # 即torque, 超過最大torque 
-                elif np.abs(self.state[i]) > self.high_torque:
-                    reward += -5.0
-                else:
-                    reward += 0.0
+                        reward += 0.0
         done = not false_done # 取bool 反向值
         
         return self.state, reward, done, {}

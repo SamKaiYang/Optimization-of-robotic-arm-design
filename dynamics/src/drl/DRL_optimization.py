@@ -182,6 +182,7 @@ class drl_optimization:
 
                 agent.memory.push(state, action, reward, next_state, done) # 保存transition
                 state = next_state # 更新下一个状态
+                rospy.loginfo("state: {}".format(state))
                 agent.update() # 更新智能体
                 ep_reward += reward # 累加奖励
                 rospy.loginfo("ep_reward: {}".format(ep_reward))
@@ -245,15 +246,6 @@ class drl_optimization:
         self.op_vel = data.vel
         self.op_acc = data.acc
         self.op_radius = data.radius
-        
-
-        # rospy.loginfo("I heard op_dof is %s", self.op_dof)
-        # rospy.loginfo("I heard op_payload is %s", self.op_payload)
-        # rospy.loginfo("I heard op_payload_position is %s", self.op_payload_position)
-        # rospy.loginfo("I heard op_vel is %s", self.op_vel)
-        # rospy.loginfo("I heard op_acc is %s", self.op_acc)
-        # rospy.loginfo("I heard op_radius is %s", self.op_radius)
-
 
     # TODO: optimization_algorithm: use Random forest
     def optimization_algorithm(self):
