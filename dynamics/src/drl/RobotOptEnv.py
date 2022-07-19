@@ -66,18 +66,27 @@ class RobotOptEnv(gym.Env):
     def __init__(self):
         self.robot = RandomRobot()
         self.robot_urdf = stl_conv_urdf("random","test")
+        # 使用者設定參數
         self.payload = 5.0
         self.payload_position = np.array([0, 0, 0.04])
         self.vel = np.array([2.356194, 2.356194, 2.356194, 2.356194, 2.356194, 2.356194])
         self.acc = np.array([2.356194, 2.356194, 2.356194, 2.356194, 2.356194, 2.356194])
         self.std_L2 = 35 # 預設標準值 第二軸 35 cm
         self.std_L3 = 35 # 預設標準值 第三軸 35 cm
+        # 觀察參數
         self.high_torque = 120.0 # 預設標準值 馬達極限 120.0 N max
         self.low_torque = 70.0 # 預設標準值 馬達極限 60.0 N rated
+        self.low_cost = 600 # 預設標準值 加總機器人馬達費用 0.0 [s1:100 m1:200 s2:150 m2:300]
+        self.high_cost = 1800 # 預設標準值 加總機器人馬達費用 0.0 [s1:100 m1:200 s2:150 m2:300]
+        # 使用者設定參數 & 觀察參數
+        self.reach_distance = 0 # 使用者設定可達半徑最小值
+        self.max_weight = 0 # 使用者設定最大整體手臂重量 單位kg
+        
         self.done = np.array([false, false, false, false, false, false])
         high = np.array([self.high_torque], dtype=np.float32)
-        # TODO: action space for length change
+
         self.action_space = spaces.Discrete(5) # 0, 1: 不动，長度增加，長度減少
+        # TODO: 增加馬達模組選型action
         # TODO: observation space for torque, motor cost, workspace, weight
         # self.observation_space = spaces.Box(low=-high, high=high, dtype=np.float32)
         self.observation_space = spaces.Box(np.array([self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque]), 
@@ -132,8 +141,9 @@ class RobotOptEnv(gym.Env):
         false_done = False in self.done 
         # result = np.where(self.done == True)
         # 走一步修正, 但還未最佳化完成
+        # TODO: reward 歸一化
         if false_done:
-            reward = -1.0
+            reward = -1.0/30
         # down 完成後, 定義所計算出的torque值, 分數加多少
         else:
             reward = 0
@@ -141,10 +151,10 @@ class RobotOptEnv(gym.Env):
             for i in range(6):
                 # 趨近於各軸馬達 rated torque 範圍
                 if np.abs(state_torque[i]) <= self.low_torque:
-                    reward += 10.0
+                    reward += 10.0/30.0
                 # 即torque, 超過最大torque 
                 elif np.abs(state_torque[i]) > self.high_torque:
-                    reward += -30.0
+                    reward += -30.0/30.0
                 else:
                     reward += 0.0
         done = not false_done # 取bool 反向值
