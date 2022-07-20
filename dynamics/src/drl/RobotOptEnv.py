@@ -184,6 +184,10 @@ class RobotOptEnv(gym.Env):
         rospy.loginfo("self.state: %s", self.state)
         self.state[6] = L_sum
         
+        # 重置
+        self.std_L2 = 35.0 # 預設標準值 
+        self.std_L3 = 35.0 # 預設標準值
+        
         self.counts = 0
         return self.state    
     
