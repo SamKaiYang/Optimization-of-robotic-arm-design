@@ -14,6 +14,10 @@ from dynamics.motor_module import mootor_data
 from dynamics.random_robot import RandomRobot
 from dynamics.stl_conv_6dof_urdf import stl_conv_urdf
 import rospy
+# one-hot encoder
+from sklearn import preprocessing
+import pandas as pd
+
 # TODO: 整合機器人重製生成 與 動力學計算
 # TODO: 初版 只考慮 6 dof 機器人的關節長度變化, 觀察各軸馬達極限之輸出最大torque值
 class RobotOptEnv(gym.Env):
@@ -84,7 +88,8 @@ class RobotOptEnv(gym.Env):
         
         self.done = np.array([false, false, false, false, false, false])
         # high = np.array([self.high_torque], dtype=np.float32)
-
+        # TODO: multidiscrete
+        # self.action_space = spaces.MultiDiscrete([2,2,4])
         self.action_space = spaces.Discrete(5) # 0, 1: 不动，長度增加，長度減少
         # TODO: 增加馬達模組選型action
         # TODO: observation space for torque, motor cost, workspace, weight
@@ -95,10 +100,20 @@ class RobotOptEnv(gym.Env):
         # TODO: reward 歸一化
         self.state = np.array([0,0,0,0,0,0,0], dtype=np.float32)
         self.pre_state = np.array([0,0,0,0,0,0,0], dtype=np.float32)
+        
     def step(self, action):
         assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
         self.pre_state[0:6] = self.state[0:6]
         # TODO: 向量編碼動作
+        # if action[0][0] == 0: # 軸2
+        #     pass
+        # elif action[1][0] == 1: # 軸3
+        #     if action[0][1] == 1: # 變長
+        #         pass
+        #         if action[0][1][0] == 0: # 型號1
+        #             pass
+        #     elif action[0][1] == 2: # 變短
+        #         pass
         if action == 0: # 不改變
             pass
         if action == 1: # 加長 第二軸
