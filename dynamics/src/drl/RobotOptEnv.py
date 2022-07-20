@@ -71,8 +71,8 @@ class RobotOptEnv(gym.Env):
         self.payload_position = np.array([0, 0, 0.04])
         self.vel = np.array([2.356194, 2.356194, 2.356194, 2.356194, 2.356194, 2.356194])
         self.acc = np.array([2.356194, 2.356194, 2.356194, 2.356194, 2.356194, 2.356194])
-        self.std_L2 = 35 # 預設標準值 第二軸 35 cm
-        self.std_L3 = 35 # 預設標準值 第三軸 35 cm
+        self.std_L2 = 35.0 # 預設標準值 第二軸 35 cm
+        self.std_L3 = 35.0 # 預設標準值 第三軸 35 cm
         # 觀察參數
         self.high_torque = 120.0 # 預設標準值 馬達極限 120.0 N max
         self.low_torque = 60.0 # 預設標準值 馬達極限 60.0 N rated
@@ -92,47 +92,42 @@ class RobotOptEnv(gym.Env):
         self.observation_space = spaces.Box(np.array([self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque, self.reach_distance]), 
                                             np.array([self.high_torque,self.high_torque,self.high_torque,self.high_torque,self.high_torque,self.high_torque, float('inf')]), 
                                             dtype=np.float32)
-        # TODO: 修正 state 為 1*7 的 numpy array, 因新增可達半徑判斷
-        self.state = None
-    
+        # TODO: reward 歸一化
+        self.state = np.array([0,0,0,0,0,0,0], dtype=np.float32)
+        self.pre_state = np.array([0,0,0,0,0,0,0], dtype=np.float32)
     def step(self, action):
         assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
-        state_torque = self.state 
-        pre_state = self.state
+        self.pre_state[0:6] = self.state[0:6]
         if action == 0: # 不改變
-            self.state = state_torque
+            pass
         if action == 1: # 加長 第二軸
-            self.std_L2 += 1
+            self.std_L2 += 1.0
             self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
             self.robot.__init__() # 重製機器人
             torque = self.dynamics_torque_limit()
-            self.state = torque
+            self.state[0:6] = torque
         if action == 2: # 縮短 第二軸
-            self.std_L2 -= 1
+            self.std_L2 -= 1.0
             self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
             self.robot.__init__() # 重製機器人
             torque = self.dynamics_torque_limit()
-            self.state = torque
+            self.state[0:6] = torque
         if action == 3: # 加長 第三軸
-            self.std_L3 += 1
+            self.std_L3 += 1.0
             self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
             self.robot.__init__() # 重製機器人
             torque = self.dynamics_torque_limit()
-            self.state = torque
+            self.state[0:6] = torque
         if action == 4: # 縮短 第三軸
-            self.std_L3 -= 1
+            self.std_L3 -= 1.0
             self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
             self.robot.__init__() # 重製機器人
             torque = self.dynamics_torque_limit()
-            self.state = torque
+            self.state[0:6] = torque
         L1,L2,L3 = self.robot.return_configuration()
         L_sum = L1+L2+L3
-        rospy.loginfo("configuration: %s, %s, %s, %s", L1, L2, L3, L_sum)
-        # self.state = state_torque # 1*6 array
+        self.state[6] = L_sum
         self.counts += 1
-        rospy.loginfo("L2: %d, L3: %d", self.std_L2, self.std_L3)
-        rospy.loginfo("counts: {}".format(self.counts))
-        # TODO: 設定 reward
         # if down 完成任务 
         # 終止條件: 趨近於各軸馬達最小torque 範圍 or 超出各軸馬達最大torque 範圍 
         torque_reward_close = 0.0
@@ -140,27 +135,19 @@ class RobotOptEnv(gym.Env):
             if np.abs(self.state[i]) < self.low_torque or np.abs(self.state[i]) > self.high_torque or L_sum < self.reach_distance:
                 self.done[i] = True # 已經完成任務
             else:
-                if np.abs(pre_state[i]) > np.abs(self.state[i]):
+                if np.abs(self.pre_state[i]) > np.abs(self.state[i]):
                     torque_reward_close = torque_reward_close + 2.0
                 else:
                     torque_reward_close = torque_reward_close - 1.0
-                # print("torque_reward_close: ", torque_reward_close)
                 self.done[i] = False
-
-        # TODO: 陣列搜索
         # 如果所有軸已經完成任務，則結束
         false_done = False in self.done 
-        # result = np.where(self.done == True)
         # 走一步修正, 但還未最佳化完成
-        # TODO: reward 歸一化
         if false_done:
             reward = torque_reward_close
             # The episode truncates at 30 time steps.
             if self.counts == 30:
                 false_done = False
-
-            # TOOD: 如果torque值比上一個狀態還要小，則reward增加
-
         # down 完成後, 定義所計算出的torque值, 分數加多少
         else:
             if L_sum < self.reach_distance:
@@ -171,7 +158,7 @@ class RobotOptEnv(gym.Env):
                     # 趨近於各軸馬達 rated torque 範圍
                     if np.abs(self.state[i]) <= self.low_torque:
                         reward += 5.0
-                        if np.abs(pre_state[i]) > np.abs(self.state[i]):
+                        if np.abs(self.pre_state[i]) > np.abs(self.state[i]):
                             reward = reward + 2.0
                         else:
                             reward = reward - 1.0
@@ -189,7 +176,14 @@ class RobotOptEnv(gym.Env):
         self.robot_urdf.opt_generate_write_urdf() # 啟用標準的L2,L3長度urdf
         self.robot.__init__() # 重製機器人
         torque = self.dynamics_torque_limit()
-        self.state = torque
+        self.state[0:6] = torque
+        # consider reach_distance
+        L1,L2,L3 = self.robot.return_configuration()
+        L_sum = L1+L2+L3
+        rospy.loginfo("configuration: %s, %s, %s, %s", L1, L2, L3, L_sum)
+        rospy.loginfo("self.state: %s", self.state)
+        self.state[6] = L_sum
+        
         self.counts = 0
         return self.state    
     

@@ -172,9 +172,9 @@ class drl_optimization:
             # while True:
             # rospy.loginfo("next train eps: {}".format(i_ep))
             while not rospy.is_shutdown():
-                # rospy.loginfo("=============================")
+                rospy.loginfo("=============================")
                 action = agent.choose_action(state) # 选择动作
-                # rospy.loginfo("action: {}".format(action))
+                rospy.loginfo("action: {}".format(action))
                 next_state, reward, done, _ = env.step(action) # 更新环境，返回transition
                 # rospy.loginfo("next_state: {}".format(next_state))
                 # rospy.loginfo("reward: {}".format(reward))
