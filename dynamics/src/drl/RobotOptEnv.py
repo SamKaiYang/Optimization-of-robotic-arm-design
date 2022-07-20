@@ -98,6 +98,7 @@ class RobotOptEnv(gym.Env):
     def step(self, action):
         assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
         self.pre_state[0:6] = self.state[0:6]
+        # TODO: 向量編碼動作
         if action == 0: # 不改變
             pass
         if action == 1: # 加長 第二軸
@@ -184,7 +185,6 @@ class RobotOptEnv(gym.Env):
         self.state[6] = L_sum
         rospy.loginfo("configuration: %s, %s, %s, %s", L1, L2, L3, L_sum)
         rospy.loginfo("self.state: %s", self.state)
-        
         
         # 重置
         self.std_L2 = 35.0 # 預設標準值 
