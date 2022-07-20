@@ -7,6 +7,7 @@ from os import path
 from urdf_parser_py.urdf import URDF, Robot
 from interface_control.msg import specified_parameter_design, cal_cmd, optimal_random
 import random
+# TODO: fix stl conv 6dof urdf & 修改為可調整dof的方式
 class stl_conv_urdf():
     def __init__(self, robot_name, robot_parameter):
         self.axis_2_length = 0.0
@@ -310,7 +311,7 @@ class stl_conv_urdf():
         self.read_check_urdf()
         self.data_write_urdf()
 
-    # for opt generated information on the interface
+    # for opt generated information on the interface 標準軸長
     def opt_generate_write_urdf(self):
         # 比較求取等差間距
         your_mesh = mesh.Mesh.from_file(path.dirname(path.realpath(__file__)) + "/meshes/" +'random_3_25.0.STL')
@@ -325,10 +326,31 @@ class stl_conv_urdf():
         axis_3_length = 35.0
         self.robot_stl_axis_2 = mesh.Mesh.from_file(path.dirname(path.realpath(__file__))+"/meshes/" + self.robot_name + "_2_"+ str(axis_2_length) + ".STL")
         self.robot_stl_axis_3 = mesh.Mesh.from_file(path.dirname(path.realpath(__file__))+"/meshes/" + self.robot_name + "_3_"+ str(axis_3_length) + ".STL")
-        self.mesh_2_name = self.robot_name + "_2_"+ str(self.axis_2_length) + ".STL"
-        self.mesh_3_name = self.robot_name + "_3_"+ str(self.axis_3_length) + ".STL"
+        self.mesh_2_name = self.robot_name + "_2_"+ str(axis_2_length) + ".STL"
+        self.mesh_3_name = self.robot_name + "_3_"+ str(axis_3_length) + ".STL"
         self.L2_volume, self.L2_cog, self.L2_inertia = self.robot_stl_axis_2.get_mass_properties()
+        # specified axis 2 length
+        specified_axis_2_length = axis_2_length
+        diff_axis_2_length = specified_axis_2_length - self.axis_2_length
+        self.axis_2_length = specified_axis_2_length
+        self.op_axis_2_length = specified_axis_2_length
+        self.L2_volume = self.L2_volume + vol*(diff_axis_2_length/5)
+        self.L2_cog = self.L2_cog + cog*(diff_axis_2_length/5)
+        self.L2_inertia = self.L2_inertia + inertia*(diff_axis_2_length/5)
+        self.L2_volume = self.L2_volume*1000
+        self.L2_inertia = self.L2_inertia*1000
         self.L3_volume, self.L3_cog, self.L3_inertia = self.robot_stl_axis_3.get_mass_properties()
+        # specified axis 3 length
+        specified_axis_3_length = axis_3_length
+        diff_axis_3_length = specified_axis_3_length - self.axis_3_length
+        self.axis_3_length = specified_axis_3_length
+        self.op_axis_3_length = specified_axis_3_length
+        self.L3_volume = self.L3_volume + vol*(diff_axis_3_length/5)
+        self.L3_cog = self.L3_cog + cog*(diff_axis_3_length/5)
+        self.L3_inertia = self.L3_inertia + inertia*(diff_axis_3_length/5)
+
+        self.L3_volume = self.L3_volume*1000
+        self.L3_inertia = self.L3_inertia*1000
         self.opt_read_check_urdf()
         self.opt_data_write_urdf(axis_2_length,axis_3_length)
         

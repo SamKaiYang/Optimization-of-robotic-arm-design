@@ -126,6 +126,7 @@ class RobotOptEnv(gym.Env):
             self.state[0:6] = torque
         L1,L2,L3 = self.robot.return_configuration()
         L_sum = L1+L2+L3
+        rospy.loginfo("configuration: %s, %s, %s, %s", L1, L2, L3, L_sum)
         self.state[6] = L_sum
         self.counts += 1
         # if down 完成任务 
