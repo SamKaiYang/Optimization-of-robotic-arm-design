@@ -22,7 +22,8 @@ class TECO_motor():
         height = [89.5, 105, 113.5, 145] # mm
         length = [123, 125, 141, 130] # mm
         weight = [1.3, 2.0, 2.6, 4.5] # kg
-
+        cost = [100,200,300,400]
+        
 class Kollmorgen_motor():
     '''
         Kollmorgen size RGM14, RGM17, RGM20, RGM25
@@ -83,7 +84,7 @@ class TM_motor():
         length = [117.6,	117.6,	108.7092,	160.0011,	201.8001] # mm
         weight = [1.45,	1.45,	2,	4.5,	7] # kg
 
-class mootor_data():
+class motor_data():
     def __init__(self, symbolic=False):
         self.TECO_motor_data = {"rated_torque":[16, 38, 60, 114],
                     "rated_speed":[35.0, 25.0, 22.5, 15.0],
@@ -92,7 +93,9 @@ class mootor_data():
                     "diameter":[80, 90, 102, 130],
                     "height":[89.5, 105, 113.5, 145],
                     "length":[123, 125, 141, 130],
-                    "weight":[1.3, 2.0, 2.6, 4.5]}
+                    "weight":[1.3, 2.0, 2.6, 4.5],
+                    "cost":[100,200,300,400]
+                    }
         self.TECO_member = pd.DataFrame(self.TECO_motor_data)
 
         self.Kollmorgen_motor_data = {"rated_torque":[13.5, 49, 61, 118],
@@ -125,7 +128,7 @@ class mootor_data():
 
 if __name__ == '__main__':    # pragma nocover
 
-    motor = mootor_data()
+    motor = motor_data()
     print(motor.TECO_member.head())
     # print(motor.TECO_member.groupby("rated_torque").mean())
     # print(motor.TECO_member.columns)

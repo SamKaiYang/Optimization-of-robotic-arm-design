@@ -10,7 +10,7 @@ from sympy import false
 
 from dynamics.arm_workspace import arm_workspace_plane
 # from robot_urdf import RandomRobot
-from dynamics.motor_module import mootor_data
+from dynamics.motor_module import motor_data
 from dynamics.random_robot import RandomRobot
 from dynamics.stl_conv_6dof_urdf import stl_conv_urdf
 import rospy
@@ -70,86 +70,159 @@ class RobotOptEnv(gym.Env):
     def __init__(self):
         self.robot = RandomRobot()
         self.robot_urdf = stl_conv_urdf("random","test")
+        
         # 使用者設定參數
         self.payload = 5.0
         self.payload_position = np.array([0, 0, 0.04])
         self.vel = np.array([2.356194, 2.356194, 2.356194, 2.356194, 2.356194, 2.356194])
         self.acc = np.array([2.356194, 2.356194, 2.356194, 2.356194, 2.356194, 2.356194])
+        self.total_weight = 20 # Kg
+        self.total_cost = 1800 # 元
+        # 預設二,三軸軸長
         self.std_L2 = 35.0 # 預設標準值 第二軸 35 cm
         self.std_L3 = 35.0 # 預設標準值 第三軸 35 cm
-        # 觀察參數
+        # 觀察參數 motor
+        self.motor = motor_data()
+        self.res = self.motor.TECO_member
         self.high_torque = 120.0 # 預設標準值 馬達極限 120.0 N max
         self.low_torque = 60.0 # 預設標準值 馬達極限 60.0 N rated
-        self.low_cost = 600 # 預設標準值 加總機器人馬達費用 0.0 [s1:100 m1:200 s2:150 m2:300]
-        self.high_cost = 1800 # 預設標準值 加總機器人馬達費用 0.0 [s1:100 m1:200 s2:150 m2:300]
+        self.motor_cost_init = np.array([200,200,200,200,200,200], dtype=np.float32) # 預設最大馬達費用
+        self.motor_weight_init = np.array([2.0,2.0,2.0,2.0,2.0,2.0], dtype=np.float32) # 預設最大馬達重量
+        self.motor_cost = np.array([200,200,200,200,200,200], dtype=np.float32) # 預設最大馬達費用
+        self.motor_weight = np.array([2.0,2.0,2.0,2.0,2.0,2.0], dtype=np.float32) # 預設最大馬達重量
         # 使用者設定參數 & 觀察參數
         self.reach_distance = 0.6 # 使用者設定可達半徑最小值
         self.max_weight = 0 # 使用者設定最大整體手臂重量 單位kg
         
         self.done = np.array([false, false, false, false, false, false])
-        # high = np.array([self.high_torque], dtype=np.float32)
-        # TODO: multidiscrete
-        # self.action_space = spaces.MultiDiscrete([2,2,4])
-        self.action_space = spaces.Discrete(5) # 0, 1: 不动，長度增加，長度減少
+        
         # TODO: 增加馬達模組選型action
+        self.action_space = spaces.Discrete(16)
+        
         # TODO: observation space for torque, motor cost, workspace, weight
-        # self.observation_space = spaces.Box(low=-high, high=high, dtype=np.float32)
-        self.observation_space = spaces.Box(np.array([self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque, self.reach_distance]), 
-                                            np.array([self.high_torque,self.high_torque,self.high_torque,self.high_torque,self.high_torque,self.high_torque, float('inf')]), 
+        self.observation_space = spaces.Box(np.array([self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque,self.low_torque, self.reach_distance, -float('inf'), -float('inf') ]), 
+                                            np.array([self.high_torque,self.high_torque,self.high_torque,self.high_torque,self.high_torque,self.high_torque, float('inf'), self.total_cost, self.total_weight]), 
                                             dtype=np.float32)
         # TODO: reward 歸一化
-        self.state = np.array([0,0,0,0,0,0,0], dtype=np.float32)
-        self.pre_state = np.array([0,0,0,0,0,0,0], dtype=np.float32)
+        self.state = np.array([0,0,0,0,0,0,0,0,0], dtype=np.float32)
+        self.pre_state = np.array([0,0,0,0,0,0,0,0,0], dtype=np.float32)
         
     def step(self, action):
         assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
         self.pre_state[0:6] = self.state[0:6]
         # TODO: 向量編碼動作
-        # if action[0][0] == 0: # 軸2
-        #     pass
-        # elif action[1][0] == 1: # 軸3
-        #     if action[0][1] == 1: # 變長
-        #         pass
-        #         if action[0][1][0] == 0: # 型號1
-        #             pass
-        #     elif action[0][1] == 2: # 變短
-        #         pass
-        if action == 0: # 不改變
-            pass
-        if action == 1: # 加長 第二軸
-            self.std_L2 += 1.0
-            self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
-            self.robot.__init__() # 重製機器人
-            torque = self.dynamics_torque_limit()
-            self.state[0:6] = torque
-        if action == 2: # 縮短 第二軸
+        if action == 0: # 軸2  # 短 # 型號1
             self.std_L2 -= 1.0
-            self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
-            self.robot.__init__() # 重製機器人
-            torque = self.dynamics_torque_limit()
-            self.state[0:6] = torque
-        if action == 3: # 加長 第三軸
-            self.std_L3 += 1.0
-            self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
-            self.robot.__init__() # 重製機器人
-            torque = self.dynamics_torque_limit()
-            self.state[0:6] = torque
-        if action == 4: # 縮短 第三軸
+            # 配置軸2 motor 型號1
+            motor_type = 0 # 型號
+            axis = 2 # 軸數
+            
+        elif action == 1: # 軸2  # 長 # 型號1
+            self.std_L2 += 1.0
+            motor_type = 0 # 型號
+            axis = 2 # 軸數
+            
+        elif action == 2: # 軸2  # 短 # 型號2
+            self.std_L2 -= 1.0
+            motor_type = 1 # 型號
+            axis = 2 # 軸數
+            
+        elif action == 3: # 軸2  # 長 # 型號2
+            self.std_L2 += 1.0
+            motor_type = 1 # 型號
+            axis = 2 # 軸數
+            
+        elif action == 4: # 軸2  # 短 # 型號3
+            self.std_L2 -= 1.0
+            motor_type = 2 # 型號
+            axis = 2 # 軸數
+            
+        elif action == 5: # 軸2  # 長 # 型號3
+            self.std_L2 += 1.0
+            motor_type = 2 # 型號
+            axis = 2 # 軸數
+            
+        elif action == 6: # 軸2  # 短 # 型號4
+            self.std_L2 -= 1.0
+            motor_type = 3 # 型號
+            axis = 2 # 軸數
+            
+        elif action == 7: # 軸2  # 長 # 型號4
+            self.std_L2 += 1.0
+            motor_type = 3 # 型號
+            axis = 2 # 軸數
+            
+        elif action == 8: # 軸3  # 短 # 型號1
             self.std_L3 -= 1.0
-            self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
-            self.robot.__init__() # 重製機器人
-            torque = self.dynamics_torque_limit()
-            self.state[0:6] = torque
+            motor_type = 0 # 型號
+            axis = 3 # 軸數
+            
+        elif action == 9: # 軸3  # 長 # 型號1
+            self.std_L3 += 1.0
+            motor_type = 0 # 型號
+            axis = 3 # 軸數
+            
+        elif action == 10: # 軸3  # 短 # 型號2
+            self.std_L3 -= 1.0
+            motor_type = 1 # 型號
+            axis = 3 # 軸數
+            
+        elif action == 11: # 軸3  # 長 # 型號2
+            self.std_L3 += 1.0
+            motor_type = 1 # 型號
+            axis = 3 # 軸數
+            
+        elif action == 12: # 軸3  # 短 # 型號3
+            self.std_L3 -= 1.0
+            motor_type = 2 # 型號
+            axis = 3 # 軸數
+            
+        elif action == 13: # 軸3  # 長 # 型號3
+            self.std_L3 += 1.0
+            motor_type = 2 # 型號
+            axis = 3 # 軸數
+            
+        elif action == 14: # 軸3  # 短 # 型號4
+            self.std_L3 -= 1.0
+            motor_type = 3 # 型號
+            axis = 3 # 軸數
+            
+        elif action == 15: # 軸3  # 長 # 型號4
+            self.std_L3 += 1.0
+            motor_type = 3 # 型號
+            axis = 3 # 軸數
+            
+        
+        
+        # 輸入action後 二,三軸軸長
+        self.robot_urdf.specified_generate_write_urdf(self.std_L2, self.std_L3)
+        self.robot.__init__() # 重製機器人
+        torque = self.dynamics_torque_limit()
+        self.state[0:6] = torque
+        
+        # 計算最大可達半徑
         L1,L2,L3 = self.robot.return_configuration()
         L_sum = L1+L2+L3
-        rospy.loginfo("configuration: %s, %s, %s, %s", L1, L2, L3, L_sum)
+        rospy.loginfo("configuration axis length: %s, %s, %s, %s", L1, L2, L3, L_sum)
         self.state[6] = L_sum
         self.counts += 1
+        
+        # 計算成本與重量    
+        self.motor_cost[axis-1] = self.res.cost[motor_type]
+        self.motor_weight[axis-1] = self.res.weight[motor_type]
+        cost = sum(self.motor_cost) 
+        weight = sum(self.motor_weight)
+        self.state[7] = cost
+        self.state[8] = weight
+        
+        rospy.loginfo("configuration cost & weight: %s, %s", cost, weight)
+        
         # if down 完成任务 
-        # 終止條件: 趨近於各軸馬達最小torque 範圍 or 超出各軸馬達最大torque 範圍 
+        
         torque_reward_close = 0.0
+        
         for i in range(6):
-            if np.abs(self.state[i]) < self.low_torque or np.abs(self.state[i]) > self.high_torque or L_sum < self.reach_distance:
+            if np.abs(self.state[i]) > self.high_torque:
                 self.done[i] = True # 已經完成任務
             else:
                 if np.abs(self.pre_state[i]) > np.abs(self.state[i]):
@@ -157,33 +230,38 @@ class RobotOptEnv(gym.Env):
                 else:
                     torque_reward_close = torque_reward_close - 1.0
                 self.done[i] = False
-        # 如果所有軸已經完成任務，則結束
+                
+        # 如果所有軸都超過最大torque，則結束
         false_done = False in self.done 
+        # 終止條件: 可達半徑低於使用者設定 or 超出各軸馬達最大torque 範圍 , 整體手臂重量高於使用者設定, 累計步數大於200次
+        if L_sum < self.reach_distance or cost > self.total_cost or weight > self.total_weight:
+            false_done = False
+            
         # 走一步修正, 但還未最佳化完成
         if false_done:
             reward = torque_reward_close
             # The episode truncates at 30 time steps.
-            if self.counts == 30:
+            if self.counts == 200:
+                reward = 30.0
                 false_done = False
+                
         # down 完成後, 定義所計算出的torque值, 分數加多少
         else:
             if L_sum < self.reach_distance:
                 reward = -20.0
+            elif cost > self.total_cost:
+                reward = -10.0
+            elif weight > self.total_weight:
+                reward = -10.0
             else:
                 reward = 0.0
                 for i in range(6):
-                    # 趨近於各軸馬達 rated torque 範圍
-                    if np.abs(self.state[i]) <= self.low_torque:
-                        reward += 5.0
-                        if np.abs(self.pre_state[i]) > np.abs(self.state[i]):
-                            reward = reward + 2.0
-                        else:
-                            reward = reward - 1.0
                     # 即torque, 超過最大torque 
-                    elif np.abs(self.state[i]) > self.high_torque:
+                    if np.abs(self.state[i]) > self.high_torque:
                         reward += -5.0
                     else:
                         reward += 0.0
+                
         done = not false_done # 取bool 反向值
         
         return self.state, reward, done, {}
@@ -198,6 +276,8 @@ class RobotOptEnv(gym.Env):
         L1,L2,L3 = self.robot.return_configuration()
         L_sum = L1+L2+L3
         self.state[6] = L_sum
+        self.state[7] = sum(self.motor_cost_init)
+        self.state[8] = sum(self.motor_weight_init)
         rospy.loginfo("configuration: %s, %s, %s, %s", L1, L2, L3, L_sum)
         rospy.loginfo("self.state: %s", self.state)
         
@@ -303,8 +383,17 @@ if __name__ == '__main__':
     env = RobotOptEnv()
     
     # env.dynamics_torque_limit()
-    env.reset()
-    env.step(env.action_space.sample())
-    print(env.state)
-    env.step(env.action_space.sample())
-    print(env.state)
+    # env.reset()
+    # env.step(env.action_space.sample())
+    # print(env.state)
+    # env.step(env.action_space.sample())
+    # print(env.action_space.sample())
+    action = env.action_space.sample()
+    print(action)
+    print(action[0])
+    print(type(action[0]))
+    print(action[1])
+    print(action[2])
+    # print(action[3])
+    # print(env.state)
+    

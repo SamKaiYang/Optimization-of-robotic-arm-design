@@ -48,7 +48,7 @@ import pandas as pd
 
 from arm_workspace import arm_workspace_plane
 # from robot_urdf import RandomRobot
-from motor_module import mootor_data
+from motor_module import motor_data
 from random_robot import RandomRobot
 from UR_robot import UR5, UR10, UR10e, UR16e
 from TM_robot import TM5_700, TM5_900, TM12, TM14
@@ -103,7 +103,7 @@ class General_arm:
     def robot_motor_random_build(self):
         self.robot.__init__()
         print("robot rebuild")
-        motor = mootor_data()
+        motor = motor_data()
         # print(motor.TECO_member.head())
         # print(motor.TECO_member.groupby("rated_torque").mean())
         print(

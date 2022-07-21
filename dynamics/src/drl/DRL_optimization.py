@@ -47,7 +47,7 @@ np.set_printoptions(
 
 from dynamics.arm_workspace import arm_workspace_plane
 # from robot_urdf import RandomRobot
-from dynamics.motor_module import mootor_data
+from dynamics.motor_module import motor_data
 from dynamics.random_robot import RandomRobot
 
 # DRL_optimization api
@@ -115,7 +115,7 @@ class drl_optimization:
     def robot_motor_random_build(self):
         self.robot.__init__()
         print("robot rebuild")
-        motor = mootor_data()
+        motor = motor_data()
         # print(motor.TECO_member.head())
         # print(motor.TECO_member.groupby("rated_torque").mean())
         print(
@@ -149,7 +149,7 @@ class drl_optimization:
         env.seed(seed)  # 设置随机种子
         n_states = env.observation_space.shape[0]  # 状态维度
         rospy.loginfo("n_states: {}".format(n_states))
-        n_actions = env.action_space.n  # 动作维度
+        n_actions = env.action_space.n  # 动作數量
         rospy.loginfo("n_actions: {}".format(n_actions))
         model = MLP(n_states,n_actions)
         agent = DQN(n_actions,model,cfg)  # 创建智能体
