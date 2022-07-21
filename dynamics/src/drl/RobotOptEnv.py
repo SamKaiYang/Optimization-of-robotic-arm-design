@@ -90,6 +90,7 @@ class RobotOptEnv(gym.Env):
         self.motor_weight_init = np.array([2.0,2.0,2.0,2.0,2.0,2.0], dtype=np.float32) # 預設最大馬達重量
         self.motor_cost = np.array([200,200,200,200,200,200], dtype=np.float32) # 預設最大馬達費用
         self.motor_weight = np.array([2.0,2.0,2.0,2.0,2.0,2.0], dtype=np.float32) # 預設最大馬達重量
+        self.motor_rated = np.array([112,112,112,112,112,112], dtype=np.float32)
         # 使用者設定參數 & 觀察參數
         self.reach_distance = 0.6 # 使用者設定可達半徑最小值
         self.max_weight = 0 # 使用者設定最大整體手臂重量 單位kg
@@ -214,7 +215,7 @@ class RobotOptEnv(gym.Env):
         weight = sum(self.motor_weight)
         self.state[7] = cost
         self.state[8] = weight
-        
+        self.motor_rated[axis-1] = self.res.rated_torque[motor_type]
         rospy.loginfo("configuration cost & weight: %s, %s", cost, weight)
         
         # if down 完成任务 
@@ -222,7 +223,7 @@ class RobotOptEnv(gym.Env):
         torque_reward_close = 0.0
         
         for i in range(6):
-            if np.abs(self.state[i]) > self.high_torque:
+            if np.abs(self.state[i]) > self.motor_rated:
                 self.done[i] = True # 已經完成任務
             else:
                 if np.abs(self.pre_state[i]) > np.abs(self.state[i]):
@@ -257,7 +258,7 @@ class RobotOptEnv(gym.Env):
                 reward = 0.0
                 for i in range(6):
                     # 即torque, 超過最大torque 
-                    if np.abs(self.state[i]) > self.high_torque:
+                    if np.abs(self.state[i]) > self.motor_rated:
                         reward += -5.0
                     else:
                         reward += 0.0
