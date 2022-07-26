@@ -17,7 +17,7 @@ import rospy
 # one-hot encoder
 from sklearn import preprocessing
 import pandas as pd
-
+import yaml
 # TODO: 整合機器人重製生成 與 動力學計算
 # TODO: 初版 只考慮 6 dof 機器人的關節長度變化, 觀察各軸馬達極限之輸出最大torque值
 class RobotOptEnv(gym.Env):
@@ -71,6 +71,7 @@ class RobotOptEnv(gym.Env):
         self.robot = RandomRobot()
         self.robot_urdf = stl_conv_urdf("random","test")
         
+        
         # 使用者設定參數
         self.payload = 5.0
         self.payload_position = np.array([0, 0, 0.04])
@@ -107,6 +108,18 @@ class RobotOptEnv(gym.Env):
         # TODO: reward 歸一化
         self.state = np.array([0,0,0,0,0,0,0,0,0], dtype=np.float32)
         self.pre_state = np.array([0,0,0,0,0,0,0,0,0], dtype=np.float32)
+
+    def optimal_design_read_yaml(self):
+        with open('data.yaml','r') as f:
+            data = yaml.load(f)
+            self.payload = data['payload']
+            self.payload_position = data['payload_position']
+            self.vel = data['vel']
+            self.acc = data['acc']
+            self.reach_distance = data['reach_distance']
+            self.total_weight = data['total_weight']
+            self.total_cost = data['total_cost']
+        pass
         
     def step(self, action):
         assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
@@ -227,17 +240,17 @@ class RobotOptEnv(gym.Env):
             if np.abs(self.state[i]) > self.motor_rated[i]:
                 self.done[i] = True # 已經完成任務
             else:
-                if np.abs(self.pre_state[i]) > np.abs(self.state[i]):
+                if np.abs(self.pre_state[i]) > np.abs(self.state[i]): # 如果前一個狀態比這一個狀態torque大
                     torque_reward_close = torque_reward_close + 2.0
                 else:
                     torque_reward_close = torque_reward_close - 2.0
                 self.done[i] = False
 
-        if cost< self.pre_state[7]:
+        if cost< self.pre_state[7]: # 成本比上一次低
             torque_reward_close = torque_reward_close + 1.0
         else:
             torque_reward_close = torque_reward_close - 1.0
-        if weight< self.pre_state[8]:
+        if weight< self.pre_state[8]: # 重量比上一次低
             torque_reward_close = torque_reward_close + 1.0
         else:
             torque_reward_close = torque_reward_close - 1.0

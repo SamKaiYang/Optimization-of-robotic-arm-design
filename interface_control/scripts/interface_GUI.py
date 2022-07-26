@@ -161,6 +161,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.btn_random_robot_structure.clicked.connect(self.random_robot_structure_buttonClicked)
         self.ui.btn_random_robot_motor.clicked.connect(self.random_robot_motor_buttonClicked)
         self.ui.btn_optimization_analysis.clicked.connect(self.optimization_analysis_buttonClicked)
+        self.ui.btn_optimization_set.clicked.connect(self.optimization_set_buttonClicked)
         self.ui.btn_cjm_select.clicked.connect(self.cjm_select_buttonClicked)
         self.ui.btn_traj_torque_plot.clicked.connect(self.traj_torque_plot_buttonClicked)
         self.ui.btn_structure_select.clicked.connect(self.structure_set_buttonClicked)
@@ -458,8 +459,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def random_robot_motor_buttonClicked(self):
         self.pub_cmd.publish(21)
-
-    def optimization_analysis_buttonClicked(self):
+    def optimization_set_buttonClicked(self):
         # input data: robot workspace, robot payload, robot joint velocity, robot joint acceleration
         
         payload = float(self.ui.lineEdit_op_payload.text())
@@ -507,6 +507,58 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.pub_optimal_design.publish(self.optimal_design)
         self.pub_cmd.publish(21)
+        
+    def optimization_analysis_buttonClicked(self):
+        # input data: robot workspace, robot payload, robot joint velocity, robot joint acceleration
+        
+        payload = float(self.ui.lineEdit_op_payload.text())
+        payload_x = float(self.ui.lineEdit_op_payload_x.text())
+        payload_y = float(self.ui.lineEdit_op_payload_y.text())
+        payload_z = float(self.ui.lineEdit_op_payload_z.text())
+        payload_position = [payload_x, payload_y, payload_z]
+
+        vel_0 = float(self.ui.lineEdit_op_vel_1.text())
+        vel_1 = float(self.ui.lineEdit_op_vel_2.text())
+        vel_2 = float(self.ui.lineEdit_op_vel_3.text())
+        vel_3 = float(self.ui.lineEdit_op_vel_4.text())
+        vel_4 = float(self.ui.lineEdit_op_vel_5.text())
+        vel_5 = float(self.ui.lineEdit_op_vel_6.text())
+        vel_6 = float(self.ui.lineEdit_op_vel_7.text())
+        joint_velocity = [vel_0, vel_1, vel_2, vel_3, vel_4, vel_5, vel_6]
+
+        
+
+        acc_0 = float(self.ui.lineEdit_op_acc_1.text())
+        acc_1 = float(self.ui.lineEdit_op_acc_2.text())
+        acc_2 = float(self.ui.lineEdit_op_acc_3.text())
+        acc_3 = float(self.ui.lineEdit_op_acc_4.text())
+        acc_4 = float(self.ui.lineEdit_op_acc_5.text())
+        acc_5 = float(self.ui.lineEdit_op_acc_6.text())
+        acc_6 = float(self.ui.lineEdit_op_acc_7.text())
+        joint_acceleration = [acc_0, acc_1, acc_2, acc_3, acc_4, acc_5, acc_6]
+
+        reachable_radius = float(self.ui.lineEdit_op_reachable_radius.text())
+
+        weight =  float(self.ui.lineEdit_op_weight.text())
+        cost = float(self.ui.lineEdit_op_cost.text())
+        # print ("payload: ", payload)
+        # print ("payload_position: ", payload_position)
+        # print ("joint_velocity: ", joint_velocity)
+        # print ("joint_acceleration: ", joint_acceleration)
+        # print ("Reachable radius: ", reachable_radius)
+
+        # self.optimization_data.payload = payload
+        self.optimal_design.payload = payload
+        self.optimal_design.payload_position = payload_position
+        self.optimal_design.dof = self.dof_select
+        # self.optimal_design.structure = self.structure
+        self.optimal_design.vel = joint_velocity
+        self.optimal_design.acc = joint_acceleration
+        self.optimal_design.radius = reachable_radius
+        self.optimal_design.arm_weight = weight
+        self.optimal_design.cost = cost
+        self.pub_optimal_design.publish(self.optimal_design)
+        # self.pub_cmd.publish(21)
 
     def cjm_select_buttonClicked(self):
         self.pub_cmd.publish(9)

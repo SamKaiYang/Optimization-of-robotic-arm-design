@@ -96,50 +96,46 @@ class MLP(nn.Module):
         x = F.relu(self.fc2(x))
         return self.fc3(x)
         
+class ros_topic:
+    def __init__(self):
+        # callback:Enter the parameters of the algorithm to be optimized on the interface
+        self.sub_optimal_design = rospy.Subscriber(
+            "/optimal_design", optimal_design, self.optimal_design_callback
+        )
+        
+    def optimal_design_callback(self, data):
+        # print(data.data)
+        # TODO: 目標構型
+        self.op_dof = data.dof
+        self.op_payload = data.payload
+        self.op_payload_position = data.payload_position
+        self.op_vel = data.vel
+        self.op_acc = data.acc
+        self.op_radius = data.radius
+        self.op_weight = data.arm_weight
+        self.op_cost = data.cost
+        
+        print("op_dof:", self.op_dof)
+        print("op_payload:", self.op_payload)
+        print("op_payload_position:", self.op_payload_position)
+        print("op_vel:", self.op_vel)
+        print("op_acc:", self.op_acc)
+        print("op_radius:", self.op_radius)
+        print("op_weight:", self.op_weight)
+        print("op_cost:", self.op_cost)
+        
 
-
+    def optimal_return(self):
+        return self.op_dof, self.op_payload, self.op_payload_position, self.op_vel, self.op_acc, self.op_radius
+    
+    def optimal_design_write_yaml(self):
+        pass
+        
 class drl_optimization:
     def __init__(self):
         # self.test = 0
         self.robot = RandomRobot()
         self.env = RobotOptEnv()
-        # callback:Enter the parameters of the algorithm to be optimized on the interface
-        self.sub_optimal_design = rospy.Subscriber(
-            "/optimal_design", optimal_design, self.optimal_design_callback
-        )
-        # callback:Randomly generated shaft length due to optimization algorithm
-        # self.sub_optimal_random = rospy.Subscriber(
-        #     "/optimal_random", optimal_random, self.optimal_random_callback
-        # )
-
-    def robot_motor_random_build(self):
-        self.robot.__init__()
-        print("robot rebuild")
-        motor = motor_data()
-        # print(motor.TECO_member.head())
-        # print(motor.TECO_member.groupby("rated_torque").mean())
-        print(
-            pd.concat(
-                [
-                    motor.TECO_member,
-                    motor.Kollmorgen_member,
-                    motor.UR_member,
-                    motor.TM_member,
-                ],
-                axis=0,
-            )
-        )
-
-        # res = motor.TECO_member.append(other=motor.Kollmorgen_member, ignore_index=True)
-        # print(res)
-
-        # res = motor.TECO_member.append(
-        #     [motor.Kollmorgen_member, motor.UR_member, motor.TM_member],
-        #     ignore_index=True,
-        # )
-        # print(res)
-
-        # self.robot.plot(self.qn)
 
     def env_agent_config(self, cfg, seed=1):
         ''' 创建环境和智能体
@@ -236,87 +232,6 @@ class drl_optimization:
         print('完成測試！')
         return rewards,ma_rewards
 
-
-    def optimal_design_callback(self, data):
-        # print(data.data)
-        # TODO: 目標構型
-        self.op_dof = data.dof
-        self.op_payload = data.payload
-        self.op_payload_position = data.payload_position
-        self.op_vel = data.vel
-        self.op_acc = data.acc
-        self.op_radius = data.radius
-
-    # TODO: optimization_algorithm: use Random forest
-    def optimization_algorithm(self):
-        # input data: random axis2,3 length, robot workspace, robot payload, robot joint velocity, robot joint acceleration, motor data
-        """
-        Agent :
-            robot payload set
-            robot velocity
-            robot acceleration
-
-        Action :
-            axis 2 length increase
-            axis 2 length reduce
-            axis 3 length increase
-            axis 3 length reduce
-            Change the motor configuration of each axis
-
-        Rewards :
-            torque
-            motor cost
-            robot workspace
-            robot weight
-
-        Status :
-            After the parameter of action is changed, the torque value of each axis
-        """
-
-        """ transfer the data to the dataframe
-        agent:
-            self.op_payload
-            self.op_payload_position
-            self.op_vel
-            self.op_acc
-            self.op_radius
-        """
-        # TODO: axis2,3 length change
-        """ receive the data from the topic
-        action:
-            axis 2 length increase
-            axis 2 length reduce
-            axis 3 length increase
-            axis 3 length reduce
-            Change the motor configuration of each axis
-        """
-        # TODO: rebuild robot
-        self.robot_motor_random_build()
-        # update dynamics torque calculation parameters
-        self.payload = self.op_payload
-        self.payload_position = self.op_payload_position
-        self.vel = self.op_vel
-        self.acc = self.op_acc
-        
-        # cal max torque
-        self.dynamics_torque_limit()
-        """ transfer the data to the topic
-        rewards:
-            torque : Use torque reduction
-            motor cost
-            robot workspace
-            robot weight
-        """
-        # Use torque reduction, motor score (the higher the cost, the lower the score),
-        # Motor score (the higher the cost, the lower the score)
-        # Scope of work (the larger the scope of work, the higher the score)
-        """ transfer the data to the topic
-        state:
-        After the parameter of action is changed, the torque value of each axis
-        """
-        # TODO: through optimization algorithm to find the best solution
-
-
 class DQNConfig:
     ''' 算法相关参数设置
     '''
@@ -353,16 +268,17 @@ class PlotConfig:
             '/' + curr_time + '/models/'  # 保存模型的路径
         self.save = True  # 是否保存图片
 
-
 if __name__ == "__main__":
     rospy.init_node("optimization")
-    a = 1
-    drl = drl_optimization()
+    a = 0
+    # drl = drl_optimization()
     cfg = DQNConfig()
     plot_cfg = PlotConfig()
+    ros_tp = ros_topic()
     while not rospy.is_shutdown():
         if a == 1:
             # 训练
+            drl = drl_optimization()
             train_env, train_agent = drl.env_agent_config(cfg, seed=1)
             train_rewards, train_ma_rewards = drl.train(cfg, train_env, train_agent)
             make_dir(plot_cfg.result_path, plot_cfg.model_path)  # 创建保存结果和模型路径的文件夹
