@@ -45,10 +45,10 @@ np.set_printoptions(
     formatter={"float": lambda x: f"{x:8.4g}" if abs(x) > 1e-10 else f"{0:8.4g}"},
 )
 
-from dynamics.arm_workspace import arm_workspace_plane
+from arm_workspace import arm_workspace_plane
 # from robot_urdf import RandomRobot
-from dynamics.motor_module import motor_data
-from dynamics.random_robot import RandomRobot
+from motor_module import motor_data
+from random_robot import RandomRobot
 
 # DRL_optimization api
 import sys
