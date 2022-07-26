@@ -7,7 +7,7 @@ from math import pi
 
 from sympy import false
 # from torch import R
-
+from interface_control.msg import optimal_design
 from dynamics.arm_workspace import arm_workspace_plane
 # from robot_urdf import RandomRobot
 from dynamics.motor_module import motor_data
@@ -71,7 +71,10 @@ class RobotOptEnv(gym.Env):
         self.robot = RandomRobot()
         self.robot_urdf = stl_conv_urdf("random","test")
         
-        
+        # callback:Enter the parameters of the algorithm to be optimized on the interface
+        self.sub_optimal_design = rospy.Subscriber(
+            "/optimal_design", optimal_design, self.optimal_design_callback
+        )
         # 使用者設定參數
         self.payload = 5.0
         self.payload_position = np.array([0, 0, 0.04])
@@ -94,7 +97,6 @@ class RobotOptEnv(gym.Env):
         self.motor_rated = np.array([112,112,112,112,112,112], dtype=np.float32)
         # 使用者設定參數 & 觀察參數
         self.reach_distance = 0.6 # 使用者設定可達半徑最小值
-        self.max_weight = 0 # 使用者設定最大整體手臂重量 單位kg
         
         self.done = np.array([false, false, false, false, false, false])
         
@@ -109,17 +111,34 @@ class RobotOptEnv(gym.Env):
         self.state = np.array([0,0,0,0,0,0,0,0,0], dtype=np.float32)
         self.pre_state = np.array([0,0,0,0,0,0,0,0,0], dtype=np.float32)
 
-    def optimal_design_read_yaml(self):
-        with open('data.yaml','r') as f:
-            data = yaml.load(f)
-            self.payload = data['payload']
-            self.payload_position = data['payload_position']
-            self.vel = data['vel']
-            self.acc = data['acc']
-            self.reach_distance = data['reach_distance']
-            self.total_weight = data['total_weight']
-            self.total_cost = data['total_cost']
-        pass
+    def optimal_design_callback(self, data):
+        # print(data.data)
+        # TODO: 目標構型
+        self.op_dof = data.dof
+        self.op_payload = data.payload
+        self.op_payload_position = data.payload_position
+        self.op_vel = data.vel
+        self.op_acc = data.acc
+        self.op_radius = data.radius
+        self.op_weight = data.arm_weight
+        self.op_cost = data.cost
+        
+        print("op_dof:", self.op_dof)
+        print("op_payload:", self.op_payload)
+        print("op_payload_position:", self.op_payload_position)
+        print("op_vel:", self.op_vel)
+        print("op_acc:", self.op_acc)
+        print("op_radius:", self.op_radius)
+        print("op_weight:", self.op_weight)
+        print("op_cost:", self.op_cost)
+        
+        self.payload = self.op_payload
+        self.payload_position = np.array(self.op_payload_position)
+        self.vel = np.array(self.op_vel[0:6])
+        self.acc = np.array(self.op_acc[0:6])
+        self.total_weight = self.op_weight # Kg
+        self.total_cost = self.op_cost # 元
+        self.reach_distance = self.op_radius # 使用者設定可達半徑最小值
         
     def step(self, action):
         assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
@@ -348,10 +367,6 @@ class RobotOptEnv(gym.Env):
             * len(q_list)
             * len(q_list)
         )
-        # T = np.zeros((3, 1))
-        # T_x = np.zeros(T_cell)
-        # T_y = np.zeros(T_cell)
-        # T_z = np.zeros(T_cell)
 
         for i in range(len(q_list)):
             q1 = q_list[i]
@@ -406,18 +421,10 @@ class RobotOptEnv(gym.Env):
 if __name__ == '__main__':
     env = RobotOptEnv()
     
-    # env.dynamics_torque_limit()
-    # env.reset()
-    # env.step(env.action_space.sample())
-    # print(env.state)
-    # env.step(env.action_space.sample())
-    # print(env.action_space.sample())
     action = env.action_space.sample()
     print(action)
     print(action[0])
     print(type(action[0]))
     print(action[1])
     print(action[2])
-    # print(action[3])
-    # print(env.state)
     

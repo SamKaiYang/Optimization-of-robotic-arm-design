@@ -70,7 +70,7 @@ from dqn import DQN
 import matplotlib.pyplot as plt
 from RobotOptEnv import RobotOptEnv
 import tensorboardX
-
+import yaml
 file_path = curr_path + "/outputs/" 
 curr_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")  # 获取当前时间
 
@@ -95,42 +95,7 @@ class MLP(nn.Module):
         x = F.relu(self.fc1(x)) 
         x = F.relu(self.fc2(x))
         return self.fc3(x)
-        
-class ros_topic:
-    def __init__(self):
-        # callback:Enter the parameters of the algorithm to be optimized on the interface
-        self.sub_optimal_design = rospy.Subscriber(
-            "/optimal_design", optimal_design, self.optimal_design_callback
-        )
-        
-    def optimal_design_callback(self, data):
-        # print(data.data)
-        # TODO: 目標構型
-        self.op_dof = data.dof
-        self.op_payload = data.payload
-        self.op_payload_position = data.payload_position
-        self.op_vel = data.vel
-        self.op_acc = data.acc
-        self.op_radius = data.radius
-        self.op_weight = data.arm_weight
-        self.op_cost = data.cost
-        
-        print("op_dof:", self.op_dof)
-        print("op_payload:", self.op_payload)
-        print("op_payload_position:", self.op_payload_position)
-        print("op_vel:", self.op_vel)
-        print("op_acc:", self.op_acc)
-        print("op_radius:", self.op_radius)
-        print("op_weight:", self.op_weight)
-        print("op_cost:", self.op_cost)
-        
 
-    def optimal_return(self):
-        return self.op_dof, self.op_payload, self.op_payload_position, self.op_vel, self.op_acc, self.op_radius
-    
-    def optimal_design_write_yaml(self):
-        pass
-        
 class drl_optimization:
     def __init__(self):
         # self.test = 0
@@ -268,17 +233,29 @@ class PlotConfig:
             '/' + curr_time + '/models/'  # 保存模型的路径
         self.save = True  # 是否保存图片
 
+class RosTopic:
+    def __init__(self):
+        self.sub_taskcmd = rospy.Subscriber("/cal_command", cal_cmd, self.cmd_callback)
+        self.cmd_run = 0
+    def cmd_callback(self, data):
+        self.cmd = data.cmd
+        rospy.loginfo("I heard command is %s", data.cmd)
+        if data.cmd == 22:
+            rospy.sleep(10)
+            self.cmd_run = 1
+            
 if __name__ == "__main__":
     rospy.init_node("optimization")
     a = 0
-    # drl = drl_optimization()
     cfg = DQNConfig()
+    drl = drl_optimization()
     plot_cfg = PlotConfig()
-    ros_tp = ros_topic()
+    ros_topic = RosTopic()
     while not rospy.is_shutdown():
-        if a == 1:
+        if ros_topic.cmd_run == 1:
+            ros_topic.cmd_run = 0
             # 训练
-            drl = drl_optimization()
+            
             train_env, train_agent = drl.env_agent_config(cfg, seed=1)
             train_rewards, train_ma_rewards = drl.train(cfg, train_env, train_agent)
             make_dir(plot_cfg.result_path, plot_cfg.model_path)  # 创建保存结果和模型路径的文件夹

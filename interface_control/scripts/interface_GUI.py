@@ -558,7 +558,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.optimal_design.arm_weight = weight
         self.optimal_design.cost = cost
         self.pub_optimal_design.publish(self.optimal_design)
-        # self.pub_cmd.publish(21)
+        self.pub_cmd.publish(22)
 
     def cjm_select_buttonClicked(self):
         self.pub_cmd.publish(9)
