@@ -223,15 +223,25 @@ class RobotOptEnv(gym.Env):
         torque_reward_close = 0.0
         
         for i in range(6):
-            if np.abs(self.state[i]) > self.motor_rated:
+            # TODO:consider cost & weight 
+            if np.abs(self.state[i]) > self.motor_rated[i]:
                 self.done[i] = True # 已經完成任務
             else:
                 if np.abs(self.pre_state[i]) > np.abs(self.state[i]):
                     torque_reward_close = torque_reward_close + 2.0
                 else:
-                    torque_reward_close = torque_reward_close - 1.0
+                    torque_reward_close = torque_reward_close - 2.0
                 self.done[i] = False
-                
+
+        if cost< self.pre_state[7]:
+            torque_reward_close = torque_reward_close + 1.0
+        else:
+            torque_reward_close = torque_reward_close - 1.0
+        if weight< self.pre_state[8]:
+            torque_reward_close = torque_reward_close + 1.0
+        else:
+            torque_reward_close = torque_reward_close - 1.0
+            
         # 如果所有軸都超過最大torque，則結束
         false_done = False in self.done 
         # 終止條件: 可達半徑低於使用者設定 or 超出各軸馬達最大torque 範圍 , 整體手臂重量高於使用者設定, 累計步數大於200次
@@ -258,7 +268,7 @@ class RobotOptEnv(gym.Env):
                 reward = 0.0
                 for i in range(6):
                     # 即torque, 超過最大torque 
-                    if np.abs(self.state[i]) > self.motor_rated:
+                    if np.abs(self.state[i]) > self.motor_rated[i]:
                         reward += -5.0
                     else:
                         reward += 0.0
