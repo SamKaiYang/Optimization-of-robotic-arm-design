@@ -5,12 +5,12 @@ from sympy import E
 
 d = generate_distutils_setup()
 d['packages'] = ['dynamics']
-d['package_dir'] = {'': 'src'}
+d['package_dir'] = {'': 'dynamics'}
 
 setup(**d)
 
 e = generate_distutils_setup()
 e['packages'] = ['drl']
-e['package_dir'] = {'': 'src'}
+e['package_dir'] = {'': 'drl'}
 
 setup(**e)
