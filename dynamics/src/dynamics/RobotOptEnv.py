@@ -94,7 +94,7 @@ class RobotOptEnv(gym.Env):
         self.motor_weight_init = np.array([2.0,2.0,2.0,2.0,2.0,2.0], dtype=np.float32) # 預設最大馬達重量
         self.motor_cost = np.array([200,200,200,200,200,200], dtype=np.float32) # 預設最大馬達費用
         self.motor_weight = np.array([2.0,2.0,2.0,2.0,2.0,2.0], dtype=np.float32) # 預設最大馬達重量
-        self.motor_rated = np.array([112,112,112,112,112,112], dtype=np.float32)
+        self.motor_rated = np.array([198,198,198,198,198,198], dtype=np.float32)
         # 使用者設定參數 & 觀察參數
         self.reach_distance = 0.6 # 使用者設定可達半徑最小值
         
