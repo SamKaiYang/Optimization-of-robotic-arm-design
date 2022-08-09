@@ -13,4 +13,3 @@ CATKIN_IGNORE
 /kinematics
 /tecobot/urdf/.vscode/browse.vc.db
 /build/
-/tecobot/meshes/*.STL
