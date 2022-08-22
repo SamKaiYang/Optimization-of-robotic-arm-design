@@ -75,9 +75,13 @@ roslaunch teco_config demo_pliz.launch
 ```
 
 
->>2022/07/06 更新
-1. 匯入UR, TM, TECO, Single Arm(7DoF), Random(teco)構型
+# 執行DRL訓練
+```bash
+roslaunch dynamics dynamics_DRL.launch
+```
+
+>>2022/08/22 更新
+1. 隨機軸長生成, 並套用DRL學習, 目前使用DQN網路訓練, 離散數值輸入
 
 >>未完成項目
-1. 深度強化學習DDPG, 學習最佳構型生成
-2. 使用模組化關節(Dynamixal or TECO) 實現多種構型生成
+1. 使用模組化關節(Dynamixal or TECO) 實現多種構型生成
