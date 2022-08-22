@@ -254,8 +254,7 @@ if __name__ == "__main__":
     while not rospy.is_shutdown():
         if ros_topic.cmd_run == 1:
             ros_topic.cmd_run = 0
-            # 训练
-            
+            # 訓練
             train_env, train_agent = drl.env_agent_config(cfg, seed=1)
             train_rewards, train_ma_rewards = drl.train(cfg, train_env, train_agent)
             make_dir(plot_cfg.result_path, plot_cfg.model_path)  # 创建保存结果和模型路径的文件夹
@@ -263,7 +262,7 @@ if __name__ == "__main__":
             save_results(train_rewards, train_ma_rewards, tag='train',
                         path=plot_cfg.result_path)  # 保存结果
             plot_rewards(train_rewards, train_ma_rewards, plot_cfg, tag="train")  # 画出结果
-            # 测试
+            # 測試
             test_env, test_agent = drl.env_agent_config(cfg, seed=10)
             test_agent.load(path=plot_cfg.model_path)  # 导入模型
             test_rewards, test_ma_rewards = drl.test(cfg, test_env, test_agent)

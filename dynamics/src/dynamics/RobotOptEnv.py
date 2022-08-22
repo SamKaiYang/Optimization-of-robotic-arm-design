@@ -311,7 +311,10 @@ class RobotOptEnv(gym.Env):
 
     # reset环境状态 
     def reset(self):
-        self.robot_urdf.opt_generate_write_urdf() # 啟用標準的L2,L3長度urdf
+        # TODO:改用random state (手臂長度隨機)
+        # self.robot_urdf.opt_generate_write_urdf() # 啟用標準的L2,L3長度urdf
+        self.std_L2, self.std_L3 = self.robot_urdf.opt_random_generate_write_urdf() # 啟用隨機的L2,L3長度urdf
+        # TODO:讀取random後的臂長
         self.robot.__init__() # 重製機器人
         torque = self.dynamics_torque_limit()
         self.state[0:6] = torque
@@ -325,8 +328,8 @@ class RobotOptEnv(gym.Env):
         rospy.loginfo("self.state: %s", self.state)
         
         # 重置
-        self.std_L2 = 35.0 # 預設標準值 
-        self.std_L3 = 35.0 # 預設標準值
+        # self.std_L2 = 35.0 # 預設標準值 
+        # self.std_L3 = 35.0 # 預設標準值
         
         self.counts = 0
         return self.state    

@@ -353,7 +353,56 @@ class stl_conv_urdf():
         self.L3_inertia = self.L3_inertia*1000
         self.opt_read_check_urdf()
         self.opt_data_write_urdf(axis_2_length,axis_3_length)
+     
+    def opt_random_generate_write_urdf(self):
+        your_mesh = mesh.Mesh.from_file(path.dirname(path.realpath(__file__)) + "/meshes/" +'random_3_25.0.STL')
+        volume_1, cog_1, inertia_1 = your_mesh.get_mass_properties()
+        your_mesh = mesh.Mesh.from_file(path.dirname(path.realpath(__file__)) + "/meshes/" +'random_3_30.0.STL')
+        volume_2, cog_2, inertia_2 = your_mesh.get_mass_properties()
+        vol = volume_2 - volume_1
+        cog = cog_2 - cog_1
+        inertia = inertia_2 - inertia_1
+
+        # ===================================
+        self.axis_2_length = 35.0
+        self.axis_3_length = 35.0
+        self.robot_stl_axis_2 = mesh.Mesh.from_file(path.dirname(path.realpath(__file__))+"/meshes/" + self.robot_name + "_2_"+ str(self.axis_2_length) + ".STL")
+        self.robot_stl_axis_3 = mesh.Mesh.from_file(path.dirname(path.realpath(__file__))+"/meshes/" + self.robot_name + "_3_"+ str(self.axis_3_length) + ".STL")
+        self.mesh_2_name = self.robot_name + "_2_"+ str(self.axis_2_length) + ".STL"
+        self.mesh_3_name = self.robot_name + "_3_"+ str(self.axis_3_length) + ".STL"
+
+        self.L2_volume, self.L2_cog, self.L2_inertia = self.robot_stl_axis_2.get_mass_properties()
+        # random axis 2 length
+        random_axis_2_length = random.uniform(self.axis_2_length - 15.0, self.axis_2_length + 15.0)
+        # print("random_axis_2_length                    = {0}".format(random_axis_2_length))
+        diff_axis_2_length = random_axis_2_length - self.axis_2_length
+        self.axis_2_length = random_axis_2_length
+        self.op_axis_2_length = random_axis_2_length
+        self.L2_volume = self.L2_volume + vol*(diff_axis_2_length/5)
+        self.L2_cog = self.L2_cog + cog*(diff_axis_2_length/5)
+        self.L2_inertia = self.L2_inertia + inertia*(diff_axis_2_length/5)
+
+        self.L2_volume = self.L2_volume*1000
+        self.L2_inertia = self.L2_inertia*1000
         
+        self.L3_volume, self.L3_cog, self.L3_inertia = self.robot_stl_axis_3.get_mass_properties()
+        # random axis 3 length
+        random_axis_3_length = random.uniform(self.axis_3_length - 15.0, self.axis_3_length + 15.0)
+        # print("random_axis_3_length                    = {0}".format(random_axis_3_length))
+        diff_axis_3_length = random_axis_3_length - self.axis_3_length
+        self.axis_3_length = random_axis_3_length
+        self.op_axis_3_length = random_axis_3_length
+        self.L3_volume = self.L3_volume + vol*(diff_axis_3_length/5)
+        self.L3_cog = self.L3_cog + cog*(diff_axis_3_length/5)
+        self.L3_inertia = self.L3_inertia + inertia*(diff_axis_3_length/5)
+
+        self.L3_volume = self.L3_volume*1000
+        self.L3_inertia = self.L3_inertia*1000
+        # ===================================
+        self.opt_read_check_urdf()
+        self.opt_data_write_urdf(random_axis_2_length,random_axis_3_length)
+        
+        return random_axis_2_length, random_axis_3_length
     # for 6 dof generated information on the interface specified length 2 , 3 axis
     def opt_data_write_urdf(self,L2,L3):
         with open(path.dirname(path.realpath(__file__)) + "/urdf/" + self.robot_name + ".urdf",'w',encoding='utf-8') as urdf_config:

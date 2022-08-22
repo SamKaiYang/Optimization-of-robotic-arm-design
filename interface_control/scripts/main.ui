@@ -4469,7 +4469,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_acc_1">
@@ -4482,7 +4482,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_vel_5">
@@ -4495,7 +4495,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_acc_5">
@@ -4508,7 +4508,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_payload_y">
@@ -4560,7 +4560,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_27">
@@ -4586,7 +4586,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>5.0</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_26">
@@ -4625,7 +4625,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_payload_z">
@@ -4638,7 +4638,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>0.04</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_vel_6">
@@ -4651,7 +4651,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QPushButton" name="btn_structure_select">
@@ -4860,7 +4860,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_10">
@@ -4886,7 +4886,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_acc_3">
@@ -4899,7 +4899,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_acc_2">
@@ -4912,7 +4912,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_acc_6">
@@ -4925,7 +4925,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_29">
@@ -4951,7 +4951,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0</string>
+       <string>0.8</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_30">
@@ -4964,7 +4964,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>mm</string>
+       <string>m</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_acc_7">
@@ -4977,7 +4977,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_vel_7">
@@ -4990,7 +4990,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.0</string>
+       <string>1.57</string>
       </property>
      </widget>
      <widget class="QComboBox" name="comboBox_dof_select">
@@ -5271,7 +5271,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0</string>
+       <string>20</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_op_cost">
@@ -5284,7 +5284,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0</string>
+       <string>1500</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_62">
