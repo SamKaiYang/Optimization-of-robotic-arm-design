@@ -94,7 +94,7 @@ curr_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")  # 获取当前时
 tb = tensorboardX.SummaryWriter()
 # tensorboard_callback = tensorboardX.(log_dir=log_dir, histogram_freq=1)
 algo_name = "DDQN"  # 算法名称
-env_name = 'RobotOptEnv'  # 环境名称
+env_name = 'DDQN_RobotOptEnv'  # 环境名称
 
 
 
@@ -127,8 +127,8 @@ class drl_optimization:
         self.config.max_buff = 1000
         self.config.update_tar_interval = 100
         self.config.batch_size = 128 # mini-batch SGD中的批量大小
-        self.config.print_interval = 10
-        self.config.log_interval = 10
+        self.config.print_interval = 20
+        self.config.log_interval = 20
         self.config.win_reward = 198     # CartPole-v0
         self.config.win_break = True
 
@@ -166,11 +166,11 @@ class RosTopic:
             self.cmd_run = 1
 
 class Trainer:
-    def __init__(self, agent, env, config: Config):
+    def __init__(self, agent, env, config: Config, model_path):
         self.agent = agent
         self.env = env
         self.config = config
-
+        self.env_name = env_name  # 环境名称
         # non-Linear epsilon decay
         epsilon_final = self.config.epsilon_min
         epsilon_start = self.config.epsilon
@@ -178,8 +178,13 @@ class Trainer:
         self.epsilon_by_frame = lambda frame_idx: epsilon_final + (epsilon_start - epsilon_final) * math.exp(
             -1. * frame_idx / epsilon_decay)
 
-        self.outputdir = get_output_folder(self.config.output, self.config.env)
+
+        self.outputdir = model_path
+        # # self.outputdir = get_output_folder(self.config.output, self.config.env)
+        # self.outputdir = curr_path + "/outputs/" + self.env_name + \
+        #     '/' + curr_time + '/models/'  # 保存模型的路径
         self.agent.save_config(self.outputdir)
+        
         # self.board_logger = TensorBoardLogger(self.outputdir)
 
     def train(self, pre_fr=0, train_eps = 300):
@@ -275,6 +280,7 @@ class Tester(object):
             if debug:
                 # print('[Test] episode: %3d, episode_reward: %5f' % (episode, episode_reward))
                 rospy.loginfo('[Test] episode: {}, episode_reward: {}'.format(episode, episode_reward))
+                tb.add_scalar("/tested-model/test_reward/", episode_reward, episode)
             avg_reward += episode_reward
         avg_reward /= self.num_episodes
         # print("avg reward: %5f" % (avg_reward))
@@ -292,16 +298,50 @@ if __name__ == "__main__":
     ddqn_test_eps = 20  # 测试的回合数
     # train = Trainer()
     while not rospy.is_shutdown():
+        # test all
         if ros_topic.cmd_run == 1:
             ros_topic.cmd_run = 0
+            make_dir(plot_cfg.result_path, plot_cfg.model_path)  # 创建保存结果和模型路径的文件夹
             # 訓練
             train_env, train_agent = drl.env_agent_config(cfg, seed=1)
-            train = Trainer(train_agent, train_env, drl.config)
+            train = Trainer(train_agent, train_env, drl.config, plot_cfg.model_path)
             train.train(train_eps = ddqn_train_eps)
             # 測試
+
+            plot_cfg.model_path = plot_cfg.model_path +'model_last.pkl'
             test_env, test_agent = drl.env_agent_config(cfg, seed=10)
-            test = Tester(train_env, train_agent, drl.config.output, test_ep_steps = ddqn_test_eps)
+            test = Tester(train_agent, train_env, plot_cfg.model_path, test_ep_steps = ddqn_test_eps)
             test.test()
             break
         else:
             pass
+        '''
+        # test trained_model
+        if ros_topic.cmd_run == 1:
+            ros_topic.cmd_run = 0
+            make_dir(plot_cfg.result_path, plot_cfg.model_path)  # 创建保存结果和模型路径的文件夹
+            # 訓練
+            train_env, train_agent = drl.env_agent_config(cfg, seed=1)
+            train = Trainer(train_agent, train_env, drl.config, plot_cfg.model_path)
+            train.train(train_eps = ddqn_train_eps)
+            break
+        else:
+            pass
+
+        '''
+
+        '''
+        # test tested_model
+        if ros_topic.cmd_run == 1:
+            ros_topic.cmd_run = 0
+            # # 訓練
+            train_env, train_agent = drl.env_agent_config(cfg, seed=1)
+            # 測試
+            plot_cfg.model_path = '/home/iclab/Documents/teco_ws/src/Optimization-of-robotic-arm-design/dynamics/src/dynamics/outputs/DDQN_RobotOptEnv/20230102-163105/models/model_last.pkl'# test 20230102
+            test_env, test_agent = drl.env_agent_config(cfg, seed=10)
+            test = Tester(train_agent, train_env, plot_cfg.model_path, test_ep_steps = ddqn_test_eps)
+            test.test()
+            break
+        else:
+            pass
+        '''

@@ -83,7 +83,7 @@ class DDQNAgent:
         torch.save(self.model.state_dict(), '%s/model_%s.pkl' % (output, tag))
 
     def save_config(self, output):
-        with open(output + '/config.txt', 'w') as f:
+        with open(output + 'config.txt', 'w') as f: # fixed  [Errno 2] No such file or directory: '/home/iclab/Documents/teco_ws/src/Optimization-of-robotic-arm-design/dynamics/src/dynamics/outputs/DDQN_RobotOptEnv/20230102-161409/models//config.txt'
             attr_val = get_class_attr_val(self.config)
             for k, v in attr_val.items():
                 f.write(str(k) + " = " + str(v) + "\n")
