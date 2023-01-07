@@ -2,6 +2,7 @@
 import numpy as np
 from roboticstoolbox import DHRobot, RevoluteDH
 from spatialmath import SE3
+import spatialmath as sm
 from urdf_parser_py.urdf import URDF
 import os
 class RandomRobot(DHRobot):
@@ -146,5 +147,35 @@ class RandomRobot(DHRobot):
 if __name__ == '__main__':    # pragma nocover
 
     robot = RandomRobot(symbolic=False)
-    print(robot)
-    print(robot.dynamics())
+    # print(robot)
+    # print(robot.dynamics())
+    symbolic = False
+    if symbolic:
+        import spatialmath.base.symbolic as sym
+        zero = sym.zero()
+        pi = sym.pi()
+    else:
+        from math import pi
+        zero = 0.0
+    # Set the desired end-effector pose
+    # print(robot.q)
+    deg = pi / 180
+    q =  np.r_[180, 90, 45, 45, 90, 0]*deg
+    
+    print(robot.fkine(q) * sm.SE3(0, 0, 0.04))
+    # robot.ikine_6s
+    # robot.ikine_global
+    # robot.ikine_LMS
+    # robot.ikine_mmc
+    T = SE3(0.7, 0.2, 0.1) * SE3.RPY([0, 1, 0])
+    print(T)
+    print(robot.ikine_LM(T=T))
+    print(robot.ikine_LMS(T=T))
+
+    print(robot.ikine_LM(T=robot.fkine(q) * sm.SE3(0, 0, 0.04)))
+    print(robot.ikine_LMS(T=robot.fkine(q) * sm.SE3(0, 0, 0.04)))
+    # print(robot.ikine_global(T=robot.fkine(q) * sm.SE3(0, 0, 0.04)))
+    # print(robot.ikine_mmc(T=robot.fkine(q) * sm.SE3(0, 0, 0.04)))
+    # print(robot.ikine_6s(T=robot.fkine(q) * sm.SE3(0, 0, 0.04)))
+    print(robot.manipulability(q=q))
+    # print(robot.manipulability(J=robot.fkine(q) * sm.SE3(0, 0, 0.04)))

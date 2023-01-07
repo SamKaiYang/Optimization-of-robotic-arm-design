@@ -257,7 +257,7 @@ class Tester(object):
         self.agent.load_weights(model_path)
         self.policy = lambda x: agent.act(x)
 
-    def test(self, debug=False, visualize=True):
+    def test(self, debug=True, visualize=True): # debug = true
         avg_reward = 0
         for episode in range(self.num_episodes):
             s0 = self.env.reset()
