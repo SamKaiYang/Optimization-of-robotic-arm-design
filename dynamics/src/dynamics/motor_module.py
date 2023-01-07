@@ -23,7 +23,23 @@ class TECO_motor():
         length = [123, 125, 141, 130] # mm
         weight = [1.3, 2.0, 2.6, 4.5] # kg
         cost = [100,200,300,400]
-        
+class dynamixel_motor():
+    '''
+        dynamixel_motor size 42_20, 54_100, 54_200
+        42_20: 42 x 84 x 42 [mm]
+        54_100: 54 x 108 x 54 [mm]
+        54_200: 54 x 126 x 54 [mm]
+    '''
+    def __init__(self, symbolic=False):
+        rated_torque = [5.1, 25.3, 44.7] # Nm
+        rated_speed = [29.2, 29.2, 29.0] # RPM
+        max_torque = [21.6, 66.3, 73.1] # Nm
+        max_output_speed = [32, 32, 32] # RPM
+        diameter = [ 42, 54, 54] # mm
+        height = [84, 108, 126] # mm
+        length = [42, 54, 54] # mm
+        weight = [0.34, 0.74, 0.855] # kg
+        cost = [200,300,400]
 class Kollmorgen_motor():
     '''
         Kollmorgen size RGM14, RGM17, RGM20, RGM25
@@ -98,6 +114,18 @@ class motor_data():
                     }
         self.TECO_member = pd.DataFrame(self.TECO_motor_data)
 
+        self.dynamixel_motor_data = {"rated_torque":[5.1, 25.3, 44.7],
+                    "rated_speed":[29.2, 29.2, 29.0],
+                    "max_torque":[21.6, 66.3, 73.1],
+                    "max_output_speed":[32, 32, 32],
+                    "diameter":[ 42, 54, 54],
+                    "height":[84, 108, 126],
+                    "length":[42, 54, 54],
+                    "weight":[0.34, 0.74, 0.855],
+                    "cost":[200,300,400]
+                    }
+        self.dynamixel_member = pd.DataFrame(self.dynamixel_motor_data)
+        
         self.Kollmorgen_motor_data = {"rated_torque":[13.5, 49, 61, 118],
                     "rated_speed":[20.0, 20.0, 15.0, 10.0], 
                     "max_torque":[34.0, 66.0, 102.0, 194.0],
@@ -130,6 +158,7 @@ if __name__ == '__main__':    # pragma nocover
 
     motor = motor_data()
     print(motor.TECO_member.head())
+    print(motor.dynamixel_member.head())
     # print(motor.TECO_member.groupby("rated_torque").mean())
     # print(motor.TECO_member.columns)
     # print(len(motor.TECO_member.columns))
