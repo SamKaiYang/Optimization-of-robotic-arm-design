@@ -5,6 +5,9 @@ from spatialmath import SE3
 import spatialmath as sm
 from urdf_parser_py.urdf import URDF
 import os
+# import pandas as pd
+from openpyxl import load_workbook
+
 class modular_robot_6dof(DHRobot):
     """
     Class that models a TECO TECOARM1 manipulator
@@ -176,8 +179,29 @@ if __name__ == '__main__':    # pragma nocover
 
     print(robot.ikine_LM(T=robot.fkine(q) * sm.SE3(0, 0, 0.04)))
     print(robot.ikine_LMS(T=robot.fkine(q) * sm.SE3(0, 0, 0.04)))
-    # print(robot.ikine_global(T=robot.fkine(q) * sm.SE3(0, 0, 0.04)))
-    # print(robot.ikine_mmc(T=robot.fkine(q) * sm.SE3(0, 0, 0.04)))
-    # print(robot.ikine_6s(T=robot.fkine(q) * sm.SE3(0, 0, 0.04)))
+    
     print(robot.manipulability(q=q))
     # print(robot.manipulability(J=robot.fkine(q) * sm.SE3(0, 0, 0.04)))
+    
+    
+    # import xlsx
+    df = load_workbook("./xlsx/task_point.xlsx")
+    sheets = df.worksheets
+    sheet1 = sheets[0]
+    rows = sheet1.rows
+    cols = sheet1.columns
+
+    for row in rows:
+        # print(row)
+        row_val = [col.value for col in row]
+        print(row_val)
+    print('')
+    for col in cols:
+        # print(col)
+        col_val = [row.value for row in col]
+        print(col_val)
+    print('')
+    
+    print(col_val)
+    # d2 = df.at[0, "axis 1"]
+    # print(d2)
