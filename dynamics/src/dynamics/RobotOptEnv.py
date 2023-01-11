@@ -439,10 +439,10 @@ class RobotOptEnv(gym.Env):
         reward = 0
         shaping = (
             -10 * np.sqrt(self.state[0] * self.state[0] + self.state[1] * self.state[1] + self.state[2] * self.state[2] + self.state[3] * self.state[3] + self.state[4] * self.state[4] + self.state[5] * self.state[5])
-            + 100 * self.state[6]
+            + 10 * self.state[6]
             - 0.1 * self.state[7]
-            - 1 * self.state[8]
-            + 100 * self.state[9]
+            - 10 * self.state[8]
+            + 1000 * self.state[9]
         ) 
 
         if self.prev_shaping is not None:
@@ -453,7 +453,7 @@ class RobotOptEnv(gym.Env):
         for i in range(6):
             # TODO:consider cost & weight 
             # if np.abs(self.state[i]) > self.motor_rated[i]:
-            if np.abs(self.state[i]) > 198: # TODO: fixed 
+            if np.abs(self.state[i]) > 114: # TODO: fixed 
                 self.torque_over = True # 超出最大扭矩
                 break # TODO
 
@@ -465,9 +465,9 @@ class RobotOptEnv(gym.Env):
         if self.torque_over == True: # TODO: fixed 0112 00:22 改為超過最大的馬達型號torque
             terminated = True
             reward = -100
-        if self.torque_over == False and self.state[6] != 0 and self.state[8] < self.op_weight and self.state[7] < self.op_cost:  # TODO: fixed 增加 cost & weight & ... 
-            terminated = True
-            reward = +100
+        # if self.torque_over == False and self.state[6] != 0 and self.state[8] < self.op_weight and self.state[7] < self.op_cost:  # TODO: fixed 增加 cost & weight & ... 
+        #     terminated = True
+        #     reward = +100
         if self.counts == 30:
             terminated = True
             self.counts = 0
