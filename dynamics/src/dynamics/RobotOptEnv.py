@@ -452,23 +452,27 @@ class RobotOptEnv(gym.Env):
         # 判斷超出最大扭矩
         for i in range(6):
             # TODO:consider cost & weight 
-            if np.abs(self.state[i]) > self.motor_rated[i]:
+            # if np.abs(self.state[i]) > self.motor_rated[i]:
+            if np.abs(self.state[i]) > 198: # TODO: fixed 
                 self.torque_over = True # 超出最大扭矩
                 break # TODO
 
         terminated = False
         # if down 完成任务 
-        if self.torque_over == True and self.state[6] == 0: # TODO: fixed 0112 00:22
+        if self.state[6] == 0: # TODO: fixed
+            terminated = True
+            reward = -50
+        if self.torque_over == True: # TODO: fixed 0112 00:22 改為超過最大的馬達型號torque
             terminated = True
             reward = -100
-        if self.torque_over == False and self.state[6] != 0:
+        if self.torque_over == False and self.state[6] != 0 and self.state[8] < self.op_weight and self.state[7] < self.op_cost:  # TODO: fixed 增加 cost & weight & ... 
             terminated = True
             reward = +100
         if self.counts == 30:
             terminated = True
             self.counts = 0
             reward = +30
-            
+        self.torque_over = False #reset
         rospy.loginfo("step_reward: %s", reward)
         return self.state, reward, terminated, {}
     # reset环境状态 
