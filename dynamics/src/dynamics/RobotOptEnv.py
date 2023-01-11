@@ -18,7 +18,15 @@ import rospy
 from sklearn import preprocessing
 import pandas as pd
 import yaml
-# TODO: 整合機器人重製生成 與 動力學計算
+# add 可達性可操作性評估
+import numpy as np
+from roboticstoolbox import DHRobot, RevoluteDH
+from spatialmath import SE3
+import spatialmath as sm
+from urdf_parser_py.urdf import URDF
+import os
+from openpyxl import load_workbook
+
 # TODO: 初版 只考慮 6 dof 機器人的關節長度變化, 觀察各軸馬達極限之輸出最大torque值
 class RobotOptEnv(gym.Env):
     """
@@ -233,6 +241,11 @@ class RobotOptEnv(gym.Env):
         torque = self.dynamics_torque_limit()
         self.state[0:6] = torque
         
+        # TODO: 改為可達性分析
+        reach_score = self.reach_evaluate()
+        manipulability_score = self.manipulability_evaluate()
+        rospy.loginfo("reach_score: %s", reach_score)
+        rospy.loginfo("manipulability_score: %s", manipulability_score)
         # 計算最大可達半徑
         L1,L2,L3 = self.robot.return_configuration()
         L_sum = L1+L2+L3
@@ -304,7 +317,8 @@ class RobotOptEnv(gym.Env):
                         reward += -5.0
                     else:
                         reward += 0.0
-                
+                    # TODO: 新增可操作性評估
+                        # manipulability_score = self.manipulability_evaluate()
         done = not false_done # 取bool 反向值
         
         return self.state, reward, done, {}
@@ -420,6 +434,66 @@ class RobotOptEnv(gym.Env):
 
         # print("torque_dynamics_limit: ", self.torque_dynamics_limit)
         return self.torque_dynamics_limit
+
+    # TODO: 新增可達性評估
+    def reach_evaluate(self):
+        # import xlsx
+        df = load_workbook("./xlsx/task_point.xlsx")
+        sheets = df.worksheets
+        sheet1 = sheets[0]
+        rows = sheet1.rows
+        cols = sheet1.columns
+        T_tmp = []
+        score = []
+        i = 0
+        false_done = False
+        for row in rows:
+            row_val = [col.value for col in row]
+            T_tmp.append(SE3(row_val[0], row_val[1], row_val[2]) * SE3.RPY([np.deg2rad(row_val[3]), np.deg2rad(row_val[4]), np.deg2rad(row_val[5])]))
+            ik_q = self.robot.ikine_LM(T=T_tmp[i])
+            # 先判斷逆運動學解是否存在(即平方殘差是否低於1e-12), 當有不存在則評估0分
+            if ik_q.success == True:
+                # 迭代500次以內的迭代次數為評估
+                iterations_count = 500 - ik_q.iterations
+                score.append(iterations_count/500)
+            else:
+                # score[i] = 0
+                false_done = True
+                break
+            i = i + 1
+        if false_done == True:
+            final_score = 0
+        else:
+            final_score = np.mean(score[i])
+
+        return(final_score) # 回傳 
+
+    # TODO: 新增可操作性評估
+    def manipulability_evaluate(self):
+        # import xlsx
+        df = load_workbook("./xlsx/task_point.xlsx")
+        sheets = df.worksheets
+        sheet1 = sheets[0]
+        rows = sheet1.rows
+        cols = sheet1.columns
+
+        T_tmp = []
+        manipulability_index = []
+        i = 0
+        for row in rows:
+            row_val = [col.value for col in row]
+            T_tmp.append(SE3(row_val[0], row_val[1], row_val[2]) * SE3.RPY([np.deg2rad(row_val[3]), np.deg2rad(row_val[4]), np.deg2rad(row_val[5])]))
+            # print(T_tmp[i])
+            ik_q = self.robot.ikine_LM(T=T_tmp[i])
+            if ik_q.success == True:
+                manipulability_index.append(self.robot.manipulability(q=ik_q.q))
+                # robot.plot_ellipse()
+                ik_np = np.array(ik_q.q)
+                # print(ik_np)
+                # self.robot.plot(q=ik_np, backend='pyplot', dt = 0.5)
+            i = i + 1
+
+        return(np.mean(manipulability_index)) # 回傳 manipulability 取平均
 
 if __name__ == '__main__':
     env = RobotOptEnv()

@@ -163,9 +163,11 @@ if __name__ == '__main__':    # pragma nocover
         from math import pi
         zero = 0.0
     # Set the desired end-effector pose
-    # print(robot.q)
+
+    '''# print(robot.q)
     deg = pi / 180
-    q =  np.r_[180, 90, 45, 45, 90, 0]*deg
+    q =  np.r_[0, 0, 0, 0, 0, 0]*deg
+    
     
     print(robot.fkine(q) * sm.SE3(0, 0, 0.04))
     # robot.ikine_6s
@@ -183,6 +185,7 @@ if __name__ == '__main__':    # pragma nocover
     print(robot.manipulability(q=q))
     # print(robot.manipulability(J=robot.fkine(q) * sm.SE3(0, 0, 0.04)))
     
+'''
     
     # import xlsx
     df = load_workbook("./xlsx/task_point.xlsx")
@@ -191,17 +194,21 @@ if __name__ == '__main__':    # pragma nocover
     rows = sheet1.rows
     cols = sheet1.columns
 
+    T_tmp = []
+    manipulability_index = []
+    i = 0
     for row in rows:
-        # print(row)
         row_val = [col.value for col in row]
-        print(row_val)
-    print('')
-    for col in cols:
-        # print(col)
-        col_val = [row.value for row in col]
-        print(col_val)
-    print('')
-    
-    print(col_val)
-    # d2 = df.at[0, "axis 1"]
-    # print(d2)
+        T_tmp.append(SE3(row_val[0], row_val[1], row_val[2]) * SE3.RPY([np.deg2rad(row_val[3]), np.deg2rad(row_val[4]), np.deg2rad(row_val[5])]))
+        # print(T_tmp[i])
+        ik_q = robot.ikine_LM(T=T_tmp[i])
+        print(ik_q)
+        # if ik_q.success == True:
+        #     manipulability_index.append(robot.manipulability(q=ik_q.q))
+        #     # robot.plot_ellipse()
+        #     ik_np = np.array(ik_q.q)
+        #     print(ik_np)
+        #     # robot.plot(q=q, backend='pyplot', dt = 0)
+        #     robot.plot(q=ik_np, backend='pyplot', dt = 0.5)
+        i = i + 1
+    # print(np.mean(manipulability_index)) # manipulability 取平均
