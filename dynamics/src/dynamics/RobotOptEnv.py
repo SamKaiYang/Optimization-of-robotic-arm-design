@@ -476,14 +476,15 @@ class RobotOptEnv(gym.Env):
         torque = self.dynamics_torque_limit()
         self.state[0:6] = torque
         # consider reach_distance
-        L1,L2,L3 = self.robot.return_configuration()
-        L_sum = L1+L2+L3
+        # L1,L2,L3 = self.robot.return_configuration()
+        # L_sum = L1+L2+L3
         reach_score = self.reach_evaluate()
         manipulability_score = self.manipulability_evaluate()
         self.state[6] = reach_score
         self.state[7] = sum(self.motor_cost_init)
         self.state[8] = sum(self.motor_weight_init)
-        rospy.loginfo("configuration: %s, %s, %s, %s", L1, L2, L3, L_sum)
+        self.state[9] = manipulability_score
+        # rospy.loginfo("configuration: %s, %s, %s, %s", L1, L2, L3, L_sum)
         rospy.loginfo("self.state: %s", self.state)
         
         # 重置
