@@ -458,13 +458,18 @@ class RobotOptEnv(gym.Env):
 
         terminated = False
         # if down 完成任务 
-        if self.torque_over == True or self.state[6] == 0:
+        if self.torque_over == True and self.state[6] == 0: # TODO: fixed 0112 00:22
             terminated = True
             reward = -100
         if self.torque_over == False and self.state[6] != 0:
             terminated = True
             reward = +100
+        if self.counts == 30:
+            terminated = True
+            self.counts = 0
+            reward = +30
             
+        rospy.loginfo("step_reward: %s", reward)
         return self.state, reward, terminated, {}
     # reset环境状态 
     def reset(self):

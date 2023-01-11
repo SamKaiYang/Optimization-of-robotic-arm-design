@@ -127,7 +127,7 @@ class drl_optimization:
         self.config.max_buff = 1000
         self.config.update_tar_interval = 100
         self.config.batch_size = 128 # mini-batch SGD中的批量大小
-        self.config.print_interval = 20
+        self.config.print_interval = 30 # TODO: fixed 0112 00:22
         self.config.log_interval = 20
         self.config.win_reward = 198     # CartPole-v0
         self.config.win_break = True
