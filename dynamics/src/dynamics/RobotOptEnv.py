@@ -430,11 +430,11 @@ class RobotOptEnv(gym.Env):
         self.state[8] = weight
         # 可操作性
         self.state[9] = self.manipulability_evaluate()
-        rospy.loginfo("reach_score: %s", self.state[6])
-        rospy.loginfo("manipulability_score: %s", self.state[9])
+        # rospy.loginfo("reach_score: %s", self.state[6])
+        # rospy.loginfo("manipulability_score: %s", self.state[9])
         self.motor_rated[axis-1] = self.res.rated_torque[motor_type]
-        rospy.loginfo("configuration cost & weight: %s, %s", cost, weight)
-        self.counts += 1
+        # rospy.loginfo("configuration cost & weight: %s, %s", cost, weight)
+        
         
         reward = 0
         shaping = (
@@ -468,11 +468,13 @@ class RobotOptEnv(gym.Env):
         # if self.torque_over == False and self.state[6] != 0 and self.state[8] < self.op_weight and self.state[7] < self.op_cost:  # TODO: fixed 增加 cost & weight & ... 
         #     terminated = True
         #     reward = +100
-        if self.counts == 30:
+        if self.counts == 10:
             terminated = True
             self.counts = 0
-            reward = +30
+            reward = +10
+        self.counts += 1
         self.torque_over = False #reset
+        rospy.loginfo("counts: %s", self.counts)
         rospy.loginfo("step_reward: %s", reward)
         return self.state, reward, terminated, {}
     # reset环境状态 
